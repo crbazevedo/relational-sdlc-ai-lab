@@ -1,0 +1,22 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+dist/
+build/
+*.egg-info/
+
+# Local data/cache areas. Commit dataset cards, not large raw outputs.
+data/raw/
+data/processed/
+data/cache/
+outputs/
+runs/
+
+# Local secrets/config.
+.env
+.env.*
+*.pem
+*.key

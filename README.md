@@ -18,10 +18,12 @@ measurable relational retrieval layer for SDLC tasks:
 - task state -> tools or agents that should run next.
 
 Contribution and source-record rules are in [CONTRIBUTING.md](CONTRIBUTING.md).
+The public operating boundary is in [docs/operating-boundary.md](docs/operating-boundary.md).
+The research lifecycle is in [docs/research-lifecycle.md](docs/research-lifecycle.md).
 
 This public repository is intentionally limited to research notes, source
 rules, dataset documentation, model designs, evaluation designs, and
-reproducible experiment results. Local planning files and workflow automation
+reproducible experiment results. Local planning files, run state, and caches
 should stay outside this repository.
 
 ## Initial North Stars
@@ -45,6 +47,7 @@ should stay outside this repository.
 4. Evaluate Recall@K, MRR, hard-negative accuracy, and test-selection quality.
 5. Publish dataset cards, model cards, experiment cards, and reproducibility
    notes.
+6. Keep local lifecycle state outside public history.
 
 ## Public Repo Contents
 

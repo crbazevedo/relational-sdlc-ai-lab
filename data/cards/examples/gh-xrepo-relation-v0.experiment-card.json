@@ -1,0 +1,33 @@
+{
+  "card_type": "experiment",
+  "id": "exp:gh-xrepo-relation-v0",
+  "name": "GitHub pilot cross-repo de-referenced — relation-metric",
+  "created_at": "2026-06-21T00:00:00Z",
+  "hypothesis": "With references removed and repos held out, does this system recover issue->fixing-PR by semantics that generalize across repositories?",
+  "task": "issue_to_fixing_pr",
+  "dataset_version": "ds:gh-pilot-v0",
+  "code_version": "relsdlc-0.1.0",
+  "seed": 0,
+  "command": "python data/pilot/run_crossrepo_ablation.py",
+  "system": "relation-metric",
+  "runtime_class": "cpu",
+  "metrics": {
+    "recall_at_k": {
+      "1": 0.454,
+      "5": 0.7989,
+      "10": 0.9598
+    },
+    "mrr": 0.6181,
+    "hard_negative_accuracy": 0.4713,
+    "n_queries": 174
+  },
+  "baseline_comparison": "exp:gh-xrepo-idf-v0",
+  "error_slices": [],
+  "leakage_checks": [
+    "references scrubbed from text; train repos disjoint from test repos (cross-repo generalization)."
+  ],
+  "known_limitations": [
+    "pilot scale; bag-of-tokens features; exploratory."
+  ],
+  "exploratory": true
+}

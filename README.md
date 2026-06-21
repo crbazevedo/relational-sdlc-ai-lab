@@ -92,10 +92,18 @@ held-out queries) — the synthetic win **does not transfer**:
 
 Real PRs restate the issues they fix, so surface similarity is already strong and
 **IDF is the baseline to beat** — the diagonal relation model ties it, it does not
-win. Real issue↔fix matching is cross-token/semantic; beating IDF needs a
-bilinear/projection relation operator or fine-tuned embeddings (the P3 work). The
-lab's deliverable is the frozen public benchmark + honest baselines that make this
-measurable.
+win.
+
+We then made the testbed honest — **references removed** (no link to follow) and
+**repos held out** (cross-repo generalization) — and added a two-tower projection
+relation embedder. Result ([docs/ablation-crossrepo.md](docs/ablation-crossrepo.md)):
+the tower **wins on cross-token synthetic (R@1 0.83) but loses to vanilla
+cross-repo (0.24)** — bag-of-tokens projections can't transfer to unseen repos'
+vocabulary; IDF (no training) stays the robust winner. The evidence-backed
+conclusion: **cross-repo generalization needs pretrained semantic embeddings as
+the feature substrate**, with the relation operator learned on top (the concrete
+P3). The lab's deliverable is the frozen public benchmark + honest baselines that
+make exactly this measurable.
 
 The synthetic `datebox` fixture (CC0, original) lets the whole pipeline run from a
 clean checkout with no network. It mirrors the timezone-bug worked example from

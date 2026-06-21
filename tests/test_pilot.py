@@ -60,3 +60,24 @@ def test_idf_is_a_strong_baseline_on_real_data():
     # IDF reliably helps real issue->PR retrieval; the diagonal relation model
     # is NOT asserted to win (it ties IDF — see docs/ablation-real.md).
     assert idf >= vanilla
+
+
+def _load_module(name: str):
+    spec = importlib.util.spec_from_file_location(name, PILOT / f"{name}.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def test_crossrepo_dataset_splits_by_repo_and_is_wellformed():
+    mod = _load_module("run_crossrepo_ablation")
+    from relsdlc.model import run_ablation
+    ds, meta = mod.load_pilot_crossrepo()
+    # Train and test repos are disjoint and both populated.
+    assert set(meta["train_repos"]).isdisjoint(meta["test_repos"])
+    assert meta["train_repos"] and meta["test_repos"]
+    report = run_ablation(ds, seed=0, min_df=mod.MIN_DF)
+    assert report["n_test_queries"] > 0
+    for m in report["systems"].values():
+        for v in m["recall_at_k"].values():
+            assert 0.0 <= v <= 1.0

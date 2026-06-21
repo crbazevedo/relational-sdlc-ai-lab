@@ -37,13 +37,17 @@ Target:
 
 ## P2: Relational Embedding Benchmark
 
-**Status: mechanism demonstrated on synthetic data; real-data baseline established.**
+**Status: mechanism demonstrated on synthetic data; real-data baselines + cross-repo
+analysis established.**
 [ablation.md](ablation.md): on a controlled benchmark, relation-supervised token
 weighting beats unsupervised IDF beats vanilla cosine (Recall@1 0.82 vs 0.38 vs
 0.11). [ablation-real.md](ablation-real.md): on the real P1 pilot the win does
 **not** transfer — IDF is the strong baseline (R@1 0.44) and the diagonal
-relation-metric ties it. Beating IDF on real data needs a cross-token relation
-operator (P3).
+relation-metric ties it. [ablation-crossrepo.md](ablation-crossrepo.md): with
+references removed and repos held out, a two-tower projection wins on cross-token
+synthetic (0.83) but loses to vanilla cross-repo (0.24) — bag-of-tokens can't
+transfer across repos. Evidence-backed next step: a relation operator on top of
+**pretrained code/text embeddings** (the real P3).
 
 Compare:
 

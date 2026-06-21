@@ -1,0 +1,628 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+
+\setlength{\parskip}{0.5em}
+\setlength{\parindent}{0pt}
+
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\rel}[1]{\textsf{#1}}
+
+\title{\textbf{Relational-Geometric Learning over the\\Software Development Lifecycle}\\[0.4em]
+\large A Technical Report on a Public Research Lab for\\Verifiable, Relation-Aware SDLC Retrieval}
+\author{Relational SDLC AI Lab}
+\date{Formalization report --- compiled from the public repository}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This report formalizes the concepts, data pipeline, models, experimental
+protocol, and results of a public research lab studying \emph{relational-geometric
+learning} over software-development-lifecycle (SDLC) records. The thesis is that
+software-engineering systems should learn and operate over \emph{verifiable
+relations} among artifacts (issue, pull request, commit, diff, file, test, log),
+not only over the surface similarity of text chunks. We instantiate a typed
+artifact/relation graph, a family of relation operators (diagonal metric,
+bilinear, low-rank two-tower projection, identity-initialized operator, and a
+LoRA-fine-tuned encoder), and a frozen, leakage-guarded benchmark with
+Recall@$K$, MRR, and hard-negative metrics. We then report an honest, one-change-
+at-a-time experimental arc. On a controlled synthetic benchmark, relation
+supervision decisively beats unsupervised IDF and vanilla cosine (Recall@1
+\textbf{0.82} vs.\ 0.38 vs.\ 0.11). That win does \emph{not} transfer to real
+GitHub issue$\to$PR retrieval, where the surface is rich and IDF is the strong
+baseline (R@1 0.46). With references removed and repositories held out,
+bag-of-tokens projections fail cross-repo (two-tower 0.24 $<$ vanilla 0.39), while
+a frozen pretrained embedder wins outright (0.59), and a bolt-on relation head on
+\emph{frozen} vectors cannot improve it. The first positive relational result on
+real held-out data is a LoRA fine-tune that places the relation loss \emph{inside}
+the representation: R@1 $0.59 \to \textbf{0.66}$, MRR $0.73 \to 0.79$, on eight
+unseen repositories, with a $0.48\%$-parameter adapter trained on CPU. The settled
+conclusions are that pretrained embeddings are the cross-repo substrate and that
+the relational contribution must live in the representation (or in graph
+structure), not as a post-hoc head. We close with the next steps: scaling the win
+with multi-split confidence intervals, a code-specific base, graph link
+prediction, and --- only after MVP-1 holds --- a relational small language model.
+\end{abstract}
+
+\tableofcontents
+\vspace{1em}
+
+% =====================================================================
+\section{Introduction and Thesis}
+\label{sec:intro}
+
+Modern software-engineering assistants are built largely on \emph{text} retrieval:
+an embedding model maps an artifact to a vector, and relevance is cosine
+similarity. This works when the right answer restates the question, but software
+artifacts are bound together by \emph{relations} that are often not surface-visible:
+a pull request \rel{fixes} an issue, a commit \rel{modifies} a file, a test
+\rel{covers} a symbol, a failing log is \rel{caused\_by} a change. These relations
+are frequently \emph{verifiable} --- they can be mined from closing keywords, diff
+contents, or coverage maps --- which makes them an unusually trustworthy source of
+supervision.
+
+\paragraph{Thesis.}
+\begin{quote}
+Embeddings (and later small language models) trained over \emph{verifiable SDLC
+relations} produce more reliable software-engineering systems than models that rely
+on generic text similarity.
+\end{quote}
+
+The lab's first target is deliberately narrow: not a full autonomous coding agent,
+but a \emph{measurable relational retrieval layer}. The target tasks are
+\code{issue}$\to$likely fixing PRs; \code{diff}$\to$affected tests; failing
+\code{log}$\to$likely files/functions; \code{PR}$\to$risk and missing-test
+candidates; and task state$\to$tools or agents to run next. The deliverable is not a
+single model but a \emph{frozen public benchmark with honest baselines} that makes
+exactly these questions falsifiable.
+
+\paragraph{Five north stars.}
+The lab is organized around five standing goals:
+(G1) public research hygiene --- public sources and reproducible records;
+(G2) falsifiable retrieval gains --- every claim needs a benchmark;
+(G3) dataset provenance --- every record carries source, license, timestamp, and
+transformation lineage;
+(G4) relation-aware models --- models should learn explicit lifecycle relations,
+not only text similarity;
+(G5) agentic readiness --- every workflow should eventually expose state,
+preconditions, actions, tools, and outcomes.
+
+\paragraph{Scope of this report.}
+This is a standalone synthesis of the public repository's work to date. It is
+\emph{exploratory} and \emph{pilot-scale} throughout: the numbers are signals to
+confirm at scale, not settled results. Where this report and the repository's
+experiment cards disagree, the cards are authoritative.
+
+% =====================================================================
+\section{Concepts and Formal Framework}
+\label{sec:concepts}
+
+\subsection{Typed artifact/relation graph}
+
+The substrate is a typed, directed, attributed multigraph $G = (V, E)$. Nodes are
+SDLC \emph{records} drawn from a closed type vocabulary: issues, pull requests,
+commits, diffs, files, symbols, tests, CI logs, tools, and agent run logs. Edges
+are typed \emph{relations} from the closed set
+\[
+\mathcal{R} = \{\,\rel{fixes},\ \rel{modifies},\ \rel{covers},\ \rel{fails\_on},\
+\rel{caused\_by},\ \rel{requires\_tool},\ \rel{safe\_to\_parallelize},\
+\rel{suitable\_agent}\,\}.
+\]
+Each node carries an embedding-bearing text content plus provenance; each edge
+carries an extraction \code{method}, a \code{confidence} $\in [0,1]$, an
+\code{observed} flag, and a \code{valid\_from} timestamp used for temporal leakage
+control (\S\ref{sec:protocol}). An encoder maps a record to a vector,
+\[
+E_\theta : \text{record} \longmapsto h \in \mathbb{R}^d,
+\]
+and a per-relation score function $f_r$ judges whether a directed pair stands in
+relation $r$:
+\[
+s_r(u,v) = f_r(h_u, h_v).
+\]
+Retrieval for a task is then: given a query record and a fixed candidate pool, rank
+candidates by $s_r$.
+
+\subsection{Relation operators}
+\label{sec:operators}
+
+The lab studies a ladder of increasingly expressive operators $f_r$, each testing a
+different hypothesis about \emph{where} the relational signal lives.
+
+\begin{description}[leftmargin=1.4em,style=nextline]
+\item[Translational operator $h_v \approx T_r(h_u)$.]
+A relation is a transformation of the source embedding; in the linear case
+$T_r(h) = M_r h$, recovering the translational/relation-map family. Implemented as
+the identity-initialized operator $M$ (\S\ref{sec:models}).
+\item[Bilinear score $s_r(u,v) = h_u^{\top} W_r\, h_v$.]
+A learned relation-specific bilinear form. Two restrictions are studied: a
+\emph{diagonal} $W_r$ (a per-token reweighting --- it can only emphasize or
+suppress \emph{shared} dimensions), and a \emph{low-rank} $W_r = W_q^{\top} W_d$,
+which factors into a two-tower projection (it can align \emph{different} dimensions
+on the two sides).
+\item[Two-tower / low-rank projection.]
+Separate projections for the query side and document side,
+$a = W_q u_{\text{issue}}$, $b = W_d u_{\text{doc}}$, $\text{score} = \langle a, b
+\rangle$. This is the operator capable of \emph{cross-token} structure --- mapping
+issue-symptom vocabulary to change vocabulary --- which a diagonal metric cannot
+represent.
+\end{description}
+
+\subsection{Losses}
+\label{sec:losses}
+
+The operators are trained with a \emph{topological margin loss} $L_{\text{topo}}$:
+a triplet/contrastive objective that pulls a query toward its related artifact and
+pushes it away from a near-miss negative, by at least a margin $\gamma$:
+\[
+L_{\text{topo}} = \sum_{(u, v^{+}, v^{-})}
+\big[\, \gamma - s_r(u, v^{+}) + s_r(u, v^{-}) \,\big]_{+}.
+\]
+At scale this is realized as a symmetric InfoNCE / multiple-negatives contrastive
+loss with in-batch negatives. The full paper program also specifies a supervised
+contrastive term $L_{\text{contrastive}}$, a relation-classification term
+$L_{\text{rel}}$, a graph-smoothness term $L_{\text{graph}}$, a logical-consistency
+term $L_{\text{logic}}$, and an alignment term $L_{\text{align}}$; these remain
+partial or future and are noted in \S\ref{sec:next}.
+
+\subsection{Metrics}
+\label{sec:metrics}
+
+Every system returns a ranked candidate list per query; aggregated over a frozen
+evaluation set we report:
+\begin{itemize}[leftmargin=1.4em,nosep]
+\item \textbf{Recall@$K$} --- fraction of relevant items in the top $K$
+($K \in \{1,5,10\}$);
+\item \textbf{MRR} --- mean reciprocal rank of the first relevant item;
+\item \textbf{Hard-negative accuracy} --- fraction of queries where a relevant item
+outranks every \emph{designated} hard negative (the wrong file in the same package,
+the wrong test in the same suite, a plausible-but-unrelated PR).
+\end{itemize}
+Hard negatives are the point: generic similarity already finds easy positives, so
+without near-miss negatives Recall@$K$ flatters every model. Generalization is
+measured by \emph{cross-repo} (held-out repositories) and, where relevant,
+\emph{temporal} (train on the past, evaluate on the future) splits.
+
+% =====================================================================
+\section{Data Pipeline}
+\label{sec:data}
+
+The pipeline turns public GitHub data into a provenance-bearing, leakage-guarded,
+frozen benchmark. It is methodology-as-code: every record carries provenance, every
+edge an extraction method and confidence, every claim an experiment card, every
+benchmark a frozen split with a leakage guard.
+
+\subsection{Ingest with provenance}
+
+Ingest is pure standard library and \emph{offline by default}: the default path
+replays a recorded API snapshot and never opens a socket; a live fetch is opt-in
+behind an explicit flag and a token, is polite by construction (descriptive
+user-agent, pinned API version, rate-limit-header obedience, modest pagination),
+and is recorded once so the mapping is replayable offline. The mapping is:
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+GitHub source & Record / edge & Method \\
+\midrule
+issue / PR / commit JSON & \code{issue} / \code{pull\_request} / \code{commit} & provenance only \\
+PR's changed file & \code{file} or \code{test} record & --- \\
+``Fixes/Closes \#N'' in PR body & \rel{fixes} edge & \code{human\_label} ($c{=}0.95$) \\
+PR's changed files & \rel{modifies} edge & \code{git\_history} ($c{=}1.0$) \\
+\bottomrule
+\end{tabular}
+\end{center}
+Every record and edge carries \code{source\_url}, \code{retrieved\_at},
+\code{license}, a real \code{sha256:} content hash, a \code{transform}, a
+\code{method}, and an \code{observed} flag. A closing-keyword reference to an issue
+\emph{not} in the snapshot is never minted as an edge, so referential integrity
+holds. Test files (paths under \code{tests/}, \code{*\_test.*}, \code{*.spec.*},
+\dots) are typed as \code{test} records. Redistribution defaults to
+\code{metadata\_only}: provenance points back to public URLs; full source text is
+not redistributed.
+
+\subsection{Records, edges, and the leakage guard}
+
+The validator enforces JSON schemas, provenance completeness, referential integrity
+(every edge endpoint resolves to a record), and a \emph{temporal leakage guard}:
+each record/edge carries \code{valid\_from}, and a query's optional \code{as\_of}
+time excludes any candidate or positive that only becomes valid later. Random splits
+leak; the default split for real data is \emph{temporal-by-commit-date}.
+
+\subsection{De-referenced, frozen, cross-repo benchmarks}
+
+Two design choices make the benchmark honest (rationale in \S\ref{sec:design}):
+\textbf{reference removal} --- explicit links (\code{\#123}, \code{owner/repo\#N},
+issue/PR URLs, commit SHAs) are scrubbed from \emph{inputs} while kept as ground-
+truth labels --- and \textbf{cross-repo splits} --- train repositories are disjoint
+from test repositories. Splits are frozen and recorded in a dataset card. Heavy
+steps (embedding) are cached and committed so downstream runs replay on the cache
+with numpy alone --- no GPU, no network, CI-reproducible.
+
+\subsection{Graph enrichment}
+
+The first pilot snapshot carried \code{issue}/\code{pull\_request}/\code{commit}
+records and \rel{fixes} edges but no file-level structure. A one-time live
+enrichment fetches each distinct fixing-PR's changed files and maps them into
+\code{file}/\code{test} records and \rel{modifies} edges using the same
+provenance-bearing helpers, yielding the structure the graph-learning track and the
+\code{diff}$\to$affected-test task need. The committed snapshot adds 497 file
+records, 239 test records (736 total), and 1{,}356 \rel{modifies} edges over 18
+repositories, each edge \code{observed} from the diff with \code{confidence} $1.0$
+and temporally consistent endpoints.
+
+% =====================================================================
+\section{Models Implemented}
+\label{sec:models}
+
+Six systems are scored on the \emph{same} candidate pools so every comparison is
+attributable to one change. Each tests a specific hypothesis about where the
+relational signal lives.
+
+\begin{description}[leftmargin=1.4em,style=nextline]
+\item[Vanilla cosine.] Plain cosine over bag-of-token vectors --- the
+off-the-shelf text-similarity floor. With all weights equal to one, every weighted
+model below reduces to this, so any gain is purely from supervision.
+\item[Unsupervised IDF cosine.] Cosine with inverse-document-frequency token
+weights from corpus statistics only --- no relation labels. The bag-of-tokens bar:
+if a relation-aware model only matches this, the ``gain'' was just a frequency
+effect.
+\item[Diagonal relation metric.] Learns a non-negative weight per token via a
+margin triplet loss over \emph{train-split} \rel{fixes} pairs. It can up-weight
+predictive tokens and down-weight ambiguous ones, but only over \emph{shared}
+dimensions. Tests: \emph{is the relation a per-token reweighting?}
+\item[Two-tower projection.] Asymmetric low-rank query/document projections trained
+with a margin triplet loss. It can align \emph{different} tokens across sides.
+Tests: \emph{can a learned cross-token operator (over bag-of-tokens features)
+generalize?}
+\item[Identity-init operator.] A relation map $M$ \emph{initialized at the
+identity} (so it starts exactly at embedder cosine) and regularized back toward it,
+applied on \emph{frozen} pretrained embeddings. Tests: \emph{can a safe refinement
+of frozen vectors help?}
+\item[LoRA-fine-tuned encoder.] Low-rank adapters ($r{=}8$, on attention
+query/key/value; $0.48\%$ of parameters) on a frozen small pretrained embedder,
+trained with the InfoNCE relation loss on train-repo pairs. The pretrained weights
+are untouched; only the adapters learn. Tests: \emph{does the relation loss inside
+the representation generalize cross-repo?}
+\end{description}
+
+The synthetic generator and the bag-of-tokens models are numpy-only and
+deterministic given a seed; the pretrained-embedder systems use a frozen
+\code{MiniLM-L6} (22M params, 384-d, CPU), embedded once and cached so the
+evaluation is numpy-only.
+
+% =====================================================================
+\section{Experimental Protocol and Design Choices}
+\label{sec:protocol}
+
+\subsection{Method invariants}
+
+Every experiment obeys six invariants so results are trustworthy and comparable:
+\begin{enumerate}[leftmargin=1.6em,nosep]
+\item \textbf{Links are labels, not features.} A relation recoverable by regex is a
+label source, never a test --- explicit references are scrubbed from inputs.
+\item \textbf{Frozen splits; cross-repo is the headline.} Held-out repositories
+measure generalization, not repo-specific memorization.
+\item \textbf{Pretrained embeddings are the substrate; the relational contribution
+is the delta over \code{embedder-cosine}.} A method ``wins'' only if it beats that
+control on the same split.
+\item \textbf{Every run emits an experiment card}; exploratory results are labeled
+exploratory and never presented as release evidence.
+\item \textbf{Reproducible from a clean checkout.} Heavy steps are cached and
+committed; downstream runs use numpy alone.
+\item \textbf{Honest negatives are kept.} A result that refutes a hypothesis is a
+result.
+\end{enumerate}
+
+\subsection{Design choices, with rationale}
+\label{sec:design}
+
+\paragraph{Why links-as-labels (de-reference the input).}
+A \rel{fixes} edge stated in the text (``Fixes \#123'') is trivially recoverable by
+a regex, so a model that ``solves'' the task by string-matching an issue number has
+learned nothing. Scrubbing the reference from the input --- while keeping it as the
+ground-truth label --- forces the model to match on \emph{semantics}, making the
+benchmark a genuine test of the relational hypothesis rather than a pointer-chasing
+exercise.
+
+\paragraph{Why cross-repo.}
+The goal is a relation that \emph{generalizes}, not one that memorizes a
+repository's idioms. Holding out entire repositories (train repos disjoint from test
+repos) is the strict test: a win must survive unseen vocabularies, module names, and
+API surfaces. This is exactly the split on which bag-of-tokens projections were
+found to fail.
+
+\paragraph{Why pretrained embeddings as the substrate.}
+The cross-repo experiments showed, with evidence, that \emph{tokens do not transfer
+between repositories; only meaning does}. A from-scratch token projection assigns
+random columns to exactly the discriminative vocabulary it never saw in training. A
+pretrained semantic embedder already places related meanings near each other across
+repositories, so it is the right feature substrate on which to learn relations.
+
+\paragraph{Why LoRA (and why the from-scratch head failed).}
+On \emph{frozen} embeddings at pilot scale, a bolt-on relation head has no headroom:
+a from-scratch projection overfits the train repos and \emph{destroys} the
+embedder's native geometry, while an identity-init operator is safe but adds
+nothing. The conclusion is that the relational contribution must \emph{reshape} the
+representation rather than project a frozen one. LoRA is the disciplined way to do
+that: tiny, low-rank adapters move the representation with very few parameters and
+little compute, keeping the pretrained weights intact.
+
+\paragraph{The role of honest negatives.}
+Keeping refuting results (the non-transfer to real data; the cross-repo failure of
+bag-of-tokens; the no-headroom of frozen-embedder heads) is not modesty --- it is
+what \emph{narrowed the search}. Each negative eliminated a hypothesis and pointed
+at the next experiment, culminating in the place the contribution had to live.
+
+\subsection{Compute discipline}
+
+CPU-first; small models (a small embedder now, a small SLM later); LoRA, not full
+fine-tuning; cache and commit embeddings so experiments replay cheaply; reach for
+GPU/scale only when a method has shown signal worth scaling. The benchmark stays
+small until the signal says ``feed me.''
+
+% =====================================================================
+\section{Results}
+\label{sec:results}
+
+The work proceeded as a sequence of one-change-at-a-time experiments, each against
+the appropriate control. Numbers are pulled from the ablation documents and the
+committed experiment cards; all are \emph{exploratory, pilot-scale}.
+
+\subsection{Synthetic per-token ablation (mechanism)}
+
+A controlled benchmark where the \rel{fixes} link is carried by \emph{rare,
+component-specific} ``impl'' tokens while the surface is dominated by \emph{common,
+ambiguous} ``topic'' tokens. Hard negatives are PRs from other components that share
+topic words. On 94 held-out queries:
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+System & Recall@1 & Recall@5 & MRR & Hard-neg \\
+\midrule
+vanilla-tf-cosine & 0.106 & 0.309 & 0.276 & 0.106 \\
+idf-cosine & 0.383 & 0.532 & 0.501 & 0.383 \\
+\textbf{relation-metric} & \textbf{0.819} & \textbf{0.894} & \textbf{0.864} & \textbf{0.819} \\
+\bottomrule
+\end{tabular}
+\end{center}
+The learned weights tell the story: mean impl-token weight $\approx 1.36$, mean
+topic-token weight $\approx 0.28$ --- the supervision recovered which tokens predict
+the fix, without being told. \emph{Finding: confirmed} --- relation supervision
+recovers a link that surface similarity cannot, on a controlled benchmark.
+
+\subsection{Cross-token synthetic (operator validation)}
+
+A harder synthetic split where the issue and its fix share \emph{no} tokens. Vanilla,
+IDF, and the diagonal metric all sit at chance (R@1 $0.01$ --- they can only reweight
+shared tokens, of which there are none); the two-tower operator recovers the mapping
+at R@1 \textbf{0.832}. \emph{Finding: confirmed} --- only a cross-token operator can
+bridge disjoint vocabulary; the tower implementation is correct.
+
+\subsection{Real issue$\to$PR (the synthetic win does not transfer)}
+
+The P1 pilot --- a frozen snapshot of 20 permissive Python-ecosystem repos
+(2{,}087 records, 356 \rel{fixes} edges, 356 queries, temporal split). On 144
+held-out queries:
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+System & Recall@1 & Recall@5 & MRR & Hard-neg \\
+\midrule
+vanilla-tf-cosine & 0.347 & 0.715 & 0.522 & 0.354 \\
+\textbf{idf-cosine} & \textbf{0.438} & \textbf{0.812} & \textbf{0.611} & 0.438 \\
+relation-metric & 0.417 & 0.785 & 0.595 & 0.438 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\emph{Finding: no transfer.} Real PRs restate the issues they fix, so the surface is
+already rich (vanilla R@5 $\approx 0.72$); IDF is the strong baseline and the diagonal
+metric ties it. A per-token reweighting has nothing extra to learn --- real
+issue$\leftrightarrow$fix association is cross-token and semantic.
+
+\subsection{De-referenced, cross-repo, bag-of-tokens}
+
+References removed and repositories held out (10 train / 8 test). On 174 held-out-repo
+queries:
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+System & Recall@1 & Recall@5 & MRR & Hard-neg \\
+\midrule
+vanilla-tf-cosine & 0.391 & 0.724 & 0.544 & 0.397 \\
+\textbf{idf-cosine} & \textbf{0.460} & \textbf{0.828} & \textbf{0.624} & 0.460 \\
+relation-metric (diagonal) & 0.454 & 0.799 & 0.618 & 0.471 \\
+relation-tower (projection) & 0.241 & 0.713 & 0.445 & 0.362 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\emph{Finding: no.} The tower --- validated on cross-token synthetic --- scores
+\emph{below vanilla} (0.241) cross-repo, because the discriminative vocabulary of
+unseen repos was never trained, so its projection columns are random on exactly the
+tokens that matter. IDF stays the robust winner precisely because it does not train.
+\emph{Tokens do not transfer between repositories; only meaning does.}
+
+\subsection{Pretrained embeddings settle the substrate}
+
+The same de-referenced cross-repo split, now with a frozen \code{MiniLM-L6} embedder
+(zero training):
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+System & Recall@1 & Recall@5 & MRR & Hard-neg \\
+\midrule
+idf-cosine (bag-of-tokens bar) & 0.460 & 0.828 & 0.624 & 0.460 \\
+\textbf{embedder-cosine} & \textbf{0.592} & 0.920 & 0.728 & 0.592 \\
+embedder + from-scratch head & 0.190 & 0.644 & 0.381 & 0.218 \\
+embedder + identity-init operator & 0.592 & \textbf{0.931} & \textbf{0.737} & 0.592 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\emph{Findings.} (1) Pretrained embeddings are the cross-repo win (R@1 $0.46 \to
+0.59$, no training) --- the substrate question is settled. (2) A from-scratch head on
+frozen embeddings is actively \emph{harmful} (0.19): it overfits and destroys the
+embedder's geometry. (3) An identity-init operator is safe but adds essentially
+nothing at this scale. \emph{The relational contribution cannot be a post-hoc head on
+frozen vectors.}
+
+\subsection{The relational fine-tune wins (Track A)}
+
+Putting the contribution \emph{inside} the representation: LoRA adapters ($r{=}8$,
+$0.48\%$ of params) on the same embedder, trained with the InfoNCE relation loss on
+182 train-repo pairs, evaluated on the same eight held-out repos:
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+System & Recall@1 & Recall@5 & MRR & Hard-neg \\
+\midrule
+idf-cosine (bag-of-tokens bar) & 0.460 & 0.828 & 0.624 & 0.460 \\
+embedder-cosine (frozen) & 0.592 & 0.920 & 0.728 & 0.592 \\
+\textbf{embedder-cosine (LoRA-tuned)} & \textbf{0.655} & \textbf{0.994} & \textbf{0.791} & \textbf{0.661} \\
+LoRA + identity-init operator & 0.649 & 0.994 & 0.790 & 0.655 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\emph{Findings.} (1) The relational fine-tune \emph{wins cross-repo}: R@1 $0.592 \to
+\mathbf{0.655}$, MRR $0.728 \to \mathbf{0.791}$, on repositories not seen in training
+--- the first positive relational result on real held-out data. (2) The contribution
+is in the representation, not a head: adding the identity-init operator on top of the
+\emph{tuned} vectors changes nothing ($0.649 \approx 0.655$), exactly as predicted.
+(3) A $0.48\%$-param adapter on a 22M model, trained on 182 pairs on CPU, moved the
+needle --- evidence the signal is real and learnable, not a capacity artifact.
+
+\subsection{Consolidated timeline}
+
+\begin{center}
+\begin{tabular}{p{4.6cm}p{4.4cm}cc}
+\toprule
+Experiment & Finding & R@1 (winner) & vs.\ control \\
+\midrule
+Synthetic per-token & relation supervision wins & \textbf{0.82} & vs.\ IDF 0.38 / van.\ 0.11 \\
+Cross-token synthetic & only the tower bridges disjoint vocab & \textbf{0.83} & vs.\ all-else 0.01 \\
+Real issue$\to$PR (linked) & no transfer; surface-rich & IDF \textbf{0.46} & diag.\ ties (0.45) \\
+De-ref.\ cross-repo (tokens) & bag-of-tokens fails cross-repo & tower \textbf{0.24} & $<$ vanilla 0.39 \\
+Embeddings cross-repo & pretrained embeddings win & \textbf{0.59} & vs.\ IDF 0.46 \\
+Head on frozen embeddings & no headroom; head harmful & 0.19 / 0.59 & ties / hurts \\
+LoRA fine-tune (Track A) & \textbf{relational win in the rep} & \textbf{0.66} & vs.\ frozen 0.59 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% =====================================================================
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{What is settled.}
+Two conclusions are evidence-backed at pilot scale.
+\emph{(i) Pretrained embeddings are the cross-repo substrate.} Meaning transfers
+across repositories where tokens do not; a frozen semantic embedder beats every
+bag-of-tokens system on held-out repos with no training.
+\emph{(ii) The relational contribution belongs in the representation (or in graph
+structure), not in a post-hoc head.} A bolt-on operator on frozen vectors has no
+headroom and can be harmful, whereas reshaping the encoder with the relation loss
+(LoRA) generalizes cross-repo. These two findings jointly redirect the program: the
+``relational contribution as the core'' is a fine-tuned encoder, not a reranker on
+fixed features.
+
+\paragraph{What is open.}
+The Track-A win is a single seed, a single cross-repo split, 182 train pairs, and a
+general-text base; R@5 $\approx 0.99$ is near the ceiling of small candidate pools, so
+R@1 and MRR are the discriminating metrics. Open questions remain falsifiable:
+whether the win survives re-splits and multiple seeds; whether graph link prediction
+adds signal beyond pairwise cosine; whether relations with weaker surface text
+(\code{diff}$\to$test, \code{log}$\to$file) show a larger lift; whether cross-repo
+same-bug-class retrieval benefits; whether scale gives a learned head the headroom it
+lacked; and how much a code-specific base helps.
+
+\paragraph{Method as the deliverable.}
+The lab's enduring output is not any one number but the \emph{frozen public benchmark
+with honest baselines and full provenance} that makes these questions measurable. The
+embedding layer is built to earn trust first; the relational small language model and
+agent policy come only after retrieval, provenance, and evaluation gates are boring.
+
+% =====================================================================
+\section{What Comes Next}
+\label{sec:next}
+
+The decision gate after the Track-A win routes to two parallel directions, with later
+phases gated on signal.
+
+\begin{description}[leftmargin=1.4em,style=nextline]
+\item[Scale the win (Track D).] Confirm the LoRA result with multi-split confidence
+intervals and multiple seeds; expand from the 20-repo pilot toward Tier-2 (200--500
+repos); and try a \emph{code-specific} base embedder (Q6). Do not scale before signal
+--- the signal is now present.
+\item[Graph link prediction (Track B).] The graph-enrichment prerequisite is done
+(file/test nodes and \rel{modifies} edges). The next step is an inductive GNN
+(GraphSAGE / R-GCN) on \emph{pretrained} node features so it transfers to unseen
+repos, with multi-relation link prediction, plus KG-embedding scoring (DistMult /
+ComplEx / RotatE) for asymmetric relations. The control is \code{embedder-cosine}
+plus the Track-A fine-tune; a win must beat them on a relation cosine cannot capture.
+\item[Tasks and labels (Track C).] Activate \code{diff}$\to$affected-test and
+\code{log}$\to$file (Q3) on the file edges, and cross-repo same-bug-class retrieval
+(Q4) using a curated SWE bug-class ontology --- with labels independent of the body
+text to avoid circularity.
+\item[Remaining losses.] Complete $L_{\text{contrastive}}$, $L_{\text{rel}}$,
+$L_{\text{graph}}$, $L_{\text{logic}}$, and $L_{\text{align}}$ as the model family
+matures.
+\item[Relational SLM (MVP-2+, Track E).] Only after MVP-1 holds: a QLoRA small
+language model with relation/policy heads for review, test suggestion, and risk; a
+GraphRAG subgraph packer; and an agent policy with outcome learning. Autonomous
+editing comes last, after retrieval and policy heads are measurable.
+\end{description}
+
+% =====================================================================
+\section{References}
+\label{sec:refs}
+
+\emph{Cited by name; arXiv-style, public methods only.}
+
+\begin{enumerate}[leftmargin=1.6em,nosep]
+\item F.\ Schroff, D.\ Kalenichenko, J.\ Philbin. \emph{FaceNet: A Unified Embedding
+for Face Recognition and Clustering.} CVPR, 2015. (triplet margin loss)
+\item P.\ Khosla et al. \emph{Supervised Contrastive Learning} (SupCon). NeurIPS,
+2020.
+\item N.\ Reimers, I.\ Gurevych. \emph{Sentence-BERT: Sentence Embeddings using
+Siamese BERT-Networks.} EMNLP, 2019.
+\item T.\ Gao, X.\ Yao, D.\ Chen. \emph{SimCSE: Simple Contrastive Learning of
+Sentence Embeddings.} EMNLP, 2021.
+\item W.\ Wang et al. \emph{MiniLM: Deep Self-Attention Distillation for
+Task-Agnostic Compression of Pre-Trained Transformers.} NeurIPS, 2020. (the
+\code{all-MiniLM-L6-v2} base)
+\item B.\ Yang, W.\ Yih, X.\ He, J.\ Gao, L.\ Deng. \emph{Embedding Entities and
+Relations for Learning and Inference in Knowledge Bases} (DistMult). ICLR, 2015.
+\item T.\ Trouillon et al. \emph{Complex Embeddings for Simple Link Prediction}
+(ComplEx). ICML, 2016.
+\item Z.\ Sun, Z.\ Deng, J.\ Nie, J.\ Tang. \emph{RotatE: Knowledge Graph Embedding
+by Relational Rotation in Complex Space.} ICLR, 2019.
+\item T.\ Kipf, M.\ Welling. \emph{Semi-Supervised Classification with Graph
+Convolutional Networks} (GCN). ICLR, 2017.
+\item W.\ Hamilton, R.\ Ying, J.\ Leskovec. \emph{Inductive Representation Learning
+on Large Graphs} (GraphSAGE). NeurIPS, 2017.
+\item M.\ Schlichtkrull et al. \emph{Modeling Relational Data with Graph
+Convolutional Networks} (R-GCN). ESWC, 2018.
+\item E.\ Hu et al. \emph{LoRA: Low-Rank Adaptation of Large Language Models.} ICLR,
+2022.
+\item T.\ Dettmers, A.\ Pagnoni, A.\ Holtzman, L.\ Zettlemoyer. \emph{QLoRA:
+Efficient Finetuning of Quantized LLMs.} NeurIPS, 2023.
+\item P.\ Lewis et al. \emph{Retrieval-Augmented Generation for Knowledge-Intensive
+NLP Tasks} (RAG). NeurIPS, 2020.
+\item B.\ Peng et al. \emph{GraphRAG: Graph Retrieval-Augmented Generation} (survey
+of graph-based RAG), 2024.
+\item C.\ Jimenez et al. \emph{SWE-bench: Can Language Models Resolve Real-World
+GitHub Issues?} ICLR, 2024.
+\end{enumerate}
+
+\vfill
+\begin{center}
+\small\emph{Exploratory, pilot-scale results. The committed experiment cards are the
+source of truth for every number in this report.}
+\end{center}
+
+\end{document}

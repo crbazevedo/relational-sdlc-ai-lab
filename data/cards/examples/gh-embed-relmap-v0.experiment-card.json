@@ -1,0 +1,33 @@
+{
+  "card_type": "experiment",
+  "id": "exp:gh-embed-relmap-v0",
+  "name": "GitHub pilot cross-repo de-referenced — embedder+relation-map",
+  "created_at": "2026-06-21T00:00:00Z",
+  "hypothesis": "Frozen sentence-transformers/all-MiniLM-L6-v2 + an identity-initialized relation operator.",
+  "task": "issue_to_fixing_pr",
+  "dataset_version": "ds:gh-pilot-v0",
+  "code_version": "relsdlc-0.1.0",
+  "seed": 0,
+  "command": "python data/pilot/run_embed_ablation.py",
+  "system": "embedder+relation-map",
+  "runtime_class": "cpu",
+  "metrics": {
+    "recall_at_k": {
+      "1": 0.592,
+      "5": 0.931,
+      "10": 0.9885
+    },
+    "mrr": 0.737,
+    "hard_negative_accuracy": 0.592,
+    "n_queries": 174
+  },
+  "baseline_comparison": "exp:gh-embed-cosine-v0",
+  "error_slices": [],
+  "leakage_checks": [
+    "references scrubbed; train repos disjoint from test repos; embeddings are frozen (no fit on test repos)."
+  ],
+  "known_limitations": [
+    "Pilot scale; frozen general-text embedder (not code-specific); relation head trained on ~180 cross-repo pairs. Exploratory."
+  ],
+  "exploratory": true
+}

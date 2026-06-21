@@ -35,8 +35,15 @@ class Vocab:
         return len(self.token2idx)
 
     @classmethod
-    def build(cls, token_lists) -> "Vocab":
-        toks = sorted({t for tl in token_lists for t in tl})
+    def build(cls, token_lists, min_df: int = 1) -> "Vocab":
+        if min_df <= 1:
+            toks = sorted({t for tl in token_lists for t in tl})
+        else:
+            df: Counter = Counter()
+            for tl in token_lists:
+                for t in set(tl):
+                    df[t] += 1
+            toks = sorted(t for t, c in df.items() if c >= min_df)
         return cls({t: i for i, t in enumerate(toks)})
 
     def vectorize(self, tokens) -> np.ndarray:
@@ -130,7 +137,8 @@ def train_relation_metric(dataset: SynthDataset, vocab: Vocab,
     return theta ** 2
 
 
-def run_ablation(dataset: SynthDataset, ks=(1, 5, 10), seed: int = 0) -> dict:
+def run_ablation(dataset: SynthDataset, ks=(1, 5, 10), seed: int = 0,
+                 min_df: int = 1) -> dict:
     """Score three tiers on TEST queries: vanilla, unsupervised IDF, relation metric.
 
     All three use the same unit vectors and candidate pools, so differences come
@@ -138,8 +146,10 @@ def run_ablation(dataset: SynthDataset, ks=(1, 5, 10), seed: int = 0) -> dict:
       - vanilla         : no weighting (plain cosine).
       - idf-cosine      : unsupervised corpus IDF weighting.
       - relation-metric : weights learned from the ``fixes`` relation.
+
+    ``min_df`` prunes rare tokens from the vocabulary (useful for real corpora).
     """
-    vocab = Vocab.build([tokenize(a.text) for a in dataset.artifacts])
+    vocab = Vocab.build([tokenize(a.text) for a in dataset.artifacts], min_df=min_df)
     vecs = _vectors(dataset, vocab)
     idf = idf_weights(dataset, vocab)
     rel = train_relation_metric(dataset, vocab, vecs, seed=seed)

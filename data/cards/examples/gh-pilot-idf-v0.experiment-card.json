@@ -1,0 +1,33 @@
+{
+  "card_type": "experiment",
+  "id": "exp:gh-pilot-idf-v0",
+  "name": "GitHub pilot — idf-cosine (issue_to_fixing_pr)",
+  "created_at": "2026-06-21T00:00:00Z",
+  "hypothesis": "On real public issue->fixing-PR retrieval, does this weighting beat plain cosine?",
+  "task": "issue_to_fixing_pr",
+  "dataset_version": "ds:gh-pilot-v0",
+  "code_version": "relsdlc-0.1.0",
+  "seed": 0,
+  "command": "python data/pilot/run_real_ablation.py",
+  "system": "idf-cosine",
+  "runtime_class": "cpu",
+  "metrics": {
+    "recall_at_k": {
+      "1": 0.4375,
+      "5": 0.8125,
+      "10": 0.9583
+    },
+    "mrr": 0.6109,
+    "hard_negative_accuracy": 0.4375,
+    "n_queries": 144
+  },
+  "baseline_comparison": "exp:gh-pilot-vanilla-v0",
+  "error_slices": [],
+  "leakage_checks": [
+    "temporal split by issue creation date; relation metric trains only on train-split fixes."
+  ],
+  "known_limitations": [
+    "Pilot scale (~20 repos); fixes mined from closing keywords; body text truncated. Exploratory."
+  ],
+  "exploratory": true
+}

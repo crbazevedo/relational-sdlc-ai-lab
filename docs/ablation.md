@@ -81,5 +81,10 @@ tokens predict the fix and common topic tokens do not — without ever being tol
   is not a simple IDF.
 
 The honest claim is narrow and falsifiable: *relation supervision recovers a link
-that surface similarity cannot, on a controlled benchmark.* Validating it on a
-public GitHub dataset (P1 ingest) is the next step — see [roadmap.md](roadmap.md).
+that surface similarity cannot, on a controlled benchmark.*
+
+**Follow-up (done):** the same ablation on a real public GitHub pilot is in
+[ablation-real.md](ablation-real.md). Spoiler — it does **not** transfer: real
+issue→fix retrieval is surface-rich, IDF is the strong baseline, and the diagonal
+relation-metric ties it rather than beating it. That negative result is the point:
+it shows the synthetic mechanism needs a cross-token model to matter on real data.

@@ -1,0 +1,45 @@
+{
+  "systems": {
+    "vanilla-tf-cosine": {
+      "n_queries": 144,
+      "recall_at_k": {
+        "1": 0.3472222222222222,
+        "5": 0.7152777777777778,
+        "10": 0.9444444444444444
+      },
+      "mrr": 0.5221695164403497,
+      "hard_negative_accuracy": 0.3541666666666667
+    },
+    "idf-cosine": {
+      "n_queries": 144,
+      "recall_at_k": {
+        "1": 0.4375,
+        "5": 0.8125,
+        "10": 0.9583333333333334
+      },
+      "mrr": 0.6109430885472552,
+      "hard_negative_accuracy": 0.4375
+    },
+    "relation-metric": {
+      "n_queries": 144,
+      "recall_at_k": {
+        "1": 0.4166666666666667,
+        "5": 0.7847222222222222,
+        "10": 0.9652777777777778
+      },
+      "mrr": 0.594937373583207,
+      "hard_negative_accuracy": 0.4375
+    }
+  },
+  "n_train_queries": 212,
+  "n_test_queries": 144,
+  "vocab_size": 3541,
+  "learned_weights": {
+    "mean_impl_weight": 0.973702124099596,
+    "mean_topic_weight": 0.9704448056903676
+  },
+  "params": {
+    "dataset": "ds:gh-pilot-v0",
+    "min_df": 3
+  }
+}

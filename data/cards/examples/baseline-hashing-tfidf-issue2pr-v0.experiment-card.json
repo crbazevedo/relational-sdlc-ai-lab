@@ -1,0 +1,33 @@
+{
+  "card_type": "experiment",
+  "id": "exp:baseline-hashing-tfidf-issue2pr-v0",
+  "name": "Baseline hashing-TF-IDF — issue_to_fixing_pr (fixture)",
+  "created_at": "2024-02-01T00:00:00Z",
+  "hypothesis": "Vanilla text embedding retrieves the fixing PR for an issue; establishes the floor a relation-aware model must beat.",
+  "task": "issue_to_fixing_pr",
+  "dataset_version": "ds:datebox-fixture-v0",
+  "code_version": "relsdlc-0.1.0",
+  "seed": 0,
+  "command": "relsdlc bench --task issue_to_fixing_pr",
+  "system": "baseline-hashing-tfidf",
+  "runtime_class": "cpu",
+  "metrics": {
+    "recall_at_k": {
+      "1": 1.0,
+      "5": 1.0,
+      "10": 1.0
+    },
+    "mrr": 1.0,
+    "hard_negative_accuracy": 1.0,
+    "n_queries": 1
+  },
+  "baseline_comparison": "none",
+  "error_slices": [],
+  "leakage_checks": [
+    "as_of=2024-02-01; no candidate/positive valid after query time"
+  ],
+  "known_limitations": [
+    "Single synthetic query; not statistically meaningful. Exploratory only."
+  ],
+  "exploratory": true
+}

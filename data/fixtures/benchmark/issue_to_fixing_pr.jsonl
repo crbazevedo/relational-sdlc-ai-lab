@@ -1,0 +1,1 @@
+{"as_of": "2024-02-01T00:00:00Z", "candidates": ["pr:512", "pr:140", "pr:300"], "hard_negatives": ["pr:140"], "query_id": "q-issue-482", "query_record": "issue:482", "relevant": ["pr:512"], "task": "issue_to_fixing_pr"}

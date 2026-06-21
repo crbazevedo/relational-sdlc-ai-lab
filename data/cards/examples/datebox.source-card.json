@@ -1,0 +1,23 @@
+{
+  "card_type": "source",
+  "id": "src:datebox",
+  "name": "datebox synthetic fixture",
+  "source_url": "synthetic://datebox",
+  "retrieved_at": "2024-02-01T00:00:00Z",
+  "license": "CC0-1.0",
+  "terms_note": "Original synthetic data authored for this project; freely redistributable.",
+  "record_types": [
+    "issue",
+    "pull_request",
+    "commit",
+    "diff",
+    "file",
+    "symbol",
+    "test",
+    "ci_log"
+  ],
+  "transform": "python data/fixtures/build_fixtures.py",
+  "content_hash": "sha256:28f007cfe25e33595a12bb6cca98cd1db8a2624ab0cd9aecd899c001403ce31b",
+  "redistribution": "synthetic_original",
+  "notes": "Mirrors the timezone-bug worked example (issue #482) from the position paper."
+}

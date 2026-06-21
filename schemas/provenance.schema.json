@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/crbazevedo/relational-sdlc-ai-lab/schemas/provenance.schema.json",
+  "title": "Provenance",
+  "description": "Verifiable provenance for a record or edge. Every public data point must be traceable to a source, a retrieval time, a license, and a content hash so any claim can be replayed and audited.",
+  "type": "object",
+  "required": ["source_url", "retrieved_at", "license", "content_hash"],
+  "additionalProperties": false,
+  "properties": {
+    "source_url": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Public URL or API query the record/edge was derived from. Use 'synthetic://<name>' for original synthetic data authored for this project."
+    },
+    "retrieved_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 timestamp of retrieval or generation."
+    },
+    "license": {
+      "type": "string",
+      "minLength": 1,
+      "description": "SPDX identifier or short license/terms note for the source (e.g. 'MIT', 'Apache-2.0', 'CC0-1.0', 'public-metadata')."
+    },
+    "content_hash": {
+      "type": "string",
+      "pattern": "^(sha256:[0-9a-f]{64}|TODO)$",
+      "description": "sha256:<hex> hash of the canonical content this record/edge was derived from. 'TODO' is permitted only in templates, never in committed dataset records."
+    },
+    "transform": {
+      "type": "string",
+      "description": "Reproducible command or pipeline step that produced this record/edge from the source."
+    },
+    "method": {
+      "type": "string",
+      "description": "Extraction channel for a relation edge (see edge.schema.json). Optional on records.",
+      "enum": [
+        "static_analysis",
+        "test_coverage",
+        "git_history",
+        "review",
+        "ci_log",
+        "human_label",
+        "agent_trace",
+        "synthetic"
+      ]
+    },
+    "observed": {
+      "type": "boolean",
+      "description": "True when directly observed from a source; false when inferred. Inferred edges should carry lower confidence."
+    }
+  }
+}

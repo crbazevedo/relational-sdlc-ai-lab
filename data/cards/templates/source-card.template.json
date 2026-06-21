@@ -1,0 +1,14 @@
+{
+  "card_type": "source",
+  "id": "src:<owner>-<repo>",
+  "name": "<repo display name>",
+  "source_url": "https://github.com/<owner>/<repo>",
+  "retrieved_at": "TODO-ISO-8601",
+  "license": "<SPDX id, e.g. MIT, Apache-2.0>",
+  "terms_note": "<API terms / rate-limit / redistribution constraints>",
+  "record_types": ["issue", "pull_request", "commit", "diff", "file", "test", "ci_log"],
+  "transform": "<reproducible ingest command>",
+  "content_hash": "TODO",
+  "redistribution": "metadata_only",
+  "notes": "<why this repo qualifies: active PRs, issues linked to PRs, tests present, permissive license, manageable size>"
+}

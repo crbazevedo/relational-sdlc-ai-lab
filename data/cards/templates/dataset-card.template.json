@@ -1,0 +1,20 @@
+{
+  "card_type": "dataset",
+  "id": "ds:<name>-<version>",
+  "name": "<dataset display name>",
+  "version": "<version>",
+  "created_at": "TODO-ISO-8601",
+  "sources": ["src:<owner>-<repo>"],
+  "record_counts": { "issue": 0, "pull_request": 0, "commit": 0, "diff": 0, "file": 0, "test": 0, "ci_log": 0 },
+  "edge_counts": { "fixes": 0, "modifies": 0, "covers": 0, "fails_on": 0, "caused_by": 0 },
+  "relation_types": ["fixes", "modifies", "covers", "fails_on", "caused_by"],
+  "split_policy": {
+    "frozen": true,
+    "method": "temporal-by-commit-date",
+    "seed": 0,
+    "boundary": "<cutoff date or commit>"
+  },
+  "redistribution": "metadata_only",
+  "known_limitations": ["<sampling bias, language skew, label noise, etc.>"],
+  "notes": "<reproducible build command and manifest hash>"
+}

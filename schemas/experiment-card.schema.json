@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/crbazevedo/relational-sdlc-ai-lab/schemas/experiment-card.schema.json",
+  "title": "Experiment Card",
+  "description": "Public, replayable record of one benchmark run: the hypothesis under test, the task, the dataset/code versions, the command and seed, and the measured metrics with their baseline comparison and leakage checks.",
+  "type": "object",
+  "required": [
+    "card_type",
+    "id",
+    "name",
+    "created_at",
+    "hypothesis",
+    "task",
+    "dataset_version",
+    "code_version",
+    "seed",
+    "command",
+    "system",
+    "metrics",
+    "exploratory"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "card_type": { "const": "experiment" },
+    "id": { "type": "string", "minLength": 1 },
+    "name": { "type": "string", "minLength": 1 },
+    "created_at": { "type": "string", "format": "date-time" },
+    "hypothesis": { "type": "string", "minLength": 1 },
+    "task": {
+      "type": "string",
+      "enum": [
+        "issue_to_fixing_pr",
+        "diff_to_affected_test",
+        "log_to_likely_file",
+        "pr_to_missing_test"
+      ],
+      "description": "Benchmark task id (see docs/benchmark-definition.md)."
+    },
+    "dataset_version": { "type": "string", "minLength": 1 },
+    "code_version": { "type": "string", "minLength": 1, "description": "Git sha (or 'dirty:<sha>') of the lab code used." },
+    "seed": { "type": "integer" },
+    "command": { "type": "string", "minLength": 1 },
+    "system": {
+      "type": "string",
+      "description": "Name/family of the embedding or model evaluated, e.g. 'baseline-hashing-tfidf', 'bge-code-v1', 'relation-bi-encoder'."
+    },
+    "runtime_class": { "type": "string", "description": "cpu | single-gpu | multi-gpu | n/a" },
+    "metrics": {
+      "type": "object",
+      "description": "Measured metrics. recall_at_k maps K (as string) to value.",
+      "additionalProperties": false,
+      "properties": {
+        "recall_at_k": {
+          "type": "object",
+          "additionalProperties": { "type": "number", "minimum": 0, "maximum": 1 }
+        },
+        "mrr": { "type": "number", "minimum": 0, "maximum": 1 },
+        "hard_negative_accuracy": { "type": "number", "minimum": 0, "maximum": 1 },
+        "n_queries": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "baseline_comparison": {
+      "type": "string",
+      "description": "Experiment-card id this run is compared against, or 'none' for a standalone baseline."
+    },
+    "error_slices": { "type": "array", "items": { "type": "string" } },
+    "leakage_checks": { "type": "array", "items": { "type": "string" } },
+    "known_limitations": { "type": "array", "items": { "type": "string" } },
+    "exploratory": {
+      "type": "boolean",
+      "description": "True if this run is exploratory and must not be presented as release-quality evidence."
+    }
+  }
+}

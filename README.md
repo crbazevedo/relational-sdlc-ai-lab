@@ -49,9 +49,37 @@ should stay outside this repository.
    notes.
 6. Keep local lifecycle state outside public history.
 
+## Quickstart
+
+```bash
+pip install -e ".[dev]"
+
+relsdlc validate data     # schema + provenance + referential integrity + leakage gates
+relsdlc bench             # Recall@K / MRR / hard-negative accuracy per task (synthetic fixture)
+pytest -q                 # metrics, baseline, and validation regression tests
+
+python data/fixtures/build_fixtures.py   # regenerate the synthetic fixture + example cards
+```
+
+The synthetic `datebox` fixture (CC0, original) lets the whole pipeline run from a
+clean checkout with no network. It mirrors the timezone-bug worked example from
+the position paper. Benchmark tasks and metrics are defined in
+[docs/benchmark-definition.md](docs/benchmark-definition.md).
+
 ## Public Repo Contents
 
 ```text
-docs/   architecture, roadmap, and research notes
-data/   dataset cards, small public fixtures, and redistribution notes
+schemas/    JSON schemas for records, edges, benchmark queries, and cards
+src/        the relsdlc library + CLI (validation, metrics, baseline, benchmark)
+data/       dataset cards, small public fixtures, and redistribution notes
+docs/       architecture, roadmap, benchmark definition, and research notes
+tests/      regression tests for schema, validation, metrics, and baseline
 ```
+
+Local coordination state — planning files, operating playbooks, run logs,
+caches, checkpoints — stays out of public history per
+[docs/operating-boundary.md](docs/operating-boundary.md).
+
+The substrate is the methodology made executable: every dataset record carries
+provenance, every relation edge an extraction method and confidence, every claim
+an experiment card, and every benchmark a frozen split with a leakage guard.

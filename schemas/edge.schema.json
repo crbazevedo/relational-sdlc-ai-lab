@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/crbazevedo/relational-sdlc-ai-lab/schemas/edge.schema.json",
+  "title": "SDLC Relation Edge",
+  "description": "A typed relation between two records. Encodes the edge tuple (u, r, v, w, t, p) from the position paper: source, relation, target, confidence weight, temporal validity, and provenance.",
+  "type": "object",
+  "required": ["source", "relation", "target", "confidence", "provenance"],
+  "additionalProperties": false,
+  "properties": {
+    "source": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Record id of the relation head u."
+    },
+    "relation": {
+      "type": "string",
+      "description": "Relation type r from the relation set R.",
+      "enum": [
+        "implements",
+        "fixes",
+        "modifies",
+        "covers",
+        "calls",
+        "depends_on",
+        "duplicates",
+        "fails_on",
+        "caused_by",
+        "regresses",
+        "mitigated_by",
+        "requires_tool",
+        "suitable_agent",
+        "blocks",
+        "enables",
+        "safe_to_parallelize"
+      ]
+    },
+    "target": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Record id of the relation tail v."
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Weight w in [0,1]. Automatically mined edges should reflect noise with lower confidence than human-labeled or directly observed edges."
+    },
+    "valid_from": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Commit sha or ISO-8601 timestamp at which this relation becomes valid. Used to prevent temporal leakage."
+    },
+    "valid_until": {
+      "type": ["string", "null"],
+      "description": "Commit sha or ISO-8601 timestamp after which this relation no longer holds. Null means currently valid."
+    },
+    "provenance": {
+      "allOf": [{ "$ref": "provenance.schema.json" }],
+      "description": "Edge provenance. The 'method' field is required on edges to record the extraction channel."
+    }
+  }
+}

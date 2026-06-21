@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/crbazevedo/relational-sdlc-ai-lab/schemas/source-card.schema.json",
+  "title": "Source Card",
+  "description": "Public evidence record for a single data source (a repository, API query, or synthetic generator) consumed by the lab. Required before any record derived from the source enters a dataset.",
+  "type": "object",
+  "required": [
+    "card_type",
+    "id",
+    "name",
+    "source_url",
+    "retrieved_at",
+    "license",
+    "record_types",
+    "redistribution"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "card_type": { "const": "source" },
+    "id": { "type": "string", "minLength": 1 },
+    "name": { "type": "string", "minLength": 1 },
+    "source_url": { "type": "string", "minLength": 1 },
+    "retrieved_at": { "type": "string", "format": "date-time" },
+    "license": { "type": "string", "minLength": 1, "description": "SPDX id or short terms note." },
+    "terms_note": { "type": "string", "description": "Notes on API terms / rate limits / redistribution constraints." },
+    "record_types": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "enum": ["issue", "pull_request", "commit", "diff", "file", "symbol", "test", "ci_log", "tool", "agent_run"]
+      }
+    },
+    "transform": { "type": "string", "description": "Reproducible command that derived records from this source." },
+    "content_hash": {
+      "type": "string",
+      "pattern": "^(sha256:[0-9a-f]{64}|TODO)$",
+      "description": "Hash of the source manifest or snapshot."
+    },
+    "redistribution": {
+      "type": "string",
+      "enum": ["metadata_only", "snippets_permitted", "full_text", "synthetic_original"],
+      "description": "What may be redistributed in this public repo for this source."
+    },
+    "notes": { "type": "string" }
+  }
+}

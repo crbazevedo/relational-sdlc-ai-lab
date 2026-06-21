@@ -1,0 +1,29 @@
+{
+  "card_type": "experiment",
+  "id": "exp:gh-scale-lora-multisplit-v0",
+  "name": "GitHub pilot — LoRA multi-split confidence (issue_to_fixing_pr)",
+  "created_at": "2026-06-21T00:00:00Z",
+  "hypothesis": "Is the LoRA-fine-tune win over the frozen embedder robust across cross-repo splits, not a single-split artifact?",
+  "task": "issue_to_fixing_pr",
+  "dataset_version": "ds:gh-pilot-v0",
+  "code_version": "relsdlc-0.1.0",
+  "seed": 0,
+  "command": "python data/pilot/run_multisplit.py",
+  "system": "minilm-lora-multisplit",
+  "runtime_class": "cpu",
+  "metrics": {
+    "recall_at_k": { "1": 0.555 },
+    "mrr": 0.717,
+    "hard_negative_accuracy": 0.555,
+    "n_queries": 766
+  },
+  "baseline_comparison": "exp:gh-finetune-cosine-v0",
+  "error_slices": [],
+  "leakage_checks": [
+    "5 held-out-repo partitions (seeds 100-104); LoRA trains on each partition's train repos only; eval on its held-out test repos."
+  ],
+  "known_limitations": [
+    "Metrics are the mean of the LoRA system over 5 cross-repo splits. The win is the DELTA over frozen: R@1 +0.061 +/- 0.021, MRR +0.052 +/- 0.010, positive on all 5 splits. Frozen mean R@1 0.494. Pilot scale; general-text base; one seed per partition. Exploratory."
+  ],
+  "exploratory": true
+}

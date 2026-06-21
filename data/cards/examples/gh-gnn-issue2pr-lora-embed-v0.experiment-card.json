@@ -1,0 +1,33 @@
+{
+  "card_type": "experiment",
+  "id": "exp:gh-gnn-issue2pr-lora-embed-v0",
+  "name": "GNN probe — issue2pr cross-repo — lora embedder-cosine",
+  "created_at": "2026-06-21T00:00:00Z",
+  "hypothesis": "On the de-referenced cross-repo split, does training-free typed graph aggregation add retrieval signal beyond pairwise text cosine on pretrained node features?",
+  "task": "issue_to_fixing_pr",
+  "dataset_version": "ds:gh-pilot-v0",
+  "code_version": "relsdlc-0.1.0",
+  "seed": 0,
+  "command": "python data/pilot/run_gnn_ablation.py",
+  "system": "embedder-cosine (lora)",
+  "runtime_class": "cpu",
+  "metrics": {
+    "recall_at_k": {
+      "1": 0.6552,
+      "5": 0.9943,
+      "10": 0.9943
+    },
+    "mrr": 0.7914,
+    "hard_negative_accuracy": 0.6609,
+    "n_queries": 174
+  },
+  "baseline_comparison": "exp:gh-gnn-issue2pr-frozen-embed-v0",
+  "error_slices": [],
+  "leakage_checks": [
+    "references scrubbed; train repos disjoint from test repos."
+  ],
+  "known_limitations": [
+    "pilot scale; TRAINING-FREE mean aggregation (no learned GNN weights); frozen/LoRA node features; exploratory probe, not the final word — a learned R-GCN is the follow-up if structure shows signal."
+  ],
+  "exploratory": true
+}

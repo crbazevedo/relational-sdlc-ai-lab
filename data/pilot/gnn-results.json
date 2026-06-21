@@ -1,0 +1,112 @@
+{
+  "results": {
+    "issue_to_fixing_pr/frozen/embedder-cosine": {
+      "n_queries": 174,
+      "recall_at_k": {
+        "1": 0.5919540229885057,
+        "5": 0.9195402298850575,
+        "10": 0.9885057471264368
+      },
+      "mrr": 0.7278370735267287,
+      "hard_negative_accuracy": 0.5919540229885057
+    },
+    "issue_to_fixing_pr/frozen/graph-aug-cosine": {
+      "n_queries": 174,
+      "recall_at_k": {
+        "1": 0.6091954022988506,
+        "5": 0.9540229885057471,
+        "10": 0.9885057471264368
+      },
+      "mrr": 0.7535166940339354,
+      "hard_negative_accuracy": 0.6149425287356322
+    },
+    "issue_to_fixing_pr/lora/embedder-cosine": {
+      "n_queries": 174,
+      "recall_at_k": {
+        "1": 0.6551724137931034,
+        "5": 0.9942528735632183,
+        "10": 0.9942528735632183
+      },
+      "mrr": 0.7914228491814699,
+      "hard_negative_accuracy": 0.6609195402298851
+    },
+    "issue_to_fixing_pr/lora/graph-aug-cosine": {
+      "n_queries": 174,
+      "recall_at_k": {
+        "1": 0.6896551724137931,
+        "5": 0.9942528735632183,
+        "10": 0.9942528735632183
+      },
+      "mrr": 0.817189132706374,
+      "hard_negative_accuracy": 0.6896551724137931
+    },
+    "diff_to_affected_test/frozen/embedder-cosine": {
+      "n_queries": 112,
+      "recall_at_k": {
+        "1": 0.008928571428571428,
+        "5": 0.17463860544217688,
+        "10": 0.7049319727891156
+      },
+      "mrr": 0.15527096911025481,
+      "hard_negative_accuracy": 0.08928571428571429
+    },
+    "diff_to_affected_test/frozen/graph-aug-cosine": {
+      "n_queries": 112,
+      "recall_at_k": {
+        "1": 0.008928571428571428,
+        "5": 0.17463860544217688,
+        "10": 0.7049319727891156
+      },
+      "mrr": 0.15527096911025481,
+      "hard_negative_accuracy": 0.08928571428571429
+    },
+    "diff_to_affected_test/lora/embedder-cosine": {
+      "n_queries": 112,
+      "recall_at_k": {
+        "1": 0.008928571428571428,
+        "5": 0.17463860544217688,
+        "10": 0.7049319727891156
+      },
+      "mrr": 0.15527096911025481,
+      "hard_negative_accuracy": 0.08928571428571429
+    },
+    "diff_to_affected_test/lora/graph-aug-cosine": {
+      "n_queries": 112,
+      "recall_at_k": {
+        "1": 0.008928571428571428,
+        "5": 0.1835671768707483,
+        "10": 0.7049319727891156
+      },
+      "mrr": 0.15562582259010832,
+      "hard_negative_accuracy": 0.08928571428571429
+    }
+  },
+  "meta": {
+    "train_repos": [
+      "Textualize/rich",
+      "astral-sh/ruff",
+      "encode/starlette",
+      "encode/uvicorn",
+      "fastapi/typer",
+      "pallets/click",
+      "pallets/flask",
+      "pallets/jinja",
+      "pallets/werkzeug",
+      "psf/black"
+    ],
+    "test_repos": [
+      "psf/requests",
+      "pydantic/pydantic",
+      "pytest-dev/pytest",
+      "python-attrs/attrs",
+      "python-pillow/Pillow",
+      "python-poetry/poetry",
+      "scrapy/scrapy",
+      "tox-dev/tox"
+    ]
+  },
+  "alpha": 0.5,
+  "hops": 2,
+  "n_issue_test_queries": 174,
+  "n_diff_test_queries": 112
+}

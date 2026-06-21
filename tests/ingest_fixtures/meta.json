@@ -1,0 +1,6 @@
+{
+  "repo": "octo-demo/widgets",
+  "license": "MIT",
+  "retrieved_at": "2024-05-01T00:00:00Z",
+  "notes": "Hand-authored, realistic GitHub-REST-shaped snapshot for hermetic ingest tests. Not a copy of any real repository; field shapes mirror the GitHub REST v3 (2022-11-28) responses for /issues, /pulls, /pulls/{n}/files, and /commits."
+}

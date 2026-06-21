@@ -1,0 +1,71 @@
+{
+  "systems": {
+    "vanilla-tf-cosine": {
+      "n_queries": 174,
+      "recall_at_k": {
+        "1": 0.39080459770114945,
+        "5": 0.7241379310344828,
+        "10": 0.9310344827586207
+      },
+      "mrr": 0.5435384698315733,
+      "hard_negative_accuracy": 0.39655172413793105
+    },
+    "idf-cosine": {
+      "n_queries": 174,
+      "recall_at_k": {
+        "1": 0.45977011494252873,
+        "5": 0.8275862068965517,
+        "10": 0.9770114942528736
+      },
+      "mrr": 0.6240368826575723,
+      "hard_negative_accuracy": 0.45977011494252873
+    },
+    "relation-metric": {
+      "n_queries": 174,
+      "recall_at_k": {
+        "1": 0.4540229885057471,
+        "5": 0.7988505747126436,
+        "10": 0.9597701149425287
+      },
+      "mrr": 0.6180879624845141,
+      "hard_negative_accuracy": 0.47126436781609193
+    },
+    "relation-tower": {
+      "n_queries": 174,
+      "recall_at_k": {
+        "1": 0.2413793103448276,
+        "5": 0.7126436781609196,
+        "10": 0.9310344827586207
+      },
+      "mrr": 0.44473497447635374,
+      "hard_negative_accuracy": 0.3620689655172414
+    }
+  },
+  "meta": {
+    "train_repos": [
+      "Textualize/rich",
+      "astral-sh/ruff",
+      "encode/starlette",
+      "encode/uvicorn",
+      "fastapi/typer",
+      "pallets/click",
+      "pallets/flask",
+      "pallets/jinja",
+      "pallets/werkzeug",
+      "psf/black"
+    ],
+    "test_repos": [
+      "psf/requests",
+      "pydantic/pydantic",
+      "pytest-dev/pytest",
+      "python-attrs/attrs",
+      "python-pillow/Pillow",
+      "python-poetry/poetry",
+      "scrapy/scrapy",
+      "tox-dev/tox"
+    ]
+  },
+  "n_test_queries": 174,
+  "n_train_queries": 182,
+  "vocab_size": 3479
+}

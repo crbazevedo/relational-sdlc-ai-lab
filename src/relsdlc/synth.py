@@ -173,3 +173,82 @@ def generate(
             "train_frac": train_frac,
         },
     )
+
+
+def generate_crosstoken(
+    seed: int = 11,
+    n_concepts: int = 12,
+    pairs_per_concept: int = 20,
+    symptom_per_concept: int = 6,
+    fix_per_concept: int = 6,
+    n_topics: int = 40,
+    issue_symptom_tokens: int = 4,
+    issue_topic_tokens: int = 7,
+    pr_fix_tokens: int = 4,
+    pr_topic_tokens: int = 7,
+    n_hard_negatives: int = 5,
+    n_random_negatives: int = 6,
+    train_frac: float = 0.6,
+) -> "SynthDataset":
+    """A CROSS-token benchmark: the issue and its fix share NO tokens.
+
+    Each concept has a disjoint symptom vocabulary (issue side) and fix vocabulary
+    (PR side); the link is the fixed symptom<->fix mapping per concept. A diagonal
+    metric (which can only reweight shared tokens) and plain cosine both score ~0
+    on the true pair; only a model that aligns *different* tokens across the two
+    sides (the two-tower projection) can recover it.
+    """
+    rng = np.random.default_rng(seed)
+    symptom = {c: [f"sympc{c}w{j:02d}" for j in range(symptom_per_concept)]
+               for c in range(n_concepts)}
+    fixv = {c: [f"fixc{c}w{j:02d}" for j in range(fix_per_concept)]
+            for c in range(n_concepts)}
+    topics = [f"topic{t:02d}" for t in range(n_topics)]
+
+    def pick(pool, k):
+        k = min(k, len(pool))
+        idx = rng.choice(len(pool), size=k, replace=False)
+        return [pool[i] for i in idx]
+
+    artifacts: list[Artifact] = []
+    fixes: list[tuple[str, str]] = []
+    counter = 0
+    for c in range(n_concepts):
+        for _ in range(pairs_per_concept):
+            counter += 1
+            split = "train" if rng.random() < train_frac else "test"
+            iss, pr = f"issue:ct{counter}", f"pr:ct{counter}"
+            issue_tokens = pick(symptom[c], issue_symptom_tokens) + pick(topics, issue_topic_tokens)
+            pr_tokens = pick(fixv[c], pr_fix_tokens) + pick(topics, pr_topic_tokens)
+            artifacts.append(Artifact(iss, "issue", c, issue_tokens, split))
+            artifacts.append(Artifact(pr, "pull_request", c, pr_tokens, split))
+            fixes.append((pr, iss))
+
+    all_prs = [a for a in artifacts if a.type == "pull_request"]
+    fix_pr_of_issue = {iss: pr for pr, iss in fixes}
+
+    def topic_overlap(a, b):
+        return len(set(t for t in a.tokens if t.startswith("topic"))
+                   & set(t for t in b.tokens if t.startswith("topic")))
+
+    queries: list[Query] = []
+    for issue in (a for a in artifacts if a.type == "issue"):
+        true_pr = fix_pr_of_issue[issue.id]
+        others = [pr for pr in all_prs if pr.component != issue.component]
+        others_sorted = sorted(others, key=lambda pr: (-topic_overlap(issue, pr), pr.id))
+        hard = [pr.id for pr in others_sorted[:n_hard_negatives]]
+        remaining = [pr.id for pr in others_sorted[n_hard_negatives:]]
+        rnd = pick(remaining, n_random_negatives) if remaining else []
+        candidates = [true_pr] + hard + rnd
+        order = rng.permutation(len(candidates))
+        candidates = [candidates[i] for i in order]
+        queries.append(Query(
+            query_id=f"q-{issue.id}", query_record=issue.id,
+            candidates=candidates, relevant=[true_pr],
+            hard_negatives=hard, split=issue.split))
+
+    return SynthDataset(
+        artifacts=artifacts, fixes=fixes, queries=queries,
+        params={"seed": seed, "kind": "cross-token", "n_concepts": n_concepts,
+                "n_hard_negatives": n_hard_negatives,
+                "n_random_negatives": n_random_negatives, "train_frac": train_frac})

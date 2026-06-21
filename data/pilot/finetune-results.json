@@ -1,0 +1,69 @@
+{
+  "tuned_model": "sentence-transformers/all-MiniLM-L6-v2+lora",
+  "systems": {
+    "idf-cosine": {
+      "n_queries": 174,
+      "recall_at_k": {
+        "1": 0.45977011494252873,
+        "5": 0.8275862068965517,
+        "10": 0.9770114942528736
+      },
+      "mrr": 0.6240368826575723,
+      "hard_negative_accuracy": 0.45977011494252873
+    },
+    "embedder-cosine-frozen": {
+      "n_queries": 174,
+      "recall_at_k": {
+        "1": 0.5919540229885057,
+        "5": 0.9195402298850575,
+        "10": 0.9885057471264368
+      },
+      "mrr": 0.7278370735267287,
+      "hard_negative_accuracy": 0.5919540229885057
+    },
+    "embedder-cosine-lora": {
+      "n_queries": 174,
+      "recall_at_k": {
+        "1": 0.6551724137931034,
+        "5": 0.9942528735632183,
+        "10": 0.9942528735632183
+      },
+      "mrr": 0.7914228491814699,
+      "hard_negative_accuracy": 0.6609195402298851
+    },
+    "lora+relation-map": {
+      "n_queries": 174,
+      "recall_at_k": {
+        "1": 0.6494252873563219,
+        "5": 0.9942528735632183,
+        "10": 0.9942528735632183
+      },
+      "mrr": 0.7895071403692093,
+      "hard_negative_accuracy": 0.6551724137931034
+    }
+  },
+  "meta": {
+    "train_repos": [
+      "Textualize/rich",
+      "astral-sh/ruff",
+      "encode/starlette",
+      "encode/uvicorn",
+      "fastapi/typer",
+      "pallets/click",
+      "pallets/flask",
+      "pallets/jinja",
+      "pallets/werkzeug",
+      "psf/black"
+    ],
+    "test_repos": [
+      "psf/requests",
+      "pydantic/pydantic",
+      "pytest-dev/pytest",
+      "python-attrs/attrs",
+      "python-pillow/Pillow",
+      "python-poetry/poetry",
+      "scrapy/scrapy",
+      "tox-dev/tox"
+    ]
+  }
+}

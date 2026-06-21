@@ -1,0 +1,32 @@
+[
+  {
+    "number": 34,
+    "title": "Snap slider thumb to configured step",
+    "body": "Fixes #12. The drag handler now rounds the value to the nearest multiple of `step` before committing. Adds a regression test.",
+    "state": "closed",
+    "merged_at": "2024-04-04T12:30:00Z",
+    "merge_commit_sha": "a1b2c3d4e5f60718293a4b5c6d7e8f9001122334",
+    "html_url": "https://github.com/octo-demo/widgets/pull/34",
+    "created_at": "2024-04-03T16:45:00Z"
+  },
+  {
+    "number": 40,
+    "title": "Clamp tooltip position once per show",
+    "body": "Closes: #18. The tooltip now computes its clamped position a single time on show instead of every animation frame, removing the flicker.",
+    "state": "closed",
+    "merged_at": "2024-04-10T09:15:00Z",
+    "merge_commit_sha": "b2c3d4e5f607182939a4b5c6d7e8f900112233aa",
+    "html_url": "https://github.com/octo-demo/widgets/pull/40",
+    "created_at": "2024-04-09T18:20:00Z"
+  },
+  {
+    "number": 50,
+    "title": "Refactor focus-ring helper",
+    "body": "Pure refactor of the shared focus-ring helper; no behavior change. See also #99 (not yet filed here).",
+    "state": "open",
+    "merged_at": null,
+    "merge_commit_sha": null,
+    "html_url": "https://github.com/octo-demo/widgets/pull/50",
+    "created_at": "2024-04-15T11:05:00Z"
+  }
+]

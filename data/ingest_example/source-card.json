@@ -1,0 +1,19 @@
+{
+  "card_type": "source",
+  "id": "src:gh:octo-demo/widgets",
+  "name": "GitHub public metadata — octo-demo/widgets",
+  "source_url": "https://github.com/octo-demo/widgets",
+  "retrieved_at": "2024-05-01T00:00:00Z",
+  "license": "MIT",
+  "terms_note": "GitHub public REST metadata. Authenticated REST ~5000 req/hr; polite ingest sets a User-Agent and honours rate-limit headers. Only metadata is redistributed in this public repo.",
+  "record_types": [
+    "commit",
+    "file",
+    "issue",
+    "pull_request",
+    "test"
+  ],
+  "transform": "python -m relsdlc.ingest transform",
+  "redistribution": "metadata_only",
+  "notes": "Offline example produced from a recorded API snapshot under tests/ingest_fixtures/. Records carry provenance back to the public GitHub URLs; full source text is not redistributed."
+}

@@ -1,0 +1,38 @@
+{
+  "34": [
+    {
+      "filename": "src/widgets/slider.js",
+      "status": "modified",
+      "additions": 14,
+      "deletions": 3
+    },
+    {
+      "filename": "tests/slider.test.js",
+      "status": "added",
+      "additions": 22,
+      "deletions": 0
+    }
+  ],
+  "40": [
+    {
+      "filename": "src/widgets/tooltip.js",
+      "status": "modified",
+      "additions": 9,
+      "deletions": 6
+    },
+    {
+      "filename": "src/widgets/position.js",
+      "status": "modified",
+      "additions": 4,
+      "deletions": 2
+    }
+  ],
+  "50": [
+    {
+      "filename": "src/widgets/focus_ring.js",
+      "status": "modified",
+      "additions": 8,
+      "deletions": 8
+    }
+  ]
+}

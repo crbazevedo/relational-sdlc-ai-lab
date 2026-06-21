@@ -46,8 +46,12 @@ weighting beats unsupervised IDF beats vanilla cosine (Recall@1 0.82 vs 0.38 vs
 relation-metric ties it. [ablation-crossrepo.md](ablation-crossrepo.md): with
 references removed and repos held out, a two-tower projection wins on cross-token
 synthetic (0.83) but loses to vanilla cross-repo (0.24) — bag-of-tokens can't
-transfer across repos. Evidence-backed next step: a relation operator on top of
-**pretrained code/text embeddings** (the real P3).
+transfer across repos. [ablation-embed.md](ablation-embed.md): a frozen MiniLM
+embedder wins cross-repo (R@1 0.59 vs IDF 0.46); a bolt-on relation head can't
+improve it at pilot scale (from-scratch overfits to 0.19; identity-init ties).
+Evidence-backed next step: put the relational contribution **inside the
+representation** (LoRA fine-tune with the relation loss) and/or **in graph
+structure** (link prediction over the typed SDLC graph) — not a frozen-embedder head.
 
 Compare:
 

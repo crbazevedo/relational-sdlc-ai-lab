@@ -101,9 +101,26 @@ the tower **wins on cross-token synthetic (R@1 0.83) but loses to vanilla
 cross-repo (0.24)** — bag-of-tokens projections can't transfer to unseen repos'
 vocabulary; IDF (no training) stays the robust winner. The evidence-backed
 conclusion: **cross-repo generalization needs pretrained semantic embeddings as
-the feature substrate**, with the relation operator learned on top (the concrete
-P3). The lab's deliverable is the frozen public benchmark + honest baselines that
-make exactly this measurable.
+the feature substrate**.
+
+### Embeddings settle the substrate ([docs/ablation-embed.md](docs/ablation-embed.md))
+
+On the same de-referenced cross-repo split, a frozen small embedder (MiniLM-L6)
+**wins outright**, and a bolt-on relation head can't improve on it at pilot scale:
+
+| System | R@1 | R@5 | MRR |
+|---|---|---|---|
+| IDF (bag-of-tokens bar) | 0.46 | 0.83 | 0.62 |
+| **embedder-cosine** | **0.59** | 0.92 | 0.73 |
+| embedder + from-scratch head | 0.19 | 0.64 | 0.38 |
+| embedder + identity-init operator | 0.59 | 0.93 | 0.74 |
+
+So: **embeddings for the substrate** (settled); a frozen-embedder head adds nothing
+(a from-scratch one actively overfits). The relational contribution therefore has
+to live **inside the representation** (fine-tune with the relation loss) or **in
+graph structure cosine can't see** (link prediction over the typed SDLC graph) —
+the next experiments. The lab's deliverable is the frozen public benchmark + honest
+baselines that make exactly this measurable.
 
 The synthetic `datebox` fixture (CC0, original) lets the whole pipeline run from a
 clean checkout with no network. It mirrors the timezone-bug worked example from

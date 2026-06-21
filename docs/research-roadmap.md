@@ -65,6 +65,8 @@ Every experiment obeys these, so results are trustworthy and comparable:
 | Embeddings, cross-repo | pretrained embeddings generalize where tokens don't? | **yes** — embedder-cosine wins | R@1 0.59 vs IDF 0.46 | `gh-embed-cosine` |
 | Relation head on frozen embeddings | does our operator add value on top? | **no** at pilot scale — from-scratch overfits (0.19), identity-init ties (0.59) | — | `gh-embed-tower`, `gh-embed-relmap` |
 | **LoRA fine-tune (Track A)** | does the relation loss *inside* the rep beat the frozen embedder cross-repo? | **YES** (pilot-scale) — R@1 0.59→0.66, MRR 0.73→0.79; a head on tuned vecs still adds nothing | R@1 0.66 vs frozen 0.59 | `gh-finetune-*` |
+| **Multi-split confidence (Track D)** | is the LoRA win robust, not split luck? | **YES** — positive on all 5 held-out-repo splits | ΔR@1 +0.061±0.021, ΔMRR +0.052±0.010 | `gh-scale-*` |
+| **Graph probe (Track B)** | does typed-graph aggregation add signal beyond cosine? | **small but real on issue→PR; stacks with LoRA**; diff→test needs denser graph | LoRA+graph R@1 0.69 vs LoRA 0.66 | `gh-gnn-*` |
 
 **Synthesis:** embeddings settle the *substrate* question; a bolt-on operator on
 *frozen* vectors has no headroom at pilot scale. The relational contribution must
@@ -104,17 +106,17 @@ structure** (link prediction) — not as a post-hoc head.
   the contribution in the representation. Open: confirm on a held-out-repo re-split
   and multiple seeds before treating the number as settled.
 
-### Track B — Graph: link prediction over the SDLC graph
+### Track B — Graph: link prediction over the SDLC graph  *(prereq DONE; probe DONE)*
 - **Paper:** `L_graph` (spectral) + KG-embedding relation scoring; GraphRAG seed.
-- **Prereq:** **graph enrichment** — extend the pilot ingest to fetch PR changed
-  files (issues↔PRs↔files↔commits↔tests), yielding `modifies`/co-change edges.
-- **Experiment:** inductive GNN (GraphSAGE/R-GCN) on **pretrained node features**
-  (so it transfers to unseen repos), multi-relation link prediction; eval
-  `issue→PR` and `diff→test` cross-repo. Control = `embedder-cosine` + Track A.
-- **Success:** beats the best non-graph system on a relation cosine can't capture.
-- **Gate:** win → richer graph + KG operators (RotatE/ComplEx) for asymmetric
-  relations. No win → graph structure isn't load-bearing at this scale; revisit at
-  Track D scale.
+- **Prereq DONE (R10B):** graph enriched with 1,356 `modifies` edges + 497 file /
+  239 test nodes ([graph-enrichment.md](graph-enrichment.md)).
+- **Probe DONE (R11B):** a training-free typed mean-aggregation
+  ([ablation-gnn.md](ablation-gnn.md)) adds a **small real lift on issue→PR** and
+  **stacks with LoRA** (LoRA+graph R@1 0.69 vs LoRA 0.66). `diff→test` fails at
+  pilot sparsity (≈47% of relevant tests isolated once the gold edge is removed).
+- **Gate fired:** structure helps a little → next is a **learned** inductive GNN /
+  R-GCN (torch) with KG operators (RotatE/ComplEx) for asymmetric relations; and
+  `diff→test` needs denser co-change (Track D scale) before the signal exists.
 
 ### Track C — Tasks & labels
 - **C1 `diff→affected-test`, `log→file`** (needs Track B's file edges): test Q3.
@@ -124,9 +126,12 @@ structure** (link prediction) — not as a post-hoc head.
   circularity); cross-repo split + textually-near hard negatives.
 - **Gate:** each task is non-degenerate (not regex-recoverable) before it counts.
 
-### Track D — Scale (only on signal)
-- Tier-2 (200–500 repos) once a method shows signal at pilot scale; Tier-3 only if
-  scaling evidence is needed. Do not scale before signal.
+### Track D — Scale (only on signal)  *(confidence DONE; repo-scale next)*
+- **Multi-split confidence DONE (R11A):** the LoRA win is positive on **all 5**
+  held-out-repo splits — ΔR@1 +0.061±0.021 ([ablation-scale.md](ablation-scale.md)).
+  The signal is real, so scaling is now justified.
+- **Next:** Tier-2 (200–500 repos) to tighten the estimate; multiple seeds per
+  partition; a **code-aware base** (Q6). Tier-3 only if scaling evidence is needed.
 
 ### Track E — Beyond MVP-1 (later)
 - Relational SLM (MVP-2): QLoRA SLM with relation/policy heads for review, test

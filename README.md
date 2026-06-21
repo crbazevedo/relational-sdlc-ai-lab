@@ -133,10 +133,19 @@ held-out repos):
 
 A 0.48%-param LoRA adapter, trained on 182 cross-repo pairs on CPU, generalizes to
 unseen repositories — and a head on top of the tuned vectors adds nothing, exactly
-as predicted (the gain is *in* the representation). This is the first positive
-relational result on real held-out data — a pilot-scale signal to confirm at scale,
-per the [research roadmap](docs/research-roadmap.md). The lab's deliverable is the
-frozen public benchmark + honest baselines that make exactly this measurable.
+as predicted (the gain is *in* the representation).
+
+**The win is robust and it compounds.** Across **5 held-out-repo splits** the LoRA
+delta is positive every time (ΔR@1 **+0.061 ± 0.021**, [docs/ablation-scale.md](docs/ablation-scale.md)),
+and typed-graph aggregation stacks on top of it — **LoRA + graph reaches R@1 0.69**
+([docs/ablation-gnn.md](docs/ablation-gnn.md)). The relational thesis holds at pilot
+scale: relation supervision *inside* the representation, plus a little graph
+structure, beats generic similarity across repositories.
+
+A standalone write-up is in [docs/report/](docs/report/) (technical-report PDF) and
+the plan is pictured in [docs/roadmap-viz.md](docs/roadmap-viz.md). The lab's
+deliverable is the frozen public benchmark + honest baselines that make exactly this
+measurable — see the [research roadmap](docs/research-roadmap.md).
 
 The synthetic `datebox` fixture (CC0, original) lets the whole pipeline run from a
 clean checkout with no network. It mirrors the timezone-bug worked example from

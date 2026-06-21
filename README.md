@@ -75,9 +75,27 @@ beats vanilla text similarity (`relsdlc ablation`, 94 held-out queries):
 | unsupervised IDF | 0.38 | 0.50 | 0.38 |
 | **relation-supervised** | **0.82** | **0.86** | **0.82** |
 
-This demonstrates the mechanism, not a real-world result — see
-[docs/ablation.md](docs/ablation.md). Validating it on public GitHub data is the
-next step.
+This demonstrates the *mechanism*, not a real-world result — see
+[docs/ablation.md](docs/ablation.md).
+
+### Real-data check (honest negative)
+
+On the [P1 pilot](docs/ablation-real.md) — a frozen snapshot of 20 permissive
+GitHub repos, real issue→fixing-PR (`python data/pilot/run_real_ablation.py`, 144
+held-out queries) — the synthetic win **does not transfer**:
+
+| System | Recall@1 | Recall@5 | MRR |
+|---|---|---|---|
+| vanilla text cosine | 0.35 | 0.72 | 0.52 |
+| **unsupervised IDF** | **0.44** | **0.81** | **0.61** |
+| relation-metric (diagonal) | 0.42 | 0.79 | 0.60 |
+
+Real PRs restate the issues they fix, so surface similarity is already strong and
+**IDF is the baseline to beat** — the diagonal relation model ties it, it does not
+win. Real issue↔fix matching is cross-token/semantic; beating IDF needs a
+bilinear/projection relation operator or fine-tuned embeddings (the P3 work). The
+lab's deliverable is the frozen public benchmark + honest baselines that make this
+measurable.
 
 The synthetic `datebox` fixture (CC0, original) lets the whole pipeline run from a
 clean checkout with no network. It mirrors the timezone-bug worked example from

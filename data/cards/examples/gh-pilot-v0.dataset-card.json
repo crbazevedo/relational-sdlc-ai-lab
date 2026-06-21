@@ -1,0 +1,52 @@
+{
+  "card_type": "dataset",
+  "id": "ds:gh-pilot-v0",
+  "name": "public GitHub issue->fixing-PR pilot",
+  "version": "v0",
+  "created_at": "2026-06-21T19:14:40Z",
+  "sources": [
+    "src:gh:pytest-dev/pytest",
+    "src:gh:fastapi/fastapi",
+    "src:gh:pydantic/pydantic",
+    "src:gh:psf/requests",
+    "src:gh:pallets/flask",
+    "src:gh:pallets/click",
+    "src:gh:pallets/jinja",
+    "src:gh:encode/httpx",
+    "src:gh:encode/starlette",
+    "src:gh:encode/uvicorn",
+    "src:gh:psf/black",
+    "src:gh:Textualize/rich",
+    "src:gh:fastapi/typer",
+    "src:gh:python-attrs/attrs",
+    "src:gh:tox-dev/tox",
+    "src:gh:python-poetry/poetry",
+    "src:gh:astral-sh/ruff",
+    "src:gh:pallets/werkzeug",
+    "src:gh:python-pillow/Pillow",
+    "src:gh:scrapy/scrapy"
+  ],
+  "record_counts": {
+    "issue": 261,
+    "pull_request": 1826
+  },
+  "edge_counts": {
+    "fixes": 356
+  },
+  "relation_types": [
+    "fixes"
+  ],
+  "split_policy": {
+    "frozen": true,
+    "method": "temporal-by-issue-created",
+    "seed": 0,
+    "boundary": "earliest 60% of fixes by issue date = train"
+  },
+  "redistribution": "metadata_only",
+  "known_limitations": [
+    "Closed issues + closed PRs from ~20 permissive Python-ecosystem repos; fixes edges mined from closing keywords (recall-limited).",
+    "Body text truncated to 500 chars; metadata only, not full source.",
+    "Pilot scale; a one-time live snapshot, not reproducible from CI."
+  ],
+  "notes": "Built by data/pilot/build_pilot.py (live GitHub REST). Hard negatives are same-repo PRs by title/body token overlap."
+}

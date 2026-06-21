@@ -22,6 +22,11 @@ just documented:
 
 Build a small dataset before a large scrape.
 
+**Status: pilot landed.** A one-time live snapshot of 20 permissive
+Python-ecosystem repos — 2,087 records, 356 `fixes` edges, 356 issue→PR queries,
+frozen temporal split, per-repo source cards + dataset card, redistribution
+metadata_only. Built by [`data/pilot/build_pilot.py`](../data/pilot/build_pilot.py).
+
 Target:
 
 - 20 public repos;
@@ -32,10 +37,13 @@ Target:
 
 ## P2: Relational Embedding Benchmark
 
-**Status: mechanism demonstrated on synthetic data (exploratory).** See
+**Status: mechanism demonstrated on synthetic data; real-data baseline established.**
 [ablation.md](ablation.md): on a controlled benchmark, relation-supervised token
 weighting beats unsupervised IDF beats vanilla cosine (Recall@1 0.82 vs 0.38 vs
-0.11). Real public-data validation follows once P1 lands a dataset.
+0.11). [ablation-real.md](ablation-real.md): on the real P1 pilot the win does
+**not** transfer — IDF is the strong baseline (R@1 0.44) and the diagonal
+relation-metric ties it. Beating IDF on real data needs a cross-token relation
+operator (P3).
 
 Compare:
 

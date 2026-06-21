@@ -1,0 +1,32 @@
+{
+  "card_type": "dataset",
+  "id": "ds:synth-relation-v0",
+  "name": "synthetic relation benchmark",
+  "version": "v0",
+  "created_at": "2024-06-01T00:00:00Z",
+  "sources": [
+    "src:synth-relation"
+  ],
+  "record_counts": {
+    "issue": 240,
+    "pull_request": 240
+  },
+  "edge_counts": {
+    "fixes": 240
+  },
+  "relation_types": [
+    "fixes"
+  ],
+  "split_policy": {
+    "frozen": true,
+    "method": "synthetic-structural-by-record",
+    "seed": 7,
+    "boundary": "record.split field (train/test)"
+  },
+  "redistribution": "synthetic_original",
+  "known_limitations": [
+    "Synthetic. Demonstrates the mechanism (relation supervision beats vanilla/IDF surface similarity); NOT a real-world result.",
+    "Single relation (fixes), single task (issue_to_fixing_pr)."
+  ],
+  "notes": "Built by python data/synth/build_synth.py seed=7. Manifest sha256:dafd235b4b13a568e31b0154ea1baa7084c17e516ecdeeddba6fcaba1d4da302."
+}

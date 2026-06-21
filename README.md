@@ -20,6 +20,8 @@ measurable relational retrieval layer for SDLC tasks:
 Contribution and source-record rules are in [CONTRIBUTING.md](CONTRIBUTING.md).
 The public operating boundary is in [docs/operating-boundary.md](docs/operating-boundary.md).
 The research lifecycle is in [docs/research-lifecycle.md](docs/research-lifecycle.md).
+The experiment-driven research plan (hypotheses, results ledger, decision gates) is
+in [docs/research-roadmap.md](docs/research-roadmap.md).
 
 This public repository is intentionally limited to research notes, source
 rules, dataset documentation, model designs, evaluation designs, and

@@ -1,5 +1,9 @@
 # Roadmap
 
+This file is the **phase view** (P0–P4). The experiment-driven, hypothesis-first
+research plan — with the results ledger, open questions, and decision gates — is in
+[research-roadmap.md](research-roadmap.md).
+
 ## P0: Public Foundation
 
 Build the public project foundation: README, contribution rules, source

@@ -117,12 +117,26 @@ On the same de-referenced cross-repo split, a frozen small embedder (MiniLM-L6)
 | embedder + from-scratch head | 0.19 | 0.64 | 0.38 |
 | embedder + identity-init operator | 0.59 | 0.93 | 0.74 |
 
-So: **embeddings for the substrate** (settled); a frozen-embedder head adds nothing
-(a from-scratch one actively overfits). The relational contribution therefore has
-to live **inside the representation** (fine-tune with the relation loss) or **in
-graph structure cosine can't see** (link prediction over the typed SDLC graph) —
-the next experiments. The lab's deliverable is the frozen public benchmark + honest
-baselines that make exactly this measurable.
+So: **embeddings for the substrate** (settled); a frozen-embedder head adds nothing.
+
+### The relational fine-tune wins ([docs/ablation-finetune.md](docs/ablation-finetune.md))
+
+Putting the contribution where R8 said it must go — *inside* the representation —
+**LoRA fine-tuning with the relation loss beats the frozen embedder cross-repo** (8
+held-out repos):
+
+| System | R@1 | R@5 | MRR |
+|---|---|---|---|
+| IDF (bag-of-tokens bar) | 0.46 | 0.83 | 0.62 |
+| frozen embedder-cosine | 0.59 | 0.92 | 0.73 |
+| **LoRA-tuned embedder-cosine** | **0.66** | **0.99** | **0.79** |
+
+A 0.48%-param LoRA adapter, trained on 182 cross-repo pairs on CPU, generalizes to
+unseen repositories — and a head on top of the tuned vectors adds nothing, exactly
+as predicted (the gain is *in* the representation). This is the first positive
+relational result on real held-out data — a pilot-scale signal to confirm at scale,
+per the [research roadmap](docs/research-roadmap.md). The lab's deliverable is the
+frozen public benchmark + honest baselines that make exactly this measurable.
 
 The synthetic `datebox` fixture (CC0, original) lets the whole pipeline run from a
 clean checkout with no network. It mirrors the timezone-bug worked example from

@@ -1,0 +1,33 @@
+{
+  "card_type": "experiment",
+  "id": "exp:gh-finetune-relmap-v0",
+  "name": "GitHub pilot cross-repo de-referenced — lora+relation-map",
+  "created_at": "2026-06-21T00:00:00Z",
+  "hypothesis": "LoRA-tuned embedder + identity-init relation operator.",
+  "task": "issue_to_fixing_pr",
+  "dataset_version": "ds:gh-pilot-v0",
+  "code_version": "relsdlc-0.1.0",
+  "seed": 0,
+  "command": "python data/pilot/finetune_embed.py && python data/pilot/run_finetune_ablation.py",
+  "system": "lora+relation-map",
+  "runtime_class": "cpu",
+  "metrics": {
+    "recall_at_k": {
+      "1": 0.6494,
+      "5": 0.9943,
+      "10": 0.9943
+    },
+    "mrr": 0.7895,
+    "hard_negative_accuracy": 0.6552,
+    "n_queries": 174
+  },
+  "baseline_comparison": "exp:gh-finetune-cosine-v0",
+  "error_slices": [],
+  "leakage_checks": [
+    "references scrubbed; LoRA trained on TRAIN repos only; eval on held-out test repos."
+  ],
+  "known_limitations": [
+    "Pilot scale (~182 train pairs); general-text base; LoRA r=8. Exploratory."
+  ],
+  "exploratory": true
+}

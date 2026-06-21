@@ -64,6 +64,7 @@ Every experiment obeys these, so results are trustworthy and comparable:
 | Real, de-referenced, cross-repo (bag-of-tokens) | learned head generalizes cross-repo? | **no** — tower 0.24 < vanilla 0.39 | — | `gh-xrepo-*` |
 | Embeddings, cross-repo | pretrained embeddings generalize where tokens don't? | **yes** — embedder-cosine wins | R@1 0.59 vs IDF 0.46 | `gh-embed-cosine` |
 | Relation head on frozen embeddings | does our operator add value on top? | **no** at pilot scale — from-scratch overfits (0.19), identity-init ties (0.59) | — | `gh-embed-tower`, `gh-embed-relmap` |
+| **LoRA fine-tune (Track A)** | does the relation loss *inside* the rep beat the frozen embedder cross-repo? | **YES** (pilot-scale) — R@1 0.59→0.66, MRR 0.73→0.79; a head on tuned vecs still adds nothing | R@1 0.66 vs frozen 0.59 | `gh-finetune-*` |
 
 **Synthesis:** embeddings settle the *substrate* question; a bolt-on operator on
 *frozen* vectors has no headroom at pilot scale. The relational contribution must
@@ -93,16 +94,15 @@ structure** (link prediction) — not as a post-hoc head.
 
 ## 5. Tracks (parallelizable, each with a decision gate)
 
-### Track A — Representation: fine-tune with the relation loss  *(NEXT)*
+### Track A — Representation: fine-tune with the relation loss  *(DONE, pilot — WON)*
 - **Paper:** `L_contrastive` + `L_topo` reshaping `E_θ` (the embedder).
-- **Prereq:** `[embed]` extra (transformers+torch); a small LoRA/last-layer train loop.
-- **Experiment:** LoRA-tune MiniLM (and/or a code embedder) on **train-repo** `fixes`
-  pairs with InfoNCE + hard negatives; cache the tuned embeddings; eval cross-repo
-  on the committed split. Control = frozen `embedder-cosine`.
-- **Success:** tuned beats frozen `embedder-cosine` R@1 (currently 0.59) by a
-  margin that survives a held-out-repo re-split.
-- **Gate:** win → add auxiliary relation heads + scale (Track D). No win → diagnose
-  (capacity / data / loss / base model via Q6) before scaling.
+- **Result:** LoRA (r=8, 0.48% params) on MiniLM, InfoNCE on 182 train-repo pairs,
+  beat frozen `embedder-cosine` cross-repo (R@1 0.59→0.66, MRR 0.73→0.79). See
+  [ablation-finetune.md](ablation-finetune.md).
+- **Gate fired: WIN.** Next per the gate → **scale (Track D)** with multi-split CIs,
+  and **code-specific base** (Q6). A head on tuned vectors still adds nothing — keep
+  the contribution in the representation. Open: confirm on a held-out-repo re-split
+  and multiple seeds before treating the number as settled.
 
 ### Track B — Graph: link prediction over the SDLC graph
 - **Paper:** `L_graph` (spectral) + KG-embedding relation scoring; GraphRAG seed.

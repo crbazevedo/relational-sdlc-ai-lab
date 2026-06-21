@@ -1,0 +1,17 @@
+{
+  "card_type": "source",
+  "id": "src:synth-relation",
+  "name": "synthetic relation benchmark generator",
+  "source_url": "synthetic://relation-bench",
+  "retrieved_at": "2024-06-01T00:00:00Z",
+  "license": "CC0-1.0",
+  "terms_note": "Original synthetic data; freely redistributable.",
+  "record_types": [
+    "issue",
+    "pull_request"
+  ],
+  "transform": "python data/synth/build_synth.py",
+  "content_hash": "sha256:dafd235b4b13a568e31b0154ea1baa7084c17e516ecdeeddba6fcaba1d4da302",
+  "redistribution": "synthetic_original",
+  "notes": "Latent-component design: rare impl tokens carry the fix link; common topic tokens are misleading surface noise."
+}

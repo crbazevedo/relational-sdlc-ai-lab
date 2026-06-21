@@ -18,7 +18,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=7"]
+# numpy (BSD-3) powers the relation-aware model + ablation. Docs:
+# https://numpy.org/doc/stable/  — kept optional so the core validate/bench path is numpy-free.
+modeling = ["numpy>=1.24"]
+dev = ["pytest>=7", "numpy>=1.24"]
 
 [project.scripts]
 relsdlc = "relsdlc.cli:main"

@@ -1,0 +1,55 @@
+{
+  "systems": {
+    "vanilla-tf-cosine": {
+      "n_queries": 94,
+      "recall_at_k": {
+        "1": 0.10638297872340426,
+        "5": 0.30851063829787234,
+        "10": 0.9680851063829787
+      },
+      "mrr": 0.27593411316815575,
+      "hard_negative_accuracy": 0.10638297872340426
+    },
+    "idf-cosine": {
+      "n_queries": 94,
+      "recall_at_k": {
+        "1": 0.3829787234042553,
+        "5": 0.5319148936170213,
+        "10": 0.9680851063829787
+      },
+      "mrr": 0.500558395505204,
+      "hard_negative_accuracy": 0.3829787234042553
+    },
+    "relation-metric": {
+      "n_queries": 94,
+      "recall_at_k": {
+        "1": 0.8191489361702128,
+        "5": 0.8936170212765957,
+        "10": 0.9893617021276596
+      },
+      "mrr": 0.8638846673421141,
+      "hard_negative_accuracy": 0.8191489361702128
+    }
+  },
+  "n_train_queries": 146,
+  "n_test_queries": 94,
+  "vocab_size": 160,
+  "learned_weights": {
+    "mean_impl_weight": 1.3574798586161099,
+    "mean_topic_weight": 0.280726333134877
+  },
+  "params": {
+    "seed": 7,
+    "n_components": 10,
+    "issues_per_component": 24,
+    "impl_per_component": 12,
+    "n_topics": 40,
+    "issue_topic_tokens": 10,
+    "issue_impl_tokens": 2,
+    "pr_impl_tokens": 8,
+    "pr_topic_tokens": 6,
+    "n_hard_negatives": 5,
+    "n_random_negatives": 6,
+    "train_frac": 0.6
+  }
+}

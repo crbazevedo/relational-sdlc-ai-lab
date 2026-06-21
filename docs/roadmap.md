@@ -32,6 +32,11 @@ Target:
 
 ## P2: Relational Embedding Benchmark
 
+**Status: mechanism demonstrated on synthetic data (exploratory).** See
+[ablation.md](ablation.md): on a controlled benchmark, relation-supervised token
+weighting beats unsupervised IDF beats vanilla cosine (Recall@1 0.82 vs 0.38 vs
+0.11). Real public-data validation follows once P1 lands a dataset.
+
 Compare:
 
 - vanilla text/code embedding;

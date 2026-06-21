@@ -83,6 +83,34 @@ def _cmd_bench(args: argparse.Namespace) -> int:
     return 1 if report["leakage"] else 0
 
 
+def _cmd_ablation(args: argparse.Namespace) -> int:
+    # Lazy import: the modeling path needs numpy; the core CLI does not.
+    try:
+        from .model import run_ablation
+        from .synth import generate
+    except ImportError as exc:  # pragma: no cover
+        print(f"ERROR: ablation needs the modeling extra (pip install -e '.[modeling]'): {exc}",
+              file=sys.stderr)
+        return 2
+
+    dataset = generate(seed=args.seed)
+    report = run_ablation(dataset, seed=args.train_seed)
+    if args.json:
+        print(json.dumps(report, indent=2))
+        return 0
+    print(f"synthetic relation ablation — task: issue_to_fixing_pr "
+          f"(train queries: {report['n_train_queries']}, test queries: {report['n_test_queries']})")
+    print(f"{'system':<20}{'R@1':>8}{'R@5':>8}{'R@10':>8}{'MRR':>8}{'HardNegAcc':>12}")
+    for name, m in report["systems"].items():
+        r = m["recall_at_k"]
+        print(f"{name:<20}{r['1']:>8.3f}{r['5']:>8.3f}{r['10']:>8.3f}"
+              f"{m['mrr']:>8.3f}{m['hard_negative_accuracy']:>12.3f}")
+    lw = report["learned_weights"]
+    print(f"learned token weights — impl(mean)={lw['mean_impl_weight']:.3f} "
+          f"topic(mean)={lw['mean_topic_weight']:.3f}")
+    return 0
+
+
 def _cmd_schemas(args: argparse.Namespace) -> int:
     print(f"schemas dir: {schemas_dir()}")
     for name in SCHEMA_NAMES:
@@ -106,6 +134,12 @@ def build_parser() -> argparse.ArgumentParser:
     p_bench.add_argument("--task", default=None, help="restrict to one task id")
     p_bench.add_argument("--json", action="store_true", help="emit JSON report")
     p_bench.set_defaults(func=_cmd_bench)
+
+    p_abl = sub.add_parser("ablation", help="run the synthetic relation ablation")
+    p_abl.add_argument("--seed", type=int, default=7, help="dataset seed")
+    p_abl.add_argument("--train-seed", type=int, default=0, help="model training seed")
+    p_abl.add_argument("--json", action="store_true", help="emit JSON report")
+    p_abl.set_defaults(func=_cmd_ablation)
 
     p_sch = sub.add_parser("schemas", help="list available schemas")
     p_sch.set_defaults(func=_cmd_schemas)

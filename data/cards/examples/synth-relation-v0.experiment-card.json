@@ -1,0 +1,33 @@
+{
+  "card_type": "experiment",
+  "id": "exp:synth-relation-v0",
+  "name": "Synthetic ablation — relation-metric (issue_to_fixing_pr)",
+  "created_at": "2024-06-01T00:00:00Z",
+  "hypothesis": "Relation-supervised token weighting beats vanilla AND unsupervised IDF.",
+  "task": "issue_to_fixing_pr",
+  "dataset_version": "ds:synth-relation-v0",
+  "code_version": "relsdlc-0.1.0",
+  "seed": 0,
+  "command": "relsdlc ablation",
+  "system": "relation-metric",
+  "runtime_class": "cpu",
+  "metrics": {
+    "recall_at_k": {
+      "1": 0.8191,
+      "5": 0.8936,
+      "10": 0.9894
+    },
+    "mrr": 0.8639,
+    "hard_negative_accuracy": 0.8191,
+    "n_queries": 94
+  },
+  "baseline_comparison": "exp:synth-idf-v0",
+  "error_slices": [],
+  "leakage_checks": [
+    "train/test split by record; relation metric trains only on train-split fixes; eval on held-out test issues."
+  ],
+  "known_limitations": [
+    "Synthetic dataset; exploratory. Real public-data validation is the P1->P2 follow-up."
+  ],
+  "exploratory": true
+}

@@ -56,10 +56,28 @@ pip install -e ".[dev]"
 
 relsdlc validate data     # schema + provenance + referential integrity + leakage gates
 relsdlc bench             # Recall@K / MRR / hard-negative accuracy per task (synthetic fixture)
-pytest -q                 # metrics, baseline, and validation regression tests
+relsdlc ablation          # relation-supervised retrieval vs vanilla vs IDF (the headline result)
+pytest -q                 # metrics, baseline, model, and validation regression tests
 
 python data/fixtures/build_fixtures.py   # regenerate the synthetic fixture + example cards
+python data/synth/build_synth.py         # regenerate the relation benchmark + ablation cards
 ```
+
+### Headline result (synthetic, exploratory)
+
+On a controlled benchmark where the `fixes` link is carried by rare tokens and the
+surface is dominated by misleading common tokens, relation supervision decisively
+beats vanilla text similarity (`relsdlc ablation`, 94 held-out queries):
+
+| System | Recall@1 | MRR | Hard-neg accuracy |
+|---|---|---|---|
+| vanilla text cosine | 0.11 | 0.28 | 0.11 |
+| unsupervised IDF | 0.38 | 0.50 | 0.38 |
+| **relation-supervised** | **0.82** | **0.86** | **0.82** |
+
+This demonstrates the mechanism, not a real-world result — see
+[docs/ablation.md](docs/ablation.md). Validating it on public GitHub data is the
+next step.
 
 The synthetic `datebox` fixture (CC0, original) lets the whole pipeline run from a
 clean checkout with no network. It mirrors the timezone-bug worked example from

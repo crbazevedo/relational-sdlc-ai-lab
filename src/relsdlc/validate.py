@@ -269,6 +269,10 @@ def _iter_objects(path: Path):
             yield data, path.name
 
 
+# Auxiliary JSON that are not schema artifacts (splits, run results, etc.).
+_SKIP_NAMES = {"split.json", "ablation-results.json"}
+
+
 def _discover(target: Path) -> list[Path]:
     if target.is_file():
         return [target]
@@ -276,7 +280,12 @@ def _discover(target: Path) -> list[Path]:
     for pattern in ("*.json", "*.jsonl"):
         files.extend(sorted(target.rglob(pattern)))
     # Templates carry intentional TODO placeholders; never validate them.
-    return [f for f in files if "templates" not in f.parts and f.name != "schemas"]
+    return [
+        f for f in files
+        if "templates" not in f.parts
+        and f.name not in _SKIP_NAMES
+        and not f.name.endswith("-results.json")
+    ]
 
 
 def validate_path(target: Path) -> Report:

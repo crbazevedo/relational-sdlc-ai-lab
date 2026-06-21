@@ -28,7 +28,7 @@ reproducible, source-aware, and easy to audit.
 
 Before merging, confirm:
 
-1. Validation passes.
+1. Validation passes (`relsdlc validate data` and `pytest -q`).
 2. Dataset records include provenance.
 3. Claims cite a benchmark, experiment card, or public source.
 4. Generated files and caches are excluded.

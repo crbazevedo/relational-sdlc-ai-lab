@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/crbazevedo/relational-sdlc-ai-lab/schemas/record.schema.json",
+  "title": "SDLC Record",
+  "description": "A single software-development-lifecycle record (a node in the relational graph). Encodes the artifact set V from the position paper: each record has a type, content, and verifiable provenance.",
+  "type": "object",
+  "required": ["id", "type", "provenance"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable, dataset-unique identifier for this record."
+    },
+    "type": {
+      "type": "string",
+      "description": "Artifact type tau(v) from the formal framework.",
+      "enum": [
+        "issue",
+        "pull_request",
+        "commit",
+        "diff",
+        "file",
+        "symbol",
+        "test",
+        "ci_log",
+        "tool",
+        "agent_run"
+      ]
+    },
+    "content": {
+      "type": "object",
+      "description": "Type-specific payload (title, body, path, code, log text, etc.). Free-form by type; kept small in public history. Large blobs live in object storage and are referenced by hash.",
+      "additionalProperties": true
+    },
+    "provenance": { "$ref": "provenance.schema.json" },
+    "valid_from": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Commit sha or ISO-8601 timestamp at which this record becomes valid (temporal-validity lower bound)."
+    },
+    "valid_until": {
+      "type": ["string", "null"],
+      "description": "Commit sha or ISO-8601 timestamp after which this record is superseded. Null means currently valid."
+    },
+    "split": {
+      "type": "string",
+      "enum": ["train", "dev", "test"],
+      "description": "Frozen split assignment, when assigned at record granularity."
+    },
+    "attributes": {
+      "type": "object",
+      "description": "Optional derived or annotated attributes (owner, component, flaky flag, etc.).",
+      "additionalProperties": true
+    }
+  }
+}

@@ -5,6 +5,19 @@
 Build the public project foundation: README, contribution rules, source
 hygiene, architecture notes, roadmap, and research outline.
 
+**Status: substrate landed (Wave R1).** The foundation is now executable, not
+just documented:
+
+- JSON schemas for records, relation edges, benchmark queries, and source /
+  dataset / experiment cards (`schemas/`);
+- the `relsdlc` library + CLI — schema validation, provenance and
+  referential-integrity gates, a temporal-leakage guard, Recall@K / MRR /
+  hard-negative metrics, and a dependency-light baseline embedder (`src/`);
+- a synthetic, reproducible `datebox` fixture + example cards (`data/`);
+- the benchmark definition (`docs/benchmark-definition.md`);
+- CI that keeps the gates boring: reproducible-fixture check, `relsdlc validate`,
+  benchmark smoke, and tests (`.github/workflows/ci.yml`).
+
 ## P1: Curated Public GitHub Dataset
 
 Build a small dataset before a large scrape.

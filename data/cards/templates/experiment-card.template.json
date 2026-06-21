@@ -1,0 +1,25 @@
+{
+  "card_type": "experiment",
+  "id": "exp:<system>-<task>-<version>",
+  "name": "<human-readable run name>",
+  "created_at": "TODO-ISO-8601",
+  "hypothesis": "<the falsifiable claim this run tests>",
+  "task": "issue_to_fixing_pr",
+  "dataset_version": "ds:<name>-<version>",
+  "code_version": "<git sha>",
+  "seed": 0,
+  "command": "<exact reproducible command>",
+  "system": "<embedder or model name>",
+  "runtime_class": "cpu",
+  "metrics": {
+    "recall_at_k": { "1": 0.0, "5": 0.0, "10": 0.0 },
+    "mrr": 0.0,
+    "hard_negative_accuracy": 0.0,
+    "n_queries": 0
+  },
+  "baseline_comparison": "<experiment-card id or 'none'>",
+  "error_slices": ["<slice where the system underperforms>"],
+  "leakage_checks": ["<temporal split / as-of guard applied>"],
+  "known_limitations": ["<what this result does NOT show>"],
+  "exploratory": true
+}

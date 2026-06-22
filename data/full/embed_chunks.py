@@ -32,7 +32,7 @@ MAX_LEN = 256
 EMB = HERE / "embeddings"
 
 
-def _load_jsonl(p): return [json.loads(l) for l in p.read_text().splitlines() if l.strip()]
+def _load_jsonl(p): return [json.loads(l) for l in p.read_text().split("\n") if l.strip()]
 
 
 def main() -> None:

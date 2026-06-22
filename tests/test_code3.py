@@ -45,7 +45,8 @@ def _raw(name):
 
 def _vecs(name):
     d = _raw(name)
-    return {str(i): d["vectors"][k].astype(np.float32) for k, i in enumerate(d["ids"])}
+    ids, V = d["ids"], np.asarray(d["vectors"], dtype=np.float32)  # decompress once (NpzFile lazy member)
+    return {str(i): V[k] for k, i in enumerate(ids)}
 
 
 def _metrics(name):

@@ -28,7 +28,8 @@ def _ds():
 
 def _vecs(p):
     d = np.load(p, allow_pickle=False)
-    return {str(i): d["vectors"][k].astype(np.float32) for k, i in enumerate(d["ids"])}
+    ids, V = d["ids"], np.asarray(d["vectors"], dtype=np.float32)  # decompress once (NpzFile lazy member)
+    return {str(i): V[k] for k, i in enumerate(ids)}
 
 
 def test_rgcn_cache_is_unit_normish():
@@ -48,7 +49,7 @@ def test_free_aggregation_beats_frozen_and_rgcn_metrics_valid():
     frozen = _vecs(FROZEN)
     modifies = [(e["source"], e["target"]) for e in
                 (json.loads(l) for l in (PILOT / "graph" / "modifies_edges.jsonl")
-                 .read_text().splitlines() if l.strip())]
+                 .read_text().split("\n") if l.strip())]
     free = run_cosine_on_vecs(ds, augmented_vecs(frozen, ds.fixes, modifies,
                               alpha=0.5, hops=2, exclude_fixes_pairs=ds.fixes))
     rgcn = run_cosine_on_vecs(ds, _vecs(RGCN))

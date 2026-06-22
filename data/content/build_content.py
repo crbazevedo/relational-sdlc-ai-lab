@@ -88,7 +88,7 @@ SLEEP = 0.4          # polite pacing between contents requests.
 
 
 def _load_jsonl(path: Path) -> list[dict]:
-    return [json.loads(ln) for ln in path.read_text(encoding="utf-8").splitlines()
+    return [json.loads(ln) for ln in path.read_text(encoding="utf-8").split("\n")
             if ln.strip()]
 
 

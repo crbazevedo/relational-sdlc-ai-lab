@@ -154,7 +154,7 @@ def _pilot_ids() -> set[str]:
     if not path.is_file():
         return set()
     return {json.loads(l)["id"]
-            for l in path.read_text(encoding="utf-8").splitlines() if l.strip()}
+            for l in path.read_text(encoding="utf-8").split("\n") if l.strip()}
 
 
 def build_benchmark(records: list[dict], edges: list[dict], rng_seed: int = 0):

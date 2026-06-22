@@ -51,7 +51,9 @@ def record_text(record: dict) -> str:
 
 def load_jsonl(path: Path) -> list[dict]:
     out: list[dict] = []
-    for line in path.read_text(encoding="utf-8").splitlines():
+    # Split on "\n" only (JSONL delimiter); str.splitlines() also breaks on Unicode
+    # line separators that can appear literally inside a record body.
+    for line in path.read_text(encoding="utf-8").split("\n"):
         line = line.strip()
         if line:
             out.append(json.loads(line))

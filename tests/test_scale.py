@@ -35,7 +35,7 @@ def _load_module(name: str):
 
 
 def _n_lines(path: Path) -> int:
-    return sum(1 for line in path.read_text(encoding="utf-8").splitlines() if line.strip())
+    return sum(1 for line in path.read_text(encoding="utf-8").split("\n") if line.strip())
 
 
 def test_scale_validates_clean():
@@ -61,11 +61,11 @@ def test_scale_is_substantially_larger_than_pilot():
 def test_scale_records_are_id_disjoint_from_pilot():
     import json
     scale_ids = {json.loads(l)["id"]
-                 for l in (SCALE / "records.jsonl").read_text(encoding="utf-8").splitlines()
+                 for l in (SCALE / "records.jsonl").read_text(encoding="utf-8").split("\n")
                  if l.strip()}
     if (PILOT / "records.jsonl").exists():
         pilot_ids = {json.loads(l)["id"]
-                     for l in (PILOT / "records.jsonl").read_text(encoding="utf-8").splitlines()
+                     for l in (PILOT / "records.jsonl").read_text(encoding="utf-8").split("\n")
                      if l.strip()}
         assert scale_ids.isdisjoint(pilot_ids)
 

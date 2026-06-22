@@ -93,11 +93,15 @@ def train_relation_metric(dataset: SynthDataset, vocab: Vocab,
                           vecs: dict[str, np.ndarray],
                           epochs: int = 300, lr: float = 0.5,
                           margin: float = 0.15, l2: float = 1e-4,
-                          seed: int = 0) -> np.ndarray:
+                          seed: int = 0, max_triplets: int | None = 60_000) -> np.ndarray:
     """Learn non-negative token weights w = theta**2 via a margin triplet loss.
 
     Triplets come only from TRAIN queries: (issue, true_pr, negative_candidate).
     Returns the weight vector w (length vocab.size); w == 1 reproduces vanilla.
+
+    ``max_triplets`` bounds the dense (T x V) work: on large corpora triplet_count
+    x vocab_size can blow up memory, so triplets above the cap are deterministically
+    subsampled and the metric scales gracefully (set None to disable).
     """
     rng = np.random.default_rng(seed)
     fix_pr_of_issue = {iss: pr for pr, iss in dataset.fixes}
@@ -114,6 +118,12 @@ def train_relation_metric(dataset: SynthDataset, vocab: Vocab,
             negatives.append(cid)
     if not anchors:
         return np.ones(vocab.size)
+
+    if max_triplets is not None and len(anchors) > max_triplets:
+        keep = rng.choice(len(anchors), size=max_triplets, replace=False)
+        anchors = [anchors[i] for i in keep]
+        positives = [positives[i] for i in keep]
+        negatives = [negatives[i] for i in keep]
 
     Ui = np.stack([vecs[a] for a in anchors])
     Up = np.stack([vecs[p] for p in positives])
@@ -138,21 +148,26 @@ def train_relation_metric(dataset: SynthDataset, vocab: Vocab,
 
 
 def run_ablation(dataset: SynthDataset, ks=(1, 5, 10), seed: int = 0,
-                 min_df: int = 1) -> dict:
-    """Score three tiers on TEST queries: vanilla, unsupervised IDF, relation metric.
+                 min_df: int = 1, include_metric: bool = True,
+                 max_triplets: int | None = 60_000) -> dict:
+    """Score the tiers on TEST queries: vanilla, unsupervised IDF, (relation metric).
 
-    All three use the same unit vectors and candidate pools, so differences come
+    The systems use the same unit vectors and candidate pools, so differences come
     only from the token weighting:
       - vanilla         : no weighting (plain cosine).
       - idf-cosine      : unsupervised corpus IDF weighting.
       - relation-metric : weights learned from the ``fixes`` relation.
 
-    ``min_df`` prunes rare tokens from the vocabulary (useful for real corpora).
+    ``min_df`` prunes rare tokens (useful for real corpora). ``include_metric=False``
+    skips the (dense, O(triplets x vocab)) diagonal metric — use it on large corpora
+    where the metric's "ties IDF" finding is already established and the cost is not
+    worth it. ``max_triplets`` bounds the metric's work when it IS computed.
     """
     vocab = Vocab.build([tokenize(a.text) for a in dataset.artifacts], min_df=min_df)
     vecs = _vectors(dataset, vocab)
     idf = idf_weights(dataset, vocab)
-    rel = train_relation_metric(dataset, vocab, vecs, seed=seed)
+    rel = (train_relation_metric(dataset, vocab, vecs, seed=seed, max_triplets=max_triplets)
+           if include_metric else None)
 
     test_q = [q for q in dataset.queries if q.split == "test"]
 
@@ -163,16 +178,16 @@ def run_ablation(dataset: SynthDataset, ks=(1, 5, 10), seed: int = 0,
             results.append(RetrievalResult.of(ranked, q.relevant, q.hard_negatives))
         return evaluate(results, ks=ks)
 
+    systems = {"vanilla-tf-cosine": eval_system(None), "idf-cosine": eval_system(idf)}
+    if include_metric:
+        systems["relation-metric"] = eval_system(rel)
+
     # mean learned weight by token family — shows what the supervision recovered.
-    impl_w = [rel[i] for t, i in vocab.token2idx.items() if t.startswith("impl")]
-    topic_w = [rel[i] for t, i in vocab.token2idx.items() if t.startswith("topic")]
+    impl_w = [rel[i] for t, i in vocab.token2idx.items() if t.startswith("impl")] if rel is not None else []
+    topic_w = [rel[i] for t, i in vocab.token2idx.items() if t.startswith("topic")] if rel is not None else []
 
     return {
-        "systems": {
-            "vanilla-tf-cosine": eval_system(None),
-            "idf-cosine": eval_system(idf),
-            "relation-metric": eval_system(rel),
-        },
+        "systems": systems,
         "n_train_queries": sum(1 for q in dataset.queries if q.split == "train"),
         "n_test_queries": len(test_q),
         "vocab_size": vocab.size,

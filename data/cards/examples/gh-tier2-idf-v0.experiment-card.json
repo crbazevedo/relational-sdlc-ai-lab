@@ -1,0 +1,33 @@
+{
+  "card_type": "experiment",
+  "id": "exp:gh-tier2-idf-v0",
+  "name": "GitHub Tier-2 (~150 repos), cross-repo de-referenced — idf-cosine",
+  "created_at": "2026-06-22T00:00:00Z",
+  "hypothesis": "At real Tier-2 scale (~120-150 repos), with references removed and repos held out, does the robust finding hold — does this weighting still beat plain cosine on issue->fixing-PR retrieval that generalizes across repos?",
+  "task": "issue_to_fixing_pr",
+  "dataset_version": "ds:gh-tier2-v0",
+  "code_version": "relsdlc-0.1.0",
+  "seed": 0,
+  "command": "python data/tier2/run_tier2_ablation.py",
+  "system": "idf-cosine",
+  "runtime_class": "cpu",
+  "metrics": {
+    "recall_at_k": {
+      "1": 0.3894,
+      "5": 0.7131,
+      "10": 0.9129
+    },
+    "mrr": 0.5417,
+    "hard_negative_accuracy": 0.392,
+    "n_queries": 1171
+  },
+  "baseline_comparison": "exp:gh-tier2-vanilla-v0",
+  "error_slices": [],
+  "leakage_checks": [
+    "references scrubbed from text; train repos disjoint from test repos (cross-repo generalization)."
+  ],
+  "known_limitations": [
+    "Tier-2 scale (~150 repos); bag-of-tokens features; fixes mined from closing keywords; body text truncated to 500 chars. Exploratory. The LoRA-at-Tier-2 run is a torch follow-up owned by central (imports load_tier2_crossrepo)."
+  ],
+  "exploratory": true
+}

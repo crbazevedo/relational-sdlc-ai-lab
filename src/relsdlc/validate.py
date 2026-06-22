@@ -255,7 +255,10 @@ def _iter_objects(path: Path):
     """Yield (obj, location) from a .json (object or list) or .jsonl file."""
     text = path.read_text(encoding="utf-8")
     if path.suffix == ".jsonl":
-        for lineno, line in enumerate(text.splitlines(), start=1):
+        # Split on "\n" only — NOT str.splitlines(), which also breaks on Unicode
+        # line separators ( / /\x85) that json.dumps(ensure_ascii=False)
+        # writes literally inside a body, splitting a record mid-string.
+        for lineno, line in enumerate(text.split("\n"), start=1):
             line = line.strip()
             if not line:
                 continue

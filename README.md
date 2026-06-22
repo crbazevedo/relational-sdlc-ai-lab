@@ -162,6 +162,12 @@ and **more text hurts** — a paired control shows de-truncating issue/PR bodies
 (500→8000 chars) *lowers* retrieval by 0.09–0.15 R@1 across every system, because the
 first ~500 chars carry the signal and the rest dilutes it
 ([docs/full-text-dataset.md](docs/full-text-dataset.md)). Truncation was a feature.
+Chunking the body and scoring by the best chunk (**MaxP**) doesn't rescue it either —
+**FirstP (the lede) wins at every chunk size** ([docs/ablation-chunking.md](docs/ablation-chunking.md)),
+so chunked late-interaction is queued for *deep-signal* tasks, not front-loaded
+issue→PR. On the base model, a true **code-embedding** model (jina-code) gets the best
+R@5 of any base and ties MRR but doesn't beat top-1 — code-awareness helps *when also
+embedding-tuned* ([docs/ablation-code3.md](docs/ablation-code3.md)).
 The throughline across every experiment: **the relational win lives in the base
 representation** — embedding-tuned substrate, LoRA reshaping it, a thin graph lift on
 top — while learned heads bolted on *frozen* vectors (a two-tower, an R-GCN) overfit

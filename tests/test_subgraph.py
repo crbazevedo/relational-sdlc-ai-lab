@@ -41,7 +41,7 @@ pytestmark = pytest.mark.skipif(
 
 
 def _read_jsonl(path: Path) -> list[dict]:
-    return [json.loads(l) for l in path.read_text(encoding="utf-8").splitlines() if l.strip()]
+    return [json.loads(l) for l in path.read_text(encoding="utf-8").split("\n") if l.strip()]
 
 
 @pytest.fixture(scope="module")

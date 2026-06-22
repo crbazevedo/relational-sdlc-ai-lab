@@ -30,7 +30,8 @@ def _ds():
 
 def _vecs(name):
     d = np.load(EMB / name, allow_pickle=False)
-    return {str(i): d["vectors"][k].astype(np.float32) for k, i in enumerate(d["ids"])}
+    ids, V = d["ids"], np.asarray(d["vectors"], dtype=np.float32)  # decompress once (NpzFile lazy member)
+    return {str(i): V[k] for k, i in enumerate(ids)}
 
 
 def _r1(name):

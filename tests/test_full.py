@@ -37,7 +37,7 @@ def _load_module(name: str):
 
 def _body_lengths() -> list[int]:
     out = []
-    for line in (FULL / "records.jsonl").read_text(encoding="utf-8").splitlines():
+    for line in (FULL / "records.jsonl").read_text(encoding="utf-8").split("\n"):
         if not line.strip():
             continue
         rec = json.loads(line)

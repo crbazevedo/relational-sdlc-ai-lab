@@ -1,0 +1,33 @@
+{
+  "card_type": "experiment",
+  "id": "exp:gh-tier2-lora-v0",
+  "name": "Dense Tier-2 (~80 repos) — LoRA-tuned vs frozen (issue_to_fixing_pr)",
+  "created_at": "2026-06-21T00:00:00Z",
+  "hypothesis": "Does the LoRA win hold/tighten with denser per-repo coverage (~80 repos)?",
+  "task": "issue_to_fixing_pr",
+  "dataset_version": "ds:gh-tier2-v0",
+  "code_version": "relsdlc-0.1.0",
+  "seed": 0,
+  "command": "python data/tier2/finetune_tier2.py && python data/tier2/run_tier2_finetune.py",
+  "system": "minilm-lora-tier2",
+  "runtime_class": "cpu",
+  "metrics": {
+    "recall_at_k": {
+      "1": 0.6294,
+      "5": 0.9206,
+      "10": 0.9846
+    },
+    "mrr": 0.7568,
+    "hard_negative_accuracy": 0.6354,
+    "n_queries": 1171
+  },
+  "baseline_comparison": "exp:gh-tier2-idf-v0",
+  "error_slices": [],
+  "leakage_checks": [
+    "LoRA trains on train-repo pairs only; eval held-out repos; refs scrubbed."
+  ],
+  "known_limitations": [
+    "Single cross-repo split; dense ~80 repos; frozen R@1 0.515, delta R@1 +0.114. Exploratory."
+  ],
+  "exploratory": true
+}

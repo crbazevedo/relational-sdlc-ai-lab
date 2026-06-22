@@ -60,7 +60,7 @@ SYSTEMS = ["vanilla-tf-cosine", "idf-cosine", "relation-metric", "embedder-cosin
 
 
 def _load_jsonl(path: Path) -> list[dict]:
-    return [json.loads(ln) for ln in path.read_text(encoding="utf-8").splitlines() if ln.strip()]
+    return [json.loads(ln) for ln in path.read_text(encoding="utf-8").split("\n") if ln.strip()]
 
 
 def _repo_of(record_id: str) -> str:

@@ -35,7 +35,7 @@ MAX_LEN = 256
 
 
 def _load_jsonl(path: Path) -> list[dict]:
-    return [json.loads(l) for l in path.read_text(encoding="utf-8").splitlines() if l.strip()]
+    return [json.loads(l) for l in path.read_text(encoding="utf-8").split("\n") if l.strip()]
 
 
 def main() -> None:

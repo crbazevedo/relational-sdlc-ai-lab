@@ -39,7 +39,7 @@ TEMP = 0.05
 SEED = 0
 
 
-def _load_jsonl(p): return [json.loads(l) for l in p.read_text().splitlines() if l.strip()]
+def _load_jsonl(p): return [json.loads(l) for l in p.read_text().split("\n") if l.strip()]
 
 
 def main() -> None:

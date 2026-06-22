@@ -51,7 +51,7 @@ TRUNC_MAX_LEN = 256  # the pilot's window, re-imposed for the paired control.
 
 
 def _load_jsonl(path: Path) -> list[dict]:
-    return [json.loads(ln) for ln in path.read_text(encoding="utf-8").splitlines() if ln.strip()]
+    return [json.loads(ln) for ln in path.read_text(encoding="utf-8").split("\n") if ln.strip()]
 
 
 def _truncate_text(text: str, chars: int) -> str:

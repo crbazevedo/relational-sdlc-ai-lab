@@ -151,7 +151,7 @@ def test_committed_example_matches_transform(result):
         pytest.skip("data/ingest_example not present")
 
     def _load(path):
-        return [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
+        return [json.loads(line) for line in path.read_text().split("\n") if line.strip()]
 
     committed_records = _load(example / "records.jsonl")
     committed_edges = _load(example / "edges.jsonl")

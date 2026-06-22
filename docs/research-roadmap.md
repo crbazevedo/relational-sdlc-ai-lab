@@ -90,6 +90,8 @@ torch (closing the snapshot-trust gap); R@5/R@10 are footnoted as near-ceiling a
 | **Full text (R14)** | does de-truncating bodies (500→8000) help? | **no — it HURTS** (paired control, truncation the only variable) | every system −0.09 to −0.15 R@1; embedder 0.69→0.55 | `gh-full-*` |
 | **Chunked MaxP (R15)** | does MaxP over chunks beat FirstP for issue→PR? | **no** — signal is front-loaded; FirstP wins every chunk size; SumP collapses (length bias) | FirstP@512 0.701 > MaxP 0.668; queued for deep-signal tasks | `gh-chunk-*` |
 | **Code-embedding base, pinned (R15B)** | does a true code+embedding-tuned base win? | **qualified yes** — jina-code (transformers<5) best R@5 ever, ties MRR, loses R@1 by a hair | R@5 0.960 (best); R@1 0.580 vs MiniLM 0.592 / bge 0.598 | `gh-code3-*` |
+| **Dense Tier-2 baseline (R16B)** | does the bag-of-tokens finding hold at 78 repos with ~3.5× denser per-repo coverage? | **yes** — IDF still beats vanilla cross-repo; density did not erase the gap | IDF R@1 0.389 vs vanilla 0.287 (+0.102) | `gh-tier2-{vanilla,idf}-*` |
+| **LoRA-at-Tier-2 (R16C)** | does the LoRA win hold at dense ~80 repos? | **yes — and grows further** (32 held-out test repos, density ~35 q/repo) | ΔR@1 +0.114 (0.515→0.629), ΔMRR +0.101 | `gh-tier2-lora-*` |
 
 **Synthesis (R3→R12, refined by R13/R14).** The relational win comes from the **base representation**:
 an embedding-tuned model as substrate, **LoRA reshaping it with the relation loss**
@@ -168,14 +170,20 @@ a trained relational SLM** — not naive "use the whole body."
   circularity); cross-repo split + textually-near hard negatives.
 - **Gate:** each task is non-degenerate (not regex-recoverable) before it counts.
 
-### Track D — Scale (only on signal)  *(confidence DONE; repo-scale STARTED)*
+### Track D — Scale (only on signal)  *(confidence DONE; repo-scale DENSE)*
 - **Multi-split confidence DONE (R11A):** the LoRA win is positive on **all 5**
   held-out-repo splits — ΔR@1 +0.061±0.021 ([ablation-scale.md](ablation-scale.md)).
-- **Repo-scale STARTED (R12A):** a ~55-repo dataset ([scale-dataset.md](scale-dataset.md));
-  the bag-of-tokens finding holds (IDF 0.444 ≥ vanilla 0.333). **Open:** re-run the
-  embedding/LoRA stack on the 55-repo set (torch follow-up) to confirm the LoRA
-  delta scales; then Tier-2 full (200–500). And **Q6 follow-up:** a code-*embedding*
-  base (not a code MLM — codebert collapsed; bge edged ahead). [ablation-code.md](ablation-code.md)
+- **Repo-scale DONE (R12A → R13A):** a ~55-repo dataset ([scale-dataset.md](scale-dataset.md));
+  the bag-of-tokens finding holds (IDF 0.444 ≥ vanilla 0.333) and the LoRA win
+  **grows** (ΔR@1 +0.080).
+- **Dense Tier-2 DONE (R16B/C):** 78 repos at **~35 queries/repo** (~3.5× denser),
+  2,744 benchmark queries ([tier2-dataset.md](tier2-dataset.md)). The bag-of-tokens
+  finding holds (IDF R@1 0.389 ≥ vanilla 0.287); the LoRA delta **grows with
+  density** to ΔR@1 **+0.114** (0.515→0.629), the largest in the program (pilot +0.07
+  → scale +0.080 → Tier-2 +0.114). **Open:** Tier-2 full breadth (200–500 repos) is
+  a GPU-scale follow-up.
+  And **Q6 follow-up:** a code-*embedding* base (not a code MLM — codebert
+  collapsed; bge edged ahead). [ablation-code.md](ablation-code.md)
 
 ### Track E — Beyond MVP-1 (entry STARTED)
 - **GraphRAG packer + SLM dry-run DONE (R12C):** relation-conditioned subgraph

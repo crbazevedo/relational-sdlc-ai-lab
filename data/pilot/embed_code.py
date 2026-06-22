@@ -31,7 +31,7 @@ MODELS = [
 MAX_LEN = 256
 
 
-def _load_jsonl(p): return [json.loads(l) for l in p.read_text().splitlines() if l.strip()]
+def _load_jsonl(p): return [json.loads(l) for l in p.read_text().split("\n") if l.strip()]
 
 
 def embed_with(model_name, pool, out_name):

@@ -70,7 +70,7 @@ PROBE_UNRELATED = "the weather forecast predicts heavy rain over the weekend"
 
 
 def _load_jsonl(p):
-    return [json.loads(l) for l in p.read_text().splitlines() if l.strip()]
+    return [json.loads(l) for l in p.read_text().split("\n") if l.strip()]
 
 
 def _pool(model_out, enc, pool, returns_embedding):

@@ -1,0 +1,33 @@
+{
+  "card_type": "experiment",
+  "id": "exp:gh-scale-lora-v0",
+  "name": "55-repo scale — LoRA-tuned vs frozen (issue_to_fixing_pr)",
+  "created_at": "2026-06-21T00:00:00Z",
+  "hypothesis": "Does the pilot LoRA win hold on the ~55-repo dataset cross-repo?",
+  "task": "issue_to_fixing_pr",
+  "dataset_version": "ds:gh-scale2-v0",
+  "code_version": "relsdlc-0.1.0",
+  "seed": 0,
+  "command": "python data/scale/finetune_scale.py && python data/scale/run_scale_finetune.py",
+  "system": "minilm-lora-scale",
+  "runtime_class": "cpu",
+  "metrics": {
+    "recall_at_k": {
+      "1": 0.5689,
+      "5": 0.9511,
+      "10": 1.0
+    },
+    "mrr": 0.729,
+    "hard_negative_accuracy": 0.5822,
+    "n_queries": 225
+  },
+  "baseline_comparison": "exp:gh-scale2-idf-v0",
+  "error_slices": [],
+  "leakage_checks": [
+    "LoRA trains on train-repo pairs only; eval held-out repos; refs scrubbed."
+  ],
+  "known_limitations": [
+    "Single cross-repo split; ~55 repos; frozen R@1 0.489, delta R@1 +0.080. Exploratory."
+  ],
+  "exploratory": true
+}

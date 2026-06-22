@@ -1,0 +1,64 @@
+{
+  "frozen": {
+    "n_queries": 225,
+    "recall_at_k": {
+      "1": 0.4888888888888889,
+      "5": 0.9022222222222223,
+      "10": 0.9866666666666667
+    },
+    "mrr": 0.6569663792997127,
+    "hard_negative_accuracy": 0.49777777777777776
+  },
+  "tuned": {
+    "n_queries": 225,
+    "recall_at_k": {
+      "1": 0.5688888888888889,
+      "5": 0.9511111111111111,
+      "10": 1.0
+    },
+    "mrr": 0.7289647266313933,
+    "hard_negative_accuracy": 0.5822222222222222
+  },
+  "delta_r1": 0.08000000000000002,
+  "delta_mrr": 0.07199834733168065,
+  "meta": {
+    "train_repos": [
+      "Delgan/loguru",
+      "HypothesisWorks/hypothesis",
+      "Textualize/textual",
+      "agronholm/anyio",
+      "aio-libs/aiohttp",
+      "arrow-py/arrow",
+      "certifi/python-certifi",
+      "dask/dask",
+      "encode/httpcore",
+      "ewels/rich-click",
+      "jd/tenacity",
+      "matplotlib/matplotlib",
+      "more-itertools/more-itertools",
+      "mwaskom/seaborn",
+      "networkx/networkx",
+      "numpy/numpy",
+      "pandas-dev/pandas",
+      "pyca/cryptography",
+      "pydantic/pydantic-core",
+      "pypa/packaging"
+    ],
+    "test_repos": [
+      "pypa/pip",
+      "pypa/setuptools",
+      "pypa/virtualenv",
+      "pypa/wheel",
+      "python-trio/trio",
+      "python/mypy",
+      "samuelcolvin/dirty-equals",
+      "scikit-learn/scikit-learn",
+      "sdispater/pendulum",
+      "sqlalchemy/sqlalchemy",
+      "sympy/sympy",
+      "theskumar/python-dotenv",
+      "urllib3/urllib3",
+      "yaml/pyyaml"
+    ]
+  }
+}

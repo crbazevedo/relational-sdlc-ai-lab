@@ -1,0 +1,33 @@
+{
+  "card_type": "experiment",
+  "id": "exp:gh-content-firstp-s256-v0",
+  "name": "Deep-signal chunked retrieval — firstp @ chunk_size 256 (diff_to_affected_test)",
+  "created_at": "2026-06-22T00:00:00Z",
+  "hypothesis": "Does MaxP over chunks beat FirstP (the file head) when the relevant signal is DEEP in long test-file contents?",
+  "task": "diff_to_affected_test",
+  "dataset_version": "ds:gh-content-v0",
+  "code_version": "relsdlc-0.1.0",
+  "seed": 0,
+  "command": "python data/content/embed_content.py && python data/content/run_content_chunk_ablation.py",
+  "system": "firstp-content-chunk256",
+  "runtime_class": "cpu",
+  "metrics": {
+    "recall_at_k": {
+      "1": 0.2166,
+      "5": 0.6435,
+      "10": 0.9807
+    },
+    "mrr": 0.4678,
+    "hard_negative_accuracy": 0.3267,
+    "n_queries": 101
+  },
+  "baseline_comparison": "none",
+  "error_slices": [],
+  "leakage_checks": [
+    "references scrubbed from file text; train repos disjoint from test repos (cross-repo); frozen MiniLM embeddings (no fit on test repos); query = PR whole-embedding, document = test-file chunk aggregation."
+  ],
+  "known_limitations": [
+    "Frozen general-text MiniLM chunk embeddings (not code-specific); file text capped at 16000 chars; coarse MaxP (not token-level MaxSim); pilot scale. Exploratory."
+  ],
+  "exploratory": true
+}

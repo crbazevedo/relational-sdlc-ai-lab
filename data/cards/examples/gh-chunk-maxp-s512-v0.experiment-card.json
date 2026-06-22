@@ -1,0 +1,33 @@
+{
+  "card_type": "experiment",
+  "id": "exp:gh-chunk-maxp-s512-v0",
+  "name": "Chunked retrieval — maxp @ chunk_size 512 (issue_to_fixing_pr)",
+  "created_at": "2026-06-21T00:00:00Z",
+  "hypothesis": "Does MaxP over chunks recover signal beyond FirstP (the lede)?",
+  "task": "issue_to_fixing_pr",
+  "dataset_version": "ds:gh-full-v0",
+  "code_version": "relsdlc-0.1.0",
+  "seed": 0,
+  "command": "python data/full/embed_chunks.py && python data/full/run_chunk_ablation.py",
+  "system": "maxp-chunk512",
+  "runtime_class": "cpu",
+  "metrics": {
+    "recall_at_k": {
+      "1": 0.6679,
+      "5": 0.9557,
+      "10": 0.9815
+    },
+    "mrr": 0.7843,
+    "hard_negative_accuracy": 0.6753,
+    "n_queries": 271
+  },
+  "baseline_comparison": "exp:gh-full-embed-cosine-v0",
+  "error_slices": [],
+  "leakage_checks": [
+    "frozen embeddings; cross-repo split; query=issue first chunk."
+  ],
+  "known_limitations": [
+    "Frozen MiniLM chunk embeddings; query=issue first chunk (not full MaxSim); pilot scale. Exploratory."
+  ],
+  "exploratory": true
+}

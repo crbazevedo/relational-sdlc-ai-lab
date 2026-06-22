@@ -20,3 +20,6 @@ runs/
 .env.*
 *.pem
 *.key
+
+# Large regenerable chunk-embedding caches (R15) — rebuild via data/full/embed_chunks.py
+data/full/embeddings/chunks-*.npz

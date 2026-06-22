@@ -67,11 +67,21 @@ Every experiment obeys these, so results are trustworthy and comparable:
 | **LoRA fine-tune (Track A)** | does the relation loss *inside* the rep beat the frozen embedder cross-repo? | **YES** (pilot-scale) — R@1 0.59→0.66, MRR 0.73→0.79; a head on tuned vecs still adds nothing | R@1 0.66 vs frozen 0.59 | `gh-finetune-*` |
 | **Multi-split confidence (Track D)** | is the LoRA win robust, not split luck? | **YES** — positive on all 5 held-out-repo splits | ΔR@1 +0.061±0.021, ΔMRR +0.052±0.010 | `gh-scale-*` |
 | **Graph probe (Track B)** | does typed-graph aggregation add signal beyond cosine? | **small but real on issue→PR; stacks with LoRA**; diff→test needs denser graph | LoRA+graph R@1 0.69 vs LoRA 0.66 | `gh-gnn-*` |
+| **Q6 base model (R12B)** | does a code/stronger base help the frozen substrate? | **embedding-tuned matters, not "code"** — bge edges past MiniLM; code-MLM collapses | bge 0.598 / MiniLM 0.592 / codebert 0.144 | `gh-code-*` |
+| **Learned R-GCN (R12B)** | does a learned GNN beat parameter-free aggregation? | **no at pilot scale** — learned head overfits ~180 pairs | rgcn 0.575 < free-agg 0.609 | `gh-rgcn-*` |
+| **Scale to ~55 repos (R12A)** | does the bag-of-tokens finding hold at larger scale? | **yes** — IDF still best, diagonal still ties | IDF 0.444 ≥ vanilla 0.333 | `gh-scale2-*` |
+| **Relational SLM v0 (R12C)** | can a relation-packed subgraph drive an SLM (MVP-2)? | **dry-run runs** — fixing PR top-5 18/20; small SLM grounds 2/3 (no benchmark claim yet) | retrieval ≈0.9 top-5 | `slm-outputs/` |
 
-**Synthesis:** embeddings settle the *substrate* question; a bolt-on operator on
-*frozen* vectors has no headroom at pilot scale. The relational contribution must
-therefore live **inside the representation** (fine-tuning) or **in graph
-structure** (link prediction) — not as a post-hoc head.
+**Synthesis (R3→R12).** The relational win comes from the **base representation**:
+an embedding-tuned model as substrate, **LoRA reshaping it with the relation loss**
+(robust: positive on all 5 cross-repo splits), with a **thin parameter-free graph
+lift** on top (LoRA+graph R@1 0.69). Everything *bolted on frozen vectors* — a
+from-scratch tower, an identity-init operator, a learned R-GCN — **overfits at pilot
+scale and does not help.** The base finding (IDF ≫ vanilla; diagonal ties IDF) holds
+at 55 repos. A relation-packed subgraph already drives a small SLM (dry-run). The
+single lever that consistently pays off is *changing the representation itself*;
+the single thing that consistently fails is *adding a learned head over frozen
+features*. **Scale + a code-embedding base are the next unlocks.**
 
 ---
 
@@ -114,9 +124,12 @@ structure** (link prediction) — not as a post-hoc head.
   ([ablation-gnn.md](ablation-gnn.md)) adds a **small real lift on issue→PR** and
   **stacks with LoRA** (LoRA+graph R@1 0.69 vs LoRA 0.66). `diff→test` fails at
   pilot sparsity (≈47% of relevant tests isolated once the gold edge is removed).
-- **Gate fired:** structure helps a little → next is a **learned** inductive GNN /
-  R-GCN (torch) with KG operators (RotatE/ComplEx) for asymmetric relations; and
-  `diff→test` needs denser co-change (Track D scale) before the signal exists.
+- **Learned-GNN tried (R12B):** a learned 1-hop R-GCN (init at frozen, InfoNCE)
+  **did NOT beat** the parameter-free aggregation at pilot scale (0.575 < 0.609) —
+  it overfits ([ablation-rgcn.md](ablation-rgcn.md)). So free aggregation stays the
+  best graph method here; a learned GNN is re-gated on **Track-D scale** (more
+  supervision) + a richer/regularized multi-hop R-GCN. `diff→test` still needs
+  denser co-change.
 
 ### Track C — Tasks & labels
 - **C1 `diff→affected-test`, `log→file`** (needs Track B's file edges): test Q3.
@@ -126,17 +139,23 @@ structure** (link prediction) — not as a post-hoc head.
   circularity); cross-repo split + textually-near hard negatives.
 - **Gate:** each task is non-degenerate (not regex-recoverable) before it counts.
 
-### Track D — Scale (only on signal)  *(confidence DONE; repo-scale next)*
+### Track D — Scale (only on signal)  *(confidence DONE; repo-scale STARTED)*
 - **Multi-split confidence DONE (R11A):** the LoRA win is positive on **all 5**
   held-out-repo splits — ΔR@1 +0.061±0.021 ([ablation-scale.md](ablation-scale.md)).
-  The signal is real, so scaling is now justified.
-- **Next:** Tier-2 (200–500 repos) to tighten the estimate; multiple seeds per
-  partition; a **code-aware base** (Q6). Tier-3 only if scaling evidence is needed.
+- **Repo-scale STARTED (R12A):** a ~55-repo dataset ([scale-dataset.md](scale-dataset.md));
+  the bag-of-tokens finding holds (IDF 0.444 ≥ vanilla 0.333). **Open:** re-run the
+  embedding/LoRA stack on the 55-repo set (torch follow-up) to confirm the LoRA
+  delta scales; then Tier-2 full (200–500). And **Q6 follow-up:** a code-*embedding*
+  base (not a code MLM — codebert collapsed; bge edged ahead). [ablation-code.md](ablation-code.md)
 
-### Track E — Beyond MVP-1 (later)
-- Relational SLM (MVP-2): QLoRA SLM with relation/policy heads for review, test
-  suggestion, risk. GraphRAG subgraph packer. Agent policy + outcome learning.
-  Explicitly deferred until MVP-1 shows a relational win.
+### Track E — Beyond MVP-1 (entry STARTED)
+- **GraphRAG packer + SLM dry-run DONE (R12C):** relation-conditioned subgraph
+  retrieval packs a context that a small SLM consumes — fixing PR in top-5 for
+  18/20 sample issues; a 0.5B SLM grounds 2/3 (no benchmark claim yet).
+  [slm-dryrun.md](slm-dryrun.md).
+- **Next:** a trained relational SLM (QLoRA) with relation/policy heads (review,
+  test selection, risk) + outcome learning. Still gated behind a solid retrieval
+  win, which Track A now provides.
 
 ---
 

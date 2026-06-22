@@ -142,6 +142,15 @@ and typed-graph aggregation stacks on top of it — **LoRA + graph reaches R@1 0
 scale: relation supervision *inside* the representation, plus a little graph
 structure, beats generic similarity across repositories.
 
+The finding **holds at larger scale** (a ~55-repo dataset: IDF still ≥ vanilla,
+[docs/scale-dataset.md](docs/scale-dataset.md)), and a relation-conditioned subgraph
+already drives a small SLM in a dry-run ([docs/slm-dryrun.md](docs/slm-dryrun.md)).
+The throughline across every experiment: **the relational win lives in the base
+representation** — embedding-tuned substrate, LoRA reshaping it, a thin graph lift on
+top — while learned heads bolted on *frozen* vectors (a two-tower, an R-GCN) overfit
+at pilot scale. Base matters as *embedding-tuned*, not "code" (a code-MLM collapses;
+see [docs/ablation-code.md](docs/ablation-code.md)).
+
 A standalone write-up is in [docs/report/](docs/report/) (technical-report PDF) and
 the plan is pictured in [docs/roadmap-viz.md](docs/roadmap-viz.md). The lab's
 deliverable is the frozen public benchmark + honest baselines that make exactly this

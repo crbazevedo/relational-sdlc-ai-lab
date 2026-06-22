@@ -1,0 +1,33 @@
+{
+  "card_type": "experiment",
+  "id": "exp:gh-code3-code3jinaembeddingsv2basecode-v0",
+  "name": "GitHub pilot cross-repo — frozen jina-embeddings-v2-base-code (code + embed-tuned)",
+  "created_at": "2026-06-21T00:00:00Z",
+  "hypothesis": "Does a TRUE code-EMBEDDING base (loaded under a pinned transformers<5 env) beat the general substrate on frozen cross-repo retrieval (Q6 finish)?",
+  "task": "issue_to_fixing_pr",
+  "dataset_version": "ds:gh-pilot-v0",
+  "code_version": "relsdlc-0.1.0",
+  "seed": 0,
+  "command": "uv pip install --python .venv-r15b 'transformers>=4.40,<5' && .venv-r15b/bin/python data/pilot/embed_code3_pinned.py && python data/pilot/run_code3_ablation.py",
+  "system": "jina-embeddings-v2-base-code (code + embed-tuned)",
+  "runtime_class": "cpu",
+  "metrics": {
+    "recall_at_k": {
+      "1": 0.5805,
+      "5": 0.9598,
+      "10": 0.9943
+    },
+    "mrr": 0.7423,
+    "hard_negative_accuracy": 0.5862,
+    "n_queries": 174
+  },
+  "baseline_comparison": "exp:gh-xrepo-idf-v0",
+  "error_slices": [],
+  "leakage_checks": [
+    "frozen embeddings; references scrubbed; cross-repo split."
+  ],
+  "known_limitations": [
+    "Pilot scale; frozen (no fine-tune). Exploratory. The code-embedding base required a pinned transformers<5 env to load (remote code)."
+  ],
+  "exploratory": true
+}

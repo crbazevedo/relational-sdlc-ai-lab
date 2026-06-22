@@ -1,0 +1,58 @@
+{
+  "systems": {
+    "minilm-l6 (substrate)": {
+      "n_queries": 174,
+      "recall_at_k": {
+        "1": 0.5919540229885057,
+        "5": 0.9195402298850575,
+        "10": 0.9885057471264368
+      },
+      "mrr": 0.7278370735267287,
+      "hard_negative_accuracy": 0.5919540229885057
+    },
+    "bge-small-en (stronger general)": {
+      "n_queries": 174,
+      "recall_at_k": {
+        "1": 0.5977011494252874,
+        "5": 0.9482758620689655,
+        "10": 1.0
+      },
+      "mrr": 0.7432904579456303,
+      "hard_negative_accuracy": 0.5977011494252874
+    },
+    "jina-embeddings-v2-base-code (code + embed-tuned)": {
+      "n_queries": 174,
+      "recall_at_k": {
+        "1": 0.5804597701149425,
+        "5": 0.9597701149425287,
+        "10": 0.9942528735632183
+      },
+      "mrr": 0.742296113847838,
+      "hard_negative_accuracy": 0.5862068965517241
+    }
+  },
+  "meta": {
+    "train_repos": [
+      "Textualize/rich",
+      "astral-sh/ruff",
+      "encode/starlette",
+      "encode/uvicorn",
+      "fastapi/typer",
+      "pallets/click",
+      "pallets/flask",
+      "pallets/jinja",
+      "pallets/werkzeug",
+      "psf/black"
+    ],
+    "test_repos": [
+      "psf/requests",
+      "pydantic/pydantic",
+      "pytest-dev/pytest",
+      "python-attrs/attrs",
+      "python-pillow/Pillow",
+      "python-poetry/poetry",
+      "scrapy/scrapy",
+      "tox-dev/tox"
+    ]
+  }
+}

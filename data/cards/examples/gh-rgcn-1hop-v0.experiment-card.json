@@ -1,0 +1,33 @@
+{
+  "card_type": "experiment",
+  "id": "exp:gh-rgcn-1hop-v0",
+  "name": "GitHub pilot cross-repo — learned 1-hop R-GCN",
+  "created_at": "2026-06-21T00:00:00Z",
+  "hypothesis": "Does a learned relational GNN beat training-free graph aggregation on issue→PR?",
+  "task": "issue_to_fixing_pr",
+  "dataset_version": "ds:gh-pilot-v0",
+  "code_version": "relsdlc-0.1.0",
+  "seed": 0,
+  "command": "python data/pilot/train_rgcn.py && python data/pilot/run_rgcn_ablation.py",
+  "system": "learned-rgcn-1hop",
+  "runtime_class": "cpu",
+  "metrics": {
+    "recall_at_k": {
+      "1": 0.5747,
+      "5": 0.9368,
+      "10": 0.9885
+    },
+    "mrr": 0.7299,
+    "hard_negative_accuracy": 0.5747,
+    "n_queries": 174
+  },
+  "baseline_comparison": "exp:gh-gnn-issue2pr-frozen-graph-v0",
+  "error_slices": [],
+  "leakage_checks": [
+    "fixes edge is supervision only, never message-passing; cross-repo split."
+  ],
+  "known_limitations": [
+    "1-hop, frozen features, pilot scale. Exploratory."
+  ],
+  "exploratory": true
+}

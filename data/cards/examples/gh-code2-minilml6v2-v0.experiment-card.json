@@ -1,0 +1,33 @@
+{
+  "card_type": "experiment",
+  "id": "exp:gh-code2-minilml6v2-v0",
+  "name": "GitHub pilot cross-repo — frozen minilm-l6 (substrate)",
+  "created_at": "2026-06-21T00:00:00Z",
+  "hypothesis": "Does a code-AWARE embedding base beat the general substrate on frozen cross-repo retrieval (Q6 follow-up)?",
+  "task": "issue_to_fixing_pr",
+  "dataset_version": "ds:gh-pilot-v0",
+  "code_version": "relsdlc-0.1.0",
+  "seed": 0,
+  "command": "python data/pilot/embed_code2.py && python data/pilot/run_code2_ablation.py",
+  "system": "minilm-l6 (substrate)",
+  "runtime_class": "cpu",
+  "metrics": {
+    "recall_at_k": {
+      "1": 0.592,
+      "5": 0.9195,
+      "10": 0.9885
+    },
+    "mrr": 0.7278,
+    "hard_negative_accuracy": 0.592,
+    "n_queries": 174
+  },
+  "baseline_comparison": "exp:gh-embed-cosine-v0",
+  "error_slices": [],
+  "leakage_checks": [
+    "frozen embeddings; references scrubbed; cross-repo split."
+  ],
+  "known_limitations": [
+    "Pilot scale; frozen (no fine-tune). Exploratory."
+  ],
+  "exploratory": true
+}

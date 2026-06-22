@@ -1,0 +1,33 @@
+{
+  "card_type": "experiment",
+  "id": "exp:gh-full-vanilla-v0",
+  "name": "GitHub full-text cross-repo de-referenced — vanilla-tf-cosine",
+  "created_at": "2026-06-21T00:00:00Z",
+  "hypothesis": "On full body text, does bag-of-tokens cosine recover issue->fixing-PR across held-out repos?",
+  "task": "issue_to_fixing_pr",
+  "dataset_version": "ds:gh-full-v0",
+  "code_version": "relsdlc-0.1.0",
+  "seed": 0,
+  "command": "python data/full/run_full_ablation.py",
+  "system": "vanilla-tf-cosine",
+  "runtime_class": "cpu",
+  "metrics": {
+    "recall_at_k": {
+      "1": 0.4022,
+      "5": 0.7343,
+      "10": 0.9336
+    },
+    "mrr": 0.552,
+    "hard_negative_accuracy": 0.4022,
+    "n_queries": 271
+  },
+  "baseline_comparison": "none",
+  "error_slices": [],
+  "leakage_checks": [
+    "references scrubbed from text; train repos disjoint from test repos (cross-repo generalization); embeddings frozen (no fit on test repos)."
+  ],
+  "known_limitations": [
+    "Pilot scale; full body text (up to 8000 chars) but frozen general-text embedder (not code-specific). Exploratory."
+  ],
+  "exploratory": true
+}

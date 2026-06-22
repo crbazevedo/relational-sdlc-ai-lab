@@ -1,0 +1,217 @@
+{
+  "model": "sentence-transformers/all-MiniLM-L6-v2",
+  "dim": 384,
+  "max_length": 512,
+  "body_cap": 8000,
+  "meta": {
+    "train_repos": [
+      "Textualize/rich",
+      "astral-sh/ruff",
+      "encode/starlette",
+      "encode/uvicorn",
+      "fastapi/typer",
+      "pallets/click",
+      "pallets/flask",
+      "pallets/jinja",
+      "pallets/werkzeug",
+      "psf/black"
+    ],
+    "test_repos": [
+      "psf/requests",
+      "pydantic/pydantic",
+      "pytest-dev/pytest",
+      "python-attrs/attrs",
+      "python-pillow/Pillow",
+      "python-poetry/poetry",
+      "scrapy/scrapy",
+      "tox-dev/tox"
+    ]
+  },
+  "n_test_queries": 271,
+  "systems": {
+    "vanilla-tf-cosine": {
+      "n_queries": 271,
+      "recall_at_k": {
+        "1": 0.4022140221402214,
+        "5": 0.7343173431734318,
+        "10": 0.933579335793358
+      },
+      "mrr": 0.5519509293494533,
+      "hard_negative_accuracy": 0.4022140221402214
+    },
+    "idf-cosine": {
+      "n_queries": 271,
+      "recall_at_k": {
+        "1": 0.5092250922509225,
+        "5": 0.8671586715867159,
+        "10": 0.9630996309963099
+      },
+      "mrr": 0.6672968482931583,
+      "hard_negative_accuracy": 0.5239852398523985
+    },
+    "relation-metric": {
+      "n_queries": 271,
+      "recall_at_k": {
+        "1": 0.5129151291512916,
+        "5": 0.8634686346863468,
+        "10": 0.9630996309963099
+      },
+      "mrr": 0.6561351829802015,
+      "hard_negative_accuracy": 0.5276752767527675
+    },
+    "embedder-cosine": {
+      "n_queries": 271,
+      "recall_at_k": {
+        "1": 0.5461254612546126,
+        "5": 0.9003690036900369,
+        "10": 0.981549815498155
+      },
+      "mrr": 0.6956864373838544,
+      "hard_negative_accuracy": 0.5571955719557196
+    }
+  },
+  "paired_truncated_control": {
+    "note": "SAME records + split as `systems`; bodies char-capped to 500 and embedder at max_length=256. Truncation is the only variable, so this lift is causal.",
+    "max_length": 256,
+    "body_cap": 500,
+    "systems": {
+      "vanilla-tf-cosine": {
+        "n_queries": 271,
+        "recall_at_k": {
+          "1": 0.5498154981549815,
+          "5": 0.8929889298892989,
+          "10": 0.9704797047970479
+        },
+        "mrr": 0.6945738353487431,
+        "hard_negative_accuracy": 0.5867158671586716
+      },
+      "idf-cosine": {
+        "n_queries": 271,
+        "recall_at_k": {
+          "1": 0.6457564575645757,
+          "5": 0.9520295202952029,
+          "10": 0.996309963099631
+        },
+        "mrr": 0.7732162568878436,
+        "hard_negative_accuracy": 0.6678966789667896
+      },
+      "relation-metric": {
+        "n_queries": 271,
+        "recall_at_k": {
+          "1": 0.6051660516605166,
+          "5": 0.9261992619926199,
+          "10": 0.988929889298893
+        },
+        "mrr": 0.735001079281522,
+        "hard_negative_accuracy": 0.6162361623616236
+      },
+      "embedder-cosine": {
+        "n_queries": 271,
+        "recall_at_k": {
+          "1": 0.6937269372693727,
+          "5": 0.9704797047970479,
+          "10": 0.996309963099631
+        },
+        "mrr": 0.810127234389227,
+        "hard_negative_accuracy": 0.7121771217712177
+      }
+    }
+  },
+  "cross_snapshot_truncated_pilot": {
+    "note": "The four systems on the FROZEN truncated pilot (data/pilot/embed-results.json). Suggestive but conflates truncation with snapshot drift (different fetch + record set).",
+    "systems": {
+      "vanilla-tf-cosine": {
+        "n_queries": 174,
+        "recall_at_k": {
+          "1": 0.39080459770114945,
+          "5": 0.7241379310344828,
+          "10": 0.9310344827586207
+        },
+        "mrr": 0.5435384698315733,
+        "hard_negative_accuracy": 0.39655172413793105
+      },
+      "idf-cosine": {
+        "n_queries": 174,
+        "recall_at_k": {
+          "1": 0.45977011494252873,
+          "5": 0.8275862068965517,
+          "10": 0.9770114942528736
+        },
+        "mrr": 0.6240368826575723,
+        "hard_negative_accuracy": 0.45977011494252873
+      },
+      "relation-metric": {
+        "n_queries": 174,
+        "recall_at_k": {
+          "1": 0.4540229885057471,
+          "5": 0.7988505747126436,
+          "10": 0.9597701149425287
+        },
+        "mrr": 0.6180879624845141,
+        "hard_negative_accuracy": 0.47126436781609193
+      },
+      "embedder-cosine": {
+        "n_queries": 174,
+        "recall_at_k": {
+          "1": 0.5919540229885057,
+          "5": 0.9195402298850575,
+          "10": 0.9885057471264368
+        },
+        "mrr": 0.7278370735267287,
+        "hard_negative_accuracy": 0.5919540229885057
+      }
+    }
+  },
+  "lift_paired_full_minus_truncated": {
+    "vanilla-tf-cosine": {
+      "1": -0.1476,
+      "5": -0.1587,
+      "10": -0.0369,
+      "mrr": -0.1426
+    },
+    "idf-cosine": {
+      "1": -0.1365,
+      "5": -0.0849,
+      "10": -0.0332,
+      "mrr": -0.1059
+    },
+    "relation-metric": {
+      "1": -0.0923,
+      "5": -0.0627,
+      "10": -0.0258,
+      "mrr": -0.0789
+    },
+    "embedder-cosine": {
+      "1": -0.1476,
+      "5": -0.0701,
+      "10": -0.0148,
+      "mrr": -0.1144
+    }
+  },
+  "lift_crosssnapshot_full_minus_truncatedpilot": {
+    "vanilla-tf-cosine": {
+      "1": 0.0114,
+      "5": 0.0102,
+      "10": 0.0025,
+      "mrr": 0.0084
+    },
+    "idf-cosine": {
+      "1": 0.0495,
+      "5": 0.0396,
+      "10": -0.0139,
+      "mrr": 0.0433
+    },
+    "relation-metric": {
+      "1": 0.0589,
+      "5": 0.0646,
+      "10": 0.0033,
+      "mrr": 0.038
+    },
+    "embedder-cosine": {
+      "1": -0.0458,
+      "5": -0.0192,
+      "10": -0.007,
+      "mrr": -0.0322
+    }
+  }
+}

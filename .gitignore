@@ -27,3 +27,5 @@ data/full/embeddings/chunks-*.npz
 # Tier-2 embedding caches (R16C) — regenerable via data/tier2/finetune_tier2.py
 data/tier2/embeddings/
 data/tier2/*.log
+# Large regenerable content chunk-embedding caches (R16A) — rebuild via data/content/embed_content.py
+data/content/embeddings/

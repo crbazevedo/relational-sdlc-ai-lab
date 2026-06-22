@@ -72,6 +72,10 @@ Run: `python data/pilot/run_gnn_ablation.py`. Cards:
    needle (R@5 0.175→0.184 on LoRA only). A free neighbour-average cannot
    generalise from "PRs that co-modify this test" to "PRs semantically like the
    query PR".
+   *(Note: unlike the same-repo `issue→PR` pools, the `diff→test` candidate pools
+   mix test files across repos — an inconsistency that does not affect the verdict,
+   since the task is documented as failing at pilot scale, but worth tightening when
+   the task is revisited at scale.)*
 
 ## What this motivates
 

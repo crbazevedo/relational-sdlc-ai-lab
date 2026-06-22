@@ -129,11 +129,18 @@ held-out repos):
 |---|---|---|---|
 | IDF (bag-of-tokens bar) | 0.46 | 0.83 | 0.62 |
 | frozen embedder-cosine | 0.59 | 0.92 | 0.73 |
-| **LoRA-tuned embedder-cosine** | **0.66** | **0.99** | **0.79** |
+| **LoRA-tuned embedder-cosine** | **0.66** | 0.99 | **0.79** |
+
+> *Read R@1 and MRR — they are the discriminating metrics. With a 13-candidate pool,
+> R@5/R@10 are near-ceiling (random chance is already R@5 = 0.39, R@10 = 0.77), so the
+> R@5 column is not where the signal lives.*
 
 A 0.48%-param LoRA adapter, trained on 182 cross-repo pairs on CPU, generalizes to
 unseen repositories — and a head on top of the tuned vectors adds nothing, exactly
-as predicted (the gain is *in* the representation).
+as predicted (the gain is *in* the representation). An [independent adversarial
+audit](docs/research-roadmap.md#audit) reproduced every number, confirmed the
+cross-repo split is genuinely disjoint, and found no leakage; a CI provenance test
+(`tests/test_provenance.py`) now guards the disjointness mechanically.
 
 **The win is robust and it compounds.** Across **5 held-out-repo splits** the LoRA
 delta is positive every time (ΔR@1 **+0.061 ± 0.021**, [docs/ablation-scale.md](docs/ablation-scale.md)),
@@ -142,9 +149,12 @@ and typed-graph aggregation stacks on top of it — **LoRA + graph reaches R@1 0
 scale: relation supervision *inside* the representation, plus a little graph
 structure, beats generic similarity across repositories.
 
-The finding **holds at larger scale** (a ~55-repo dataset: IDF still ≥ vanilla,
-[docs/scale-dataset.md](docs/scale-dataset.md)), and a relation-conditioned subgraph
-already drives a small SLM in a dry-run ([docs/slm-dryrun.md](docs/slm-dryrun.md)).
+The finding **holds at larger scale**: on a ~55-repo dataset the LoRA win not only
+survives but **grows** — ΔR@1 **+0.080** on 14 held-out repos
+([docs/ablation-scale-lora.md](docs/ablation-scale-lora.md)) — and the bag-of-tokens
+ordering (IDF ≥ vanilla) is unchanged ([docs/scale-dataset.md](docs/scale-dataset.md)).
+A relation-conditioned subgraph already drives a small SLM in a dry-run
+([docs/slm-dryrun.md](docs/slm-dryrun.md)).
 The throughline across every experiment: **the relational win lives in the base
 representation** — embedding-tuned substrate, LoRA reshaping it, a thin graph lift on
 top — while learned heads bolted on *frozen* vectors (a two-tower, an R-GCN) overfit

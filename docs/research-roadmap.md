@@ -52,6 +52,20 @@ Every experiment obeys these, so results are trustworthy and comparable:
    committed; downstream runs on the cache with numpy alone, so CI needs no torch.
 6. **Honest negatives are kept.** A result that refutes a hypothesis is a result.
 
+<a name="audit"></a>
+### Audit (R13)
+
+An independent adversarial audit stress-tested the five headline claims:
+**verdict — sound, zero CRITICAL issues.** Verified mechanically: cross-repo splits
+genuinely disjoint (0 train-repo candidates in any test query); reference scrub
+leaks no gold-pair numbers; train/eval separation (182 train pairs, all train-repo);
+the graph leakage guard is load-bearing (gold edge unreachable post-guard); the
+5-split study uses 5 distinct partitions; **every numpy result reproduces the
+committed cards byte-for-byte**. Responses landed: a CI provenance test
+(`tests/test_provenance.py`) now asserts the disjointness + train-pair count without
+torch (closing the snapshot-trust gap); R@5/R@10 are footnoted as near-ceiling at a
+13-candidate pool (R@1/MRR are the discriminating metrics).
+
 ---
 
 ## 3. Results ledger (what we know, with evidence)
@@ -71,6 +85,7 @@ Every experiment obeys these, so results are trustworthy and comparable:
 | **Learned R-GCN (R12B)** | does a learned GNN beat parameter-free aggregation? | **no at pilot scale** — learned head overfits ~180 pairs | rgcn 0.575 < free-agg 0.609 | `gh-rgcn-*` |
 | **Scale to ~55 repos (R12A)** | does the bag-of-tokens finding hold at larger scale? | **yes** — IDF still best, diagonal still ties | IDF 0.444 ≥ vanilla 0.333 | `gh-scale2-*` |
 | **Relational SLM v0 (R12C)** | can a relation-packed subgraph drive an SLM (MVP-2)? | **dry-run runs** — fixing PR top-5 18/20; small SLM grounds 2/3 (no benchmark claim yet) | retrieval ≈0.9 top-5 | `slm-outputs/` |
+| **LoRA-at-scale (R13A)** | does the LoRA win hold on 55 repos? | **yes — and grows** (14 held-out test repos) | ΔR@1 +0.080, ΔMRR +0.072 | `gh-scale-lora-*` |
 
 **Synthesis (R3→R12).** The relational win comes from the **base representation**:
 an embedding-tuned model as substrate, **LoRA reshaping it with the relation loss**

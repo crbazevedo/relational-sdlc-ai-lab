@@ -86,8 +86,10 @@ torch (closing the snapshot-trust gap); R@5/R@10 are footnoted as near-ceiling a
 | **Scale to ~55 repos (R12A)** | does the bag-of-tokens finding hold at larger scale? | **yes** — IDF still best, diagonal still ties | IDF 0.444 ≥ vanilla 0.333 | `gh-scale2-*` |
 | **Relational SLM v0 (R12C)** | can a relation-packed subgraph drive an SLM (MVP-2)? | **dry-run runs** — fixing PR top-5 18/20; small SLM grounds 2/3 (no benchmark claim yet) | retrieval ≈0.9 top-5 | `slm-outputs/` |
 | **LoRA-at-scale (R13A)** | does the LoRA win hold on 55 repos? | **yes — and grows** (14 held-out test repos) | ΔR@1 +0.080, ΔMRR +0.072 | `gh-scale-lora-*` |
+| **Code-embedding base (R13B)** | does a code base beat the general substrate? | **no** — axis is embedding-tuned, not "code" (monotone in tuning) | codebert 0.14 < unixcoder 0.45 < st-codesearch 0.55 < MiniLM 0.59 ≈ bge 0.60 | `gh-code2-*` |
+| **Full text (R14)** | does de-truncating bodies (500→8000) help? | **no — it HURTS** (paired control, truncation the only variable) | every system −0.09 to −0.15 R@1; embedder 0.69→0.55 | `gh-full-*` |
 
-**Synthesis (R3→R12).** The relational win comes from the **base representation**:
+**Synthesis (R3→R12, refined by R13/R14).** The relational win comes from the **base representation**:
 an embedding-tuned model as substrate, **LoRA reshaping it with the relation loss**
 (robust: positive on all 5 cross-repo splits), with a **thin parameter-free graph
 lift** on top (LoRA+graph R@1 0.69). Everything *bolted on frozen vectors* — a
@@ -96,7 +98,17 @@ scale and does not help.** The base finding (IDF ≫ vanilla; diagonal ties IDF)
 at 55 repos. A relation-packed subgraph already drives a small SLM (dry-run). The
 single lever that consistently pays off is *changing the representation itself*;
 the single thing that consistently fails is *adding a learned head over frozen
-features*. **Scale + a code-embedding base are the next unlocks.**
+features*.
+
+R13/R14 sharpened two beliefs: (a) the base model matters along the
+**embedding-tuned** axis, not "code-pretrained" — a code base does not beat a strong
+general embedder at pilot scale; (b) **more text is not better** — a paired control
+shows de-truncating bodies (500→8000 chars, 256→512 tokens) *hurts* every system by
+0.09–0.15 R@1, because the first ~500 chars (title + lede) carry the signal and the
+rest dilutes both lexical and mean-pooled-embedding methods. The next real unlocks
+are therefore **scale (more repos), a code-*embedding* base via a pinned
+transformers<5 env, smarter use of long text (salient-section / better pooling), and
+a trained relational SLM** — not naive "use the whole body."
 
 ---
 

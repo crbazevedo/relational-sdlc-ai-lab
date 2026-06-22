@@ -155,6 +155,13 @@ survives but **grows** — ΔR@1 **+0.080** on 14 held-out repos
 ordering (IDF ≥ vanilla) is unchanged ([docs/scale-dataset.md](docs/scale-dataset.md)).
 A relation-conditioned subgraph already drives a small SLM in a dry-run
 ([docs/slm-dryrun.md](docs/slm-dryrun.md)).
+
+Two counterintuitive results worth flagging: a **code-pretrained base does not help**
+(the axis is *embedding-tuned*, not "code" — [docs/ablation-code2.md](docs/ablation-code2.md)),
+and **more text hurts** — a paired control shows de-truncating issue/PR bodies
+(500→8000 chars) *lowers* retrieval by 0.09–0.15 R@1 across every system, because the
+first ~500 chars carry the signal and the rest dilutes it
+([docs/full-text-dataset.md](docs/full-text-dataset.md)). Truncation was a feature.
 The throughline across every experiment: **the relational win lives in the base
 representation** — embedding-tuned substrate, LoRA reshaping it, a thin graph lift on
 top — while learned heads bolted on *frozen* vectors (a two-tower, an R-GCN) overfit

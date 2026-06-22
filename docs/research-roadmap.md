@@ -90,6 +90,7 @@ torch (closing the snapshot-trust gap); R@5/R@10 are footnoted as near-ceiling a
 | **Full text (R14)** | does de-truncating bodies (500→8000) help? | **no — it HURTS** (paired control, truncation the only variable) | every system −0.09 to −0.15 R@1; embedder 0.69→0.55 | `gh-full-*` |
 | **Chunked MaxP (R15)** | does MaxP over chunks beat FirstP for issue→PR? | **no** — signal is front-loaded; FirstP wins every chunk size; SumP collapses (length bias) | FirstP@512 0.701 > MaxP 0.668; queued for deep-signal tasks | `gh-chunk-*` |
 | **Code-embedding base, pinned (R15B)** | does a true code+embedding-tuned base win? | **qualified yes** — jina-code (transformers<5) best R@5 ever, ties MRR, loses R@1 by a hair | R@5 0.960 (best); R@1 0.580 vs MiniLM 0.592 / bge 0.598 | `gh-code3-*` |
+| **Deep-content chunking (R16A)** | does MaxP beat FirstP where signal is deep (diff→affected-test)? | **yes** — the mirror of R15; MaxP wins at every chunk size, biggest win at small chunks | ΔR@1 +0.346 / +0.171 / +0.112 (chunks 256/512/1024) | `gh-content-*` |
 | **Dense Tier-2 baseline (R16B)** | does the bag-of-tokens finding hold at 78 repos with ~3.5× denser per-repo coverage? | **yes** — IDF still beats vanilla cross-repo; density did not erase the gap | IDF R@1 0.389 vs vanilla 0.287 (+0.102) | `gh-tier2-{vanilla,idf}-*` |
 | **LoRA-at-Tier-2 (R16C)** | does the LoRA win hold at dense ~80 repos? | **yes — and grows further** (32 held-out test repos, density ~35 q/repo) | ΔR@1 +0.114 (0.515→0.629), ΔMRR +0.101 | `gh-tier2-lora-*` |
 

@@ -149,10 +149,15 @@ and typed-graph aggregation stacks on top of it — **LoRA + graph reaches R@1 0
 scale: relation supervision *inside* the representation, plus a little graph
 structure, beats generic similarity across repositories.
 
-The finding **holds at larger scale**: on a ~55-repo dataset the LoRA win not only
-survives but **grows** — ΔR@1 **+0.080** on 14 held-out repos
-([docs/ablation-scale-lora.md](docs/ablation-scale-lora.md)) — and the bag-of-tokens
-ordering (IDF ≥ vanilla) is unchanged ([docs/scale-dataset.md](docs/scale-dataset.md)).
+The finding **holds at larger scale, and the LoRA win grows with data**: on a
+~55-repo dataset ΔR@1 is **+0.080** on 14 held-out repos
+([docs/ablation-scale-lora.md](docs/ablation-scale-lora.md)), and on a **dense
+78-repo Tier-2** set — ~35 fixes-queries/repo, ~3.5× denser — it widens further to
+ΔR@1 **+0.114** (frozen 0.515 → LoRA 0.629) on 32 held-out repos
+([docs/tier2-dataset.md](docs/tier2-dataset.md)). The progression is monotone in
+density (pilot +0.07 → scale +0.080 → Tier-2 +0.114): more positive pairs per repo
+give the relation loss more to contrast. The bag-of-tokens ordering (IDF ≥ vanilla)
+is unchanged at every scale ([docs/scale-dataset.md](docs/scale-dataset.md)).
 A relation-conditioned subgraph already drives a small SLM in a dry-run
 ([docs/slm-dryrun.md](docs/slm-dryrun.md)).
 
@@ -164,8 +169,12 @@ first ~500 chars carry the signal and the rest dilutes it
 ([docs/full-text-dataset.md](docs/full-text-dataset.md)). Truncation was a feature.
 Chunking the body and scoring by the best chunk (**MaxP**) doesn't rescue it either —
 **FirstP (the lede) wins at every chunk size** ([docs/ablation-chunking.md](docs/ablation-chunking.md)),
-so chunked late-interaction is queued for *deep-signal* tasks, not front-loaded
-issue→PR. On the base model, a true **code-embedding** model (jina-code) gets the best
+because issue→PR signal is front-loaded. The mirror image confirms the mechanism:
+on **diff→affected-test** over long file bodies (R16A), **MaxP beats FirstP at every
+chunk size** — ΔR@1 up to **+0.35** (smaller chunks, bigger win, as FirstP only sees
+the file head), exactly the deep-signal regime R15 predicted
+([docs/ablation-content-chunk.md](docs/ablation-content-chunk.md)). So chunked
+late-interaction pays off for deep/distributed content, not front-loaded issue→PR. On the base model, a true **code-embedding** model (jina-code) gets the best
 R@5 of any base and ties MRR but doesn't beat top-1 — code-awareness helps *when also
 embedding-tuned* ([docs/ablation-code3.md](docs/ablation-code3.md)).
 The throughline across every experiment: **the relational win lives in the base

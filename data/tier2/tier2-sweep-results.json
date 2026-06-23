@@ -1,0 +1,175 @@
+{
+  "frozen": {
+    "n_queries": 1171,
+    "recall_at_k": {
+      "1": 0.5149444918872759,
+      "5": 0.829205807002562,
+      "10": 0.9692570452604612
+    },
+    "mrr": 0.6552891908357322,
+    "hard_negative_accuracy": 0.5226302305721605
+  },
+  "configs": [
+    {
+      "name": "frozen",
+      "n_queries": 1171,
+      "recall_at_k": {
+        "1": 0.5149444918872759,
+        "5": 0.829205807002562,
+        "10": 0.9692570452604612
+      },
+      "mrr": 0.6552891908357322,
+      "hard_negative_accuracy": 0.5226302305721605
+    },
+    {
+      "name": "r8-b32 (baseline)",
+      "r": 8,
+      "batch": 32,
+      "delta_r1": 0.11443210930828351,
+      "delta_mrr": 0.10146317294054275,
+      "n_queries": 1171,
+      "recall_at_k": {
+        "1": 0.6293766011955594,
+        "5": 0.9205807002561913,
+        "10": 0.9846285226302306
+      },
+      "mrr": 0.756752363776275,
+      "hard_negative_accuracy": 0.6353543979504697,
+      "_minutes": 36.1
+    },
+    {
+      "name": "r16-b32",
+      "r": 16,
+      "batch": 32,
+      "delta_r1": 0.11101622544833467,
+      "delta_mrr": 0.10026281717144236,
+      "n_queries": 1171,
+      "recall_at_k": {
+        "1": 0.6259607173356105,
+        "5": 0.9214346712211785,
+        "10": 0.986336464560205
+      },
+      "mrr": 0.7555520080071746,
+      "hard_negative_accuracy": 0.6310845431255337,
+      "_minutes": 37.0
+    },
+    {
+      "name": "r32-b32",
+      "r": 32,
+      "batch": 32,
+      "delta_r1": 0.11699402220324506,
+      "delta_mrr": 0.10452332798618025,
+      "n_queries": 1171,
+      "recall_at_k": {
+        "1": 0.6319385140905209,
+        "5": 0.9214346712211785,
+        "10": 0.9846285226302306
+      },
+      "mrr": 0.7598125188219125,
+      "hard_negative_accuracy": 0.6379163108454312,
+      "_minutes": 36.5
+    },
+    {
+      "name": "r16-b48 (harder negs)",
+      "r": 16,
+      "batch": 48,
+      "delta_r1": 0.1263877028181042,
+      "delta_mrr": 0.10804507429187193,
+      "n_queries": 1171,
+      "recall_at_k": {
+        "1": 0.64133219470538,
+        "5": 0.9214346712211785,
+        "10": 0.986336464560205
+      },
+      "mrr": 0.7633342651276042,
+      "hard_negative_accuracy": 0.6464560204953032,
+      "_minutes": 37.8
+    }
+  ],
+  "meta": {
+    "train_repos": [
+      "Delgan/loguru",
+      "HypothesisWorks/hypothesis",
+      "MagicStack/asyncpg",
+      "Textualize/rich",
+      "Textualize/textual",
+      "agronholm/anyio",
+      "aio-libs/aiohttp",
+      "arrow-py/arrow",
+      "astral-sh/ruff",
+      "boto/boto3",
+      "boto/botocore",
+      "celery/kombu",
+      "certifi/python-certifi",
+      "chalk/chalk",
+      "clap-rs/clap",
+      "click-contrib/click-completion",
+      "coleifer/peewee",
+      "dask/dask",
+      "encode/databases",
+      "encode/httpcore",
+      "encode/starlette",
+      "encode/uvicorn",
+      "ewels/rich-click",
+      "expressjs/express",
+      "fabric/fabric",
+      "fastapi/fastapi",
+      "fastapi/typer",
+      "gin-gonic/gin",
+      "jd/tenacity",
+      "joblib/joblib",
+      "marshmallow-code/marshmallow",
+      "matplotlib/matplotlib",
+      "more-itertools/more-itertools",
+      "mwaskom/seaborn",
+      "networkx/networkx",
+      "numpy/numpy",
+      "pallets/click",
+      "pallets/flask",
+      "pallets/jinja",
+      "pallets/markupsafe",
+      "pallets/werkzeug",
+      "pandas-dev/pandas",
+      "psf/black",
+      "psf/requests",
+      "pyca/cryptography",
+      "pydantic/pydantic"
+    ],
+    "test_repos": [
+      "pydantic/pydantic-core",
+      "pypa/packaging",
+      "pypa/pip",
+      "pypa/setuptools",
+      "pypa/virtualenv",
+      "pypa/wheel",
+      "pytest-dev/pluggy",
+      "pytest-dev/pytest",
+      "pytest-dev/pytest-cov",
+      "python-attrs/attrs",
+      "python-jsonschema/jsonschema",
+      "python-pillow/Pillow",
+      "python-poetry/poetry",
+      "python-trio/trio",
+      "python/mypy",
+      "redis/redis-py",
+      "samuelcolvin/dirty-equals",
+      "scikit-learn/scikit-learn",
+      "scrapy/scrapy",
+      "sdispater/pendulum",
+      "serde-rs/serde",
+      "sindresorhus/got",
+      "spf13/cobra",
+      "sqlalchemy/sqlalchemy",
+      "sympy/sympy",
+      "theskumar/python-dotenv",
+      "tiangolo/sqlmodel",
+      "tornadoweb/tornado",
+      "tox-dev/tox",
+      "urllib3/urllib3",
+      "wimglenn/johnnydep",
+      "yaml/pyyaml"
+    ]
+  },
+  "epochs": 12,
+  "max_len": 256
+}

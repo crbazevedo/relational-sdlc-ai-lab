@@ -93,6 +93,7 @@ torch (closing the snapshot-trust gap); R@5/R@10 are footnoted as near-ceiling a
 | **Deep-content chunking (R16A)** | does MaxP beat FirstP where signal is deep (diff→affected-test)? | **yes** — the mirror of R15; MaxP wins at every chunk size, biggest win at small chunks | ΔR@1 +0.346 / +0.171 / +0.112 (chunks 256/512/1024) | `gh-content-*` |
 | **Dense Tier-2 baseline (R16B)** | does the bag-of-tokens finding hold at 78 repos with ~3.5× denser per-repo coverage? | **yes** — IDF still beats vanilla cross-repo; density did not erase the gap | IDF R@1 0.389 vs vanilla 0.287 (+0.102) | `gh-tier2-{vanilla,idf}-*` |
 | **LoRA-at-Tier-2 (R16C)** | does the LoRA win hold at dense ~80 repos? | **yes — and grows further** (32 held-out test repos, density ~35 q/repo) | ΔR@1 +0.114 (0.515→0.629), ΔMRR +0.101 | `gh-tier2-lora-*` |
+| **LoRA sweep (R16D)** | is +0.114 a floor or near-tuned (rank × harder negatives)? | **near-tuned** — rank saturated (r8≈r16≈r32, ±0.003); harder in-batch negatives are the only lever and the next gain wants GPU memory | best r16-b48 ΔR@1 +0.126 (vs +0.114); rank flat | `tier2-sweep-results.json` |
 
 **Synthesis (R3→R12, refined by R13/R14).** The relational win comes from the **base representation**:
 an embedding-tuned model as substrate, **LoRA reshaping it with the relation loss**
@@ -181,8 +182,13 @@ a trained relational SLM** — not naive "use the whole body."
   2,744 benchmark queries ([tier2-dataset.md](tier2-dataset.md)). The bag-of-tokens
   finding holds (IDF R@1 0.389 ≥ vanilla 0.287); the LoRA delta **grows with
   density** to ΔR@1 **+0.114** (0.515→0.629), the largest in the program (pilot +0.07
-  → scale +0.080 → Tier-2 +0.114). **Open:** Tier-2 full breadth (200–500 repos) is
-  a GPU-scale follow-up.
+  → scale +0.080 → Tier-2 +0.114).
+- **LoRA sweep DONE (R16D):** +0.114 is **near-tuned, not a floor**
+  ([ablation-lora-sweep.md](ablation-lora-sweep.md)). Rank is saturated (r8≈r16≈r32,
+  ±0.003 R@1); the only lever that moves is **harder/more in-batch negatives** —
+  pool 32→48 gives the best recipe yet (r16-b48, ΔR@1 **+0.126**). Larger negative
+  pools are capped by CPU memory, so the next gain is a GPU lever. **Open:** Tier-2
+  full breadth (200–500 repos) is a GPU-scale follow-up.
   And **Q6 follow-up:** a code-*embedding* base (not a code MLM — codebert
   collapsed; bge edged ahead). [ablation-code.md](ablation-code.md)
 

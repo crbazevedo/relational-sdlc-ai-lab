@@ -32,3 +32,7 @@ data/content/embeddings/
 
 # Local numpy-only venv for this machine (Python 3.9; torch lives elsewhere)
 .venv-np/
+
+# macOS junk
+.DS_Store
+**/.DS_Store

@@ -1,0 +1,35 @@
+{
+  "card_type": "experiment",
+  "id": "exp:gh-graphsweep-issue2pr-lora-h1-best-v0",
+  "name": "graph-lift sweep — issue2pr cross-repo — lora best 1-hop (alpha=0.25)",
+  "created_at": "2026-06-22T00:00:00Z",
+  "hypothesis": "Is the training-free graph lift a tuned knife-edge or a plateau across (alpha, hops), and can multi-hop rescue diff->affected-test or is it structure-bound?",
+  "task": "issue_to_fixing_pr",
+  "dataset_version": "ds:gh-pilot-v0",
+  "code_version": "relsdlc-0.1.0",
+  "seed": 0,
+  "command": "python data/pilot/run_graph_sweep.py",
+  "system": "graph-aug-cosine (lora, h1, a=0.25)",
+  "runtime_class": "cpu",
+  "metrics": {
+    "recall_at_k": {
+      "1": 0.6897,
+      "5": 0.9943,
+      "10": 0.9943
+    },
+    "mrr": 0.8196,
+    "hard_negative_accuracy": 0.6897,
+    "n_queries": 174
+  },
+  "baseline_comparison": "exp:gh-gnn-issue2pr-lora-embed-v0",
+  "error_slices": [],
+  "leakage_checks": [
+    "references scrubbed; train repos disjoint from test repos.",
+    "gold (issue,fixing-PR) edges excluded from aggregation (no leakage).",
+    "lift positive across alpha in [0,0.75]; 1 hop == 2 hops (graph-sweep-results.json) — robust plateau, not a tuned point."
+  ],
+  "known_limitations": [
+    "pilot scale; TRAINING-FREE mean aggregation (no learned weights); single cross-repo split; exploratory sweep, not release evidence."
+  ],
+  "exploratory": true
+}

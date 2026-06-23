@@ -94,6 +94,7 @@ torch (closing the snapshot-trust gap); R@5/R@10 are footnoted as near-ceiling a
 | **Dense Tier-2 baseline (R16B)** | does the bag-of-tokens finding hold at 78 repos with ~3.5× denser per-repo coverage? | **yes** — IDF still beats vanilla cross-repo; density did not erase the gap | IDF R@1 0.389 vs vanilla 0.287 (+0.102) | `gh-tier2-{vanilla,idf}-*` |
 | **LoRA-at-Tier-2 (R16C)** | does the LoRA win hold at dense ~80 repos? | **yes — and grows further** (32 held-out test repos, density ~35 q/repo) | ΔR@1 +0.114 (0.515→0.629), ΔMRR +0.101 | `gh-tier2-lora-*` |
 | **LoRA sweep (R16D)** | is +0.114 a floor or near-tuned (rank × harder negatives)? | **near-tuned** — rank saturated (r8≈r16≈r32, ±0.003); harder in-batch negatives are the only lever and the next gain wants GPU memory | best r16-b48 ΔR@1 +0.126 (vs +0.114); rank flat | `tier2-sweep-results.json` |
+| **Graph-lift sweep (R16E)** | is the R11B graph lift a tuned knife-edge or robust; can multi-hop rescue diff→test? | **robust plateau + structure-bound** — issue→PR lift positive across α∈[0,0.75], hops=1≡hops=2 (R11B point sits on a plateau, 1 hop suffices); diff→test flat at every (α,hops) because 46.9% of gold tests are isolated after the leakage guard | issue→PR LoRA+graph 0.690 (h1, α0.25); diff→test reachable ceiling 59.8% | `gh-graphsweep-*` |
 
 **Synthesis (R3→R12, refined by R13/R14).** The relational win comes from the **base representation**:
 an embedding-tuned model as substrate, **LoRA reshaping it with the relation loss**
@@ -163,6 +164,15 @@ a trained relational SLM** — not naive "use the whole body."
   best graph method here; a learned GNN is re-gated on **Track-D scale** (more
   supervision) + a richer/regularized multi-hop R-GCN. `diff→test` still needs
   denser co-change.
+- **Robustness sweep DONE (R16E):** the free-aggregation lift was measured at one
+  point `(α=0.5, hops=2)`; an `α×hops` sweep ([ablation-graph-sweep.md](ablation-graph-sweep.md))
+  shows the issue→PR lift is a **plateau** (positive across α∈[0,0.75], both feature
+  sets) and **saturates at 1 hop** (hops=1≡hops=2) — so 0.690 is robust and cheap,
+  not a tuned spike. The learned-GNN bar is thus ~0.690 (LoRA)/~0.621 (frozen), not
+  raw cosine. The sweep also **quantifies the `diff→test` blocker**: 46.9% of gold
+  test nodes are isolated (degree-0) after the leakage guard → a 59.8% reachable
+  ceiling, feature- and hop-independent. Confirms the limiter is co-change **density
+  (a Track-D data problem)**, not the aggregation method.
 
 ### Track C — Tasks & labels
 - **C1 `diff→affected-test`, `log→file`** (needs Track B's file edges): test Q3.

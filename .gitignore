@@ -29,3 +29,6 @@ data/tier2/embeddings/
 data/tier2/*.log
 # Large regenerable content chunk-embedding caches (R16A) — rebuild via data/content/embed_content.py
 data/content/embeddings/
+
+# Local numpy-only venv for this machine (Python 3.9; torch lives elsewhere)
+.venv-np/

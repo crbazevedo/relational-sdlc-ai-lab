@@ -1,0 +1,35 @@
+{
+  "card_type": "experiment",
+  "id": "exp:gh-graphsweep-diff2test-lora-h2-v0",
+  "name": "graph-lift sweep — diff2test cross-repo — lora graph-aug (h2)",
+  "created_at": "2026-06-22T00:00:00Z",
+  "hypothesis": "Is the training-free graph lift a tuned knife-edge or a plateau across (alpha, hops), and can multi-hop rescue diff->affected-test or is it structure-bound?",
+  "task": "diff_to_affected_test",
+  "dataset_version": "ds:gh-pilot-v0",
+  "code_version": "relsdlc-0.1.0",
+  "seed": 0,
+  "command": "python data/pilot/run_graph_sweep.py",
+  "system": "graph-aug-cosine (lora, h2, a=0.0)",
+  "runtime_class": "cpu",
+  "metrics": {
+    "recall_at_k": {
+      "1": 0.0089,
+      "5": 0.1836,
+      "10": 0.7049
+    },
+    "mrr": 0.1556,
+    "hard_negative_accuracy": 0.0893,
+    "n_queries": 112
+  },
+  "baseline_comparison": "exp:gh-gnn-diff2test-lora-embed-v0",
+  "error_slices": [],
+  "leakage_checks": [
+    "test-file features come ONLY from PRs that modify them (structure).",
+    "gold (PR,test) modifies edges excluded from aggregation (no leakage)."
+  ],
+  "known_limitations": [
+    "STRUCTURE-BOUND: 75/160 (47%) gold tests isolated after the leakage guard; reachable ceiling 60%. Flat across all (alpha,hops) — needs denser co-change (scale), not tuning.",
+    "pilot scale; TRAINING-FREE mean aggregation (no learned weights); single cross-repo split; exploratory sweep, not release evidence."
+  ],
+  "exploratory": true
+}

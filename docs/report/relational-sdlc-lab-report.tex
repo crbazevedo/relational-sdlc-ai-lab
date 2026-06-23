@@ -46,9 +46,12 @@ the representation: R@1 $0.59 \to \textbf{0.66}$, MRR $0.73 \to 0.79$, on eight
 unseen repositories, with a $0.48\%$-parameter adapter trained on CPU. The settled
 conclusions are that pretrained embeddings are the cross-repo substrate and that
 the relational contribution must live in the representation (or in graph
-structure), not as a post-hoc head. We close with the next steps: scaling the win
-with multi-split confidence intervals, a code-specific base, graph link
-prediction, and --- only after MVP-1 holds --- a relational small language model.
+structure), not as a post-hoc head. We close with the next steps. (Several have
+since landed --- see the editor's note and the consolidated timeline: the win holds
+with multi-split confidence and within-split CIs that exclude zero, grows with
+density to $\Delta$R@1 $+0.114$ on a dense 78-repo set, the base axis is
+``embedding-tuned'' not ``code,'' and a parameter-free graph lift stacks on top; the
+frontier is now GPU/torch-gated scale and a relational small language model.)
 \end{abstract}
 
 \tableofcontents
@@ -95,10 +98,24 @@ not only text similarity;
 preconditions, actions, tools, and outcomes.
 
 \paragraph{Scope of this report.}
-This is a standalone synthesis of the public repository's work to date. It is
+This is a standalone synthesis of the public repository's work. It is
 \emph{exploratory} and \emph{pilot-scale} throughout: the numbers are signals to
 confirm at scale, not settled results. Where this report and the repository's
 experiment cards disagree, the cards are authoritative.
+
+\paragraph{Editor's note (2026-06-23).}
+The detailed sections of this \LaTeX{} report (\S\ref{sec:concepts}--\S\ref{sec:results})
+were written through the \textbf{Track-A LoRA win} and remain accurate for what they
+cover. Subsequent waves --- multi-split confidence (R11A), the graph probe and its
+robustness sweep (R11B/R16E), repo-scale and dense Tier-2 (R12A/R13A/R16B/R16C), the
+base-model and long-text/chunking studies (R12B/R13B/R14/R15/R16A), the LoRA sweep
+(R16D), the headline CIs (R17a), and the diff$\to$test density probe (R17b) --- are
+folded into the \emph{consolidated timeline} (\S\ref{sec:results}) and
+\emph{What Comes Next} (\S\ref{sec:next}) below, and are covered in full in
+\texttt{docs/research-roadmap.md} (\S3 ledger) and the current rendered program report
+\texttt{docs/report/relational-sdlc-lab-report-2026-06-23.pdf}. That dated PDF is the
+authoritative rendered artifact; this \texttt{.tex} is the \LaTeX{} source of record and
+should be recompiled where a \LaTeX{} toolchain is available.
 
 % =====================================================================
 \section{Concepts and Formal Framework}
@@ -510,6 +527,16 @@ De-ref.\ cross-repo (tokens) & bag-of-tokens fails cross-repo & tower \textbf{0.
 Embeddings cross-repo & pretrained embeddings win & \textbf{0.59} & vs.\ IDF 0.46 \\
 Head on frozen embeddings & no headroom; head harmful & 0.19 / 0.59 & ties / hurts \\
 LoRA fine-tune (Track A) & \textbf{relational win in the rep} & \textbf{0.66} & vs.\ frozen 0.59 \\
+\midrule
+\multicolumn{4}{l}{\emph{\small Waves after the Track-A win (full ledger: \texttt{research-roadmap.md} \S3):}} \\
+Multi-split (R11A) & LoRA win on \emph{all 5} held-out splits & $\Delta$\textbf{+0.061} & $\pm0.021$ \\
+Graph probe (R11B) & free aggregation stacks on LoRA & \textbf{0.69} & vs.\ LoRA 0.66 \\
+Dense Tier-2 (R16C) & LoRA win \emph{grows} with density & $\Delta$\textbf{+0.114} & $0.515{\to}0.629$ \\
+Base model (R12B/R13B) & ``embedding-tuned'', not ``code'' & 0.14--0.60 & monotone in tuning \\
+Long text / chunk (R14/R15/R16A) & truncation helps issue$\to$PR; MaxP wins deep & --- & FirstP@512 0.701 \\
+Graph sweep (R16E) & robust plateau; diff$\to$test structure-bound & 0.690 & ceiling 59.8\% \\
+LoRA-win CIs (R17a) & 95\% CIs exclude zero (query + repo) & $\Delta$+0.063 & CI [+.006,+.121] \\
+diff$\to$test density (R17b) & 59.8\% ceiling is an ingest artefact & \textbf{96.4\%} & co-change median 35 \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -554,10 +581,13 @@ The decision gate after the Track-A win routes to two parallel directions, with 
 phases gated on signal.
 
 \begin{description}[leftmargin=1.4em,style=nextline]
-\item[Scale the win (Track D).] Confirm the LoRA result with multi-split confidence
-intervals and multiple seeds; expand from the 20-repo pilot toward Tier-2 (200--500
-repos); and try a \emph{code-specific} base embedder (Q6). Do not scale before signal
---- the signal is now present.
+\item[Scale the win (Track D).] \emph{Largely done and now GPU-gated.} The LoRA result
+is confirmed with multi-split confidence (R11A) and within-split CIs that exclude zero
+(R17a); it \emph{grows} with density through a dense 78-repo Tier-2 set
+($\Delta$R@1 $+0.114$, R16C); the base axis is ``embedding-tuned,'' not ``code''
+(R12B/R13B); and a rank sweep shows the Tier-2 delta is near-tuned, with harder in-batch
+negatives the only remaining lever (R16D). What remains needs a GPU: Tier-2 full breadth
+(200--500 repos), larger negative pools, and multiple seeds.
 \item[Graph link prediction (Track B).] The graph-enrichment prerequisite is done
 (file/test nodes and \rel{modifies} edges). The next step is an inductive GNN
 (GraphSAGE / R-GCN) on \emph{pretrained} node features so it transfers to unseen

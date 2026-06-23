@@ -272,8 +272,8 @@ def _iter_objects(path: Path):
             yield data, path.name
 
 
-# Auxiliary JSON that are not schema artifacts (splits, run results, etc.).
-_SKIP_NAMES = {"split.json", "ablation-results.json"}
+# Auxiliary JSON that are not schema artifacts (splits, run results, snapshots).
+_SKIP_NAMES = {"split.json", "ablation-results.json", "diff2test-cochange.json"}
 
 
 def _discover(target: Path) -> list[Path]:

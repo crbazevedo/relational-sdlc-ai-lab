@@ -1,0 +1,144 @@
+{
+  "task": "issue_to_fixing_pr",
+  "split": "default cross-repo (8 held-out repos)",
+  "n_queries": 174,
+  "n_test_repos": 8,
+  "bootstrap": {
+    "B": 10000,
+    "seed": 0
+  },
+  "point": {
+    "delta_r1": 0.06321839080459768,
+    "delta_mrr": 0.0635857756547411,
+    "n_queries": 174,
+    "frozen": {
+      "r1": 0.5919540229885057,
+      "r5": 0.9195402298850575,
+      "r10": 0.9885057471264368,
+      "mrr": 0.7278370735267287,
+      "hns": 0.5919540229885057
+    },
+    "lora": {
+      "r1": 0.6551724137931034,
+      "r5": 0.9942528735632183,
+      "r10": 0.9942528735632183,
+      "mrr": 0.7914228491814698,
+      "hns": 0.6609195402298851
+    }
+  },
+  "ci95": {
+    "query_bootstrap": {
+      "delta_r1": [
+        0.005747126436781658,
+        0.12068965517241381
+      ],
+      "delta_mrr": [
+        0.026625999319965003,
+        0.10216290574049185
+      ],
+      "p_one_sided_le0_r1": 0.017,
+      "p_one_sided_le0_mrr": 0.0005
+    },
+    "repo_cluster_bootstrap": {
+      "delta_r1": [
+        0.007083812535940214,
+        0.12209302325581395
+      ],
+      "delta_mrr": [
+        0.024347230803231822,
+        0.11026801303854869
+      ],
+      "p_one_sided_le0_r1": 0.0163,
+      "frac_resamples_positive_r1": 0.9837
+    }
+  },
+  "per_query_flips": {
+    "rank1_gains": 18,
+    "rank1_losses": 7,
+    "net": 11,
+    "mcnemar_sign_test_p": 0.043285250663757324
+  },
+  "per_repo": [
+    {
+      "repo": "pydantic/pydantic",
+      "n": 12,
+      "frozen_r1": 0.3333,
+      "lora_r1": 0.5,
+      "delta_r1": 0.1667,
+      "frozen_mrr": 0.5446,
+      "lora_mrr": 0.7083
+    },
+    {
+      "repo": "python-pillow/Pillow",
+      "n": 12,
+      "frozen_r1": 0.5833,
+      "lora_r1": 0.75,
+      "delta_r1": 0.1667,
+      "frozen_mrr": 0.75,
+      "lora_mrr": 0.8264
+    },
+    {
+      "repo": "python-poetry/poetry",
+      "n": 31,
+      "frozen_r1": 0.5161,
+      "lora_r1": 0.6452,
+      "delta_r1": 0.129,
+      "frozen_mrr": 0.6541,
+      "lora_mrr": 0.793
+    },
+    {
+      "repo": "tox-dev/tox",
+      "n": 17,
+      "frozen_r1": 0.7059,
+      "lora_r1": 0.8235,
+      "delta_r1": 0.1176,
+      "frozen_mrr": 0.8137,
+      "lora_mrr": 0.902
+    },
+    {
+      "repo": "pytest-dev/pytest",
+      "n": 45,
+      "frozen_r1": 0.6444,
+      "lora_r1": 0.7111,
+      "delta_r1": 0.0667,
+      "frozen_mrr": 0.7633,
+      "lora_mrr": 0.8159
+    },
+    {
+      "repo": "psf/requests",
+      "n": 4,
+      "frozen_r1": 0.75,
+      "lora_r1": 0.75,
+      "delta_r1": 0.0,
+      "frozen_mrr": 0.875,
+      "lora_mrr": 0.875
+    },
+    {
+      "repo": "scrapy/scrapy",
+      "n": 35,
+      "frozen_r1": 0.4857,
+      "lora_r1": 0.4571,
+      "delta_r1": -0.0286,
+      "frozen_mrr": 0.6724,
+      "lora_mrr": 0.6852
+    },
+    {
+      "repo": "python-attrs/attrs",
+      "n": 18,
+      "frozen_r1": 0.8333,
+      "lora_r1": 0.7778,
+      "delta_r1": -0.0556,
+      "frozen_mrr": 0.8676,
+      "lora_mrr": 0.843
+    }
+  ],
+  "repos_improved": 5,
+  "repos_regressed": 2,
+  "cross_split_reference_R11A": {
+    "note": "mean over 5 held-out-repo partitions (multisplit-results.json)",
+    "delta_r1_mean": 0.0614,
+    "delta_r1_std": 0.0211,
+    "delta_mrr_mean": 0.0521,
+    "delta_mrr_std": 0.0103
+  }
+}

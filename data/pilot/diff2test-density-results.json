@@ -1,0 +1,26 @@
+{
+  "method": "live commits?path co-change; gold-PR date excluded (strict) ",
+  "per_page_cap": 100,
+  "pair_total": 160,
+  "R16E_baseline": {
+    "pair_isolation_rate": 0.4688,
+    "reachable_ceiling": 0.5982
+  },
+  "strict_nongold": {
+    "pair_isolated": 7,
+    "pair_isolation_rate": 0.0437,
+    "query_all_isolated": 4,
+    "reachable_ceiling": 0.9643
+  },
+  "loose_ge2_commits": {
+    "pair_isolated": 12,
+    "pair_isolation_rate": 0.075
+  },
+  "cochange_depth": {
+    "median_commits_per_gold_test": 35,
+    "max": 100,
+    "files_touched_by_1_commit": 12,
+    "files_capped_at_100": 25,
+    "files_missing_path_404": 3
+  }
+}

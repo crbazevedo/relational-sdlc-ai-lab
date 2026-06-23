@@ -95,6 +95,8 @@ torch (closing the snapshot-trust gap); R@5/R@10 are footnoted as near-ceiling a
 | **LoRA-at-Tier-2 (R16C)** | does the LoRA win hold at dense ~80 repos? | **yes — and grows further** (32 held-out test repos, density ~35 q/repo) | ΔR@1 +0.114 (0.515→0.629), ΔMRR +0.101 | `gh-tier2-lora-*` |
 | **LoRA sweep (R16D)** | is +0.114 a floor or near-tuned (rank × harder negatives)? | **near-tuned** — rank saturated (r8≈r16≈r32, ±0.003); harder in-batch negatives are the only lever and the next gain wants GPU memory | best r16-b48 ΔR@1 +0.126 (vs +0.114); rank flat | `tier2-sweep-results.json` |
 | **Graph-lift sweep (R16E)** | is the R11B graph lift a tuned knife-edge or robust; can multi-hop rescue diff→test? | **robust plateau + structure-bound** — issue→PR lift positive across α∈[0,0.75], hops=1≡hops=2 (R11B point sits on a plateau, 1 hop suffices); diff→test flat at every (α,hops) because 46.9% of gold tests are isolated after the leakage guard | issue→PR LoRA+graph 0.690 (h1, α0.25); diff→test reachable ceiling 59.8% | `gh-graphsweep-*` |
+| **LoRA-win CIs (R17a)** | does the headline LoRA delta survive a within-split CI, and where does it come from? | **yes — both query- and repo-cluster 95% CIs exclude zero; broad but not uniform** (5/8 repos improve, 2 regress slightly; net +11 rank-1 flips, sign-test p≈0.043) | ΔR@1 +0.063, CI [+0.006,+0.121] (repo-cluster [+0.007,+0.122]); ΔMRR +0.064, CI [+0.027,+0.102] | `bootstrap-ci-results.json` |
+| **diff→test density (R17b)** | is the 59.8% diff→test ceiling method-bound or an ingest-depth (density) artefact? | **density artefact, confirmed** — gold test files are heavily co-changed in real history (median 35 commits each); only 12/110 touched by ≤1 change | reachable ceiling 59.8% → **96.4%** (isolation 46.9% → 4.4%) under real co-change | `diff2test-density-results.json` |
 
 **Synthesis (R3→R12, refined by R13/R14).** The relational win comes from the **base representation**:
 an embedding-tuned model as substrate, **LoRA reshaping it with the relation loss**
@@ -147,8 +149,15 @@ a trained relational SLM** — not naive "use the whole body."
   [ablation-finetune.md](ablation-finetune.md).
 - **Gate fired: WIN.** Next per the gate → **scale (Track D)** with multi-split CIs,
   and **code-specific base** (Q6). A head on tuned vectors still adds nothing — keep
-  the contribution in the representation. Open: confirm on a held-out-repo re-split
-  and multiple seeds before treating the number as settled.
+  the contribution in the representation.
+- **CIs landed (R17a):** the re-split/CI open item is now closed on the default split —
+  both a query bootstrap and a **repo-cluster** bootstrap put ΔR@1's 95% CI above zero
+  ([+0.006,+0.121]) and ΔMRR's more decisively ([+0.027,+0.102]); the per-repo
+  decomposition shows the win is **broad but not uniform** (5/8 repos improve, 2 regress
+  slightly). Together with R11A (all-5-splits) the win is robust to which repos are
+  held out, to query resampling, and to repo correlation. Still open: **multiple seeds**,
+  and a CI on the larger Tier-2 delta (needs torch to regenerate the gitignored caches).
+  [ablation-bootstrap-ci.md](ablation-bootstrap-ci.md)
 
 ### Track B — Graph: link prediction over the SDLC graph  *(prereq DONE; probe DONE)*
 - **Paper:** `L_graph` (spectral) + KG-embedding relation scoring; GraphRAG seed.
@@ -173,6 +182,14 @@ a trained relational SLM** — not naive "use the whole body."
   test nodes are isolated (degree-0) after the leakage guard → a 59.8% reachable
   ceiling, feature- and hop-independent. Confirms the limiter is co-change **density
   (a Track-D data problem)**, not the aggregation method.
+- **Density confirmed against ground truth (R17b):** a live co-change probe
+  ([ablation-diff2test-density.md](ablation-diff2test-density.md)) shows the gold test
+  files are in fact heavily co-changed (**median 35 commits each**; only 12/110 touched
+  by ≤1 change). The pilot's 46.9% isolation was an **ingest-depth artefact**: with real
+  history the reachable ceiling rises **59.8% → 96.4%**. So the structural blocker is
+  removable by denser ingest — the diff→test retrieval re-eval (which needs torch to
+  embed the new PR nodes) is now a worthwhile **Track-D/GPU** follow-up, no longer
+  capped below 60% by construction.
 
 ### Track C — Tasks & labels
 - **C1 `diff→affected-test`, `log→file`** (needs Track B's file edges): test Q3.

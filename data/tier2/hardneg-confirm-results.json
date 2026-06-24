@@ -1,0 +1,188 @@
+{
+  "device": "mps",
+  "batch": 48,
+  "epochs": 12,
+  "seeds": [
+    0,
+    1
+  ],
+  "frozen": {
+    "recall_at_k": {
+      "1": 0.5149444918872759,
+      "5": 0.829205807002562,
+      "10": 0.9692570452604612
+    },
+    "mrr": 0.6552891908357326
+  },
+  "cells": [
+    {
+      "key": "random-s0",
+      "config": "random",
+      "seed": 0,
+      "batch": 48,
+      "recall_at_k": {
+        "1": 0.6336464560204953,
+        "5": 0.9248505550811272,
+        "10": 0.9854824935952178
+      },
+      "mrr": 0.7600783408639953,
+      "delta_r1": 0.1187,
+      "delta_mrr": 0.1048,
+      "minutes": 9.5
+    },
+    {
+      "key": "repo-hard-s0",
+      "config": "repo-hard",
+      "seed": 0,
+      "batch": 48,
+      "recall_at_k": {
+        "1": 0.6524338172502135,
+        "5": 0.9299743808710503,
+        "10": 0.9888983774551665
+      },
+      "mrr": 0.7751097844180684,
+      "delta_r1": 0.1375,
+      "delta_mrr": 0.1198,
+      "minutes": 18.5
+    },
+    {
+      "key": "random-s1",
+      "config": "random",
+      "seed": 1,
+      "batch": 48,
+      "recall_at_k": {
+        "1": 0.6404782237403929,
+        "5": 0.9231426131511529,
+        "10": 0.986336464560205
+      },
+      "mrr": 0.762564131949274,
+      "delta_r1": 0.1255,
+      "delta_mrr": 0.1073,
+      "minutes": 21.3
+    },
+    {
+      "key": "repo-hard-s1",
+      "config": "repo-hard",
+      "seed": 1,
+      "batch": 48,
+      "recall_at_k": {
+        "1": 0.6609735269000854,
+        "5": 0.9333902647309992,
+        "10": 0.9871904355251921
+      },
+      "mrr": 0.779581536690846,
+      "delta_r1": 0.146,
+      "delta_mrr": 0.1243,
+      "minutes": 22.3
+    }
+  ],
+  "aggregate": {
+    "random": {
+      "n": 2,
+      "delta_r1_mean": 0.1221,
+      "delta_r1_std": 0.0034,
+      "delta_mrr_mean": 0.1061
+    },
+    "repo-hard": {
+      "n": 2,
+      "delta_r1_mean": 0.1417,
+      "delta_r1_std": 0.0042,
+      "delta_mrr_mean": 0.122
+    }
+  },
+  "paired_vs_random": {
+    "repo-hard_minus_random": {
+      "per_seed": [
+        0.0188,
+        0.0205
+      ],
+      "mean": 0.0197,
+      "std": 0.0009,
+      "all_positive": true
+    }
+  },
+  "meta": {
+    "train_repos": [
+      "Delgan/loguru",
+      "HypothesisWorks/hypothesis",
+      "MagicStack/asyncpg",
+      "Textualize/rich",
+      "Textualize/textual",
+      "agronholm/anyio",
+      "aio-libs/aiohttp",
+      "arrow-py/arrow",
+      "astral-sh/ruff",
+      "boto/boto3",
+      "boto/botocore",
+      "celery/kombu",
+      "certifi/python-certifi",
+      "chalk/chalk",
+      "clap-rs/clap",
+      "click-contrib/click-completion",
+      "coleifer/peewee",
+      "dask/dask",
+      "encode/databases",
+      "encode/httpcore",
+      "encode/starlette",
+      "encode/uvicorn",
+      "ewels/rich-click",
+      "expressjs/express",
+      "fabric/fabric",
+      "fastapi/fastapi",
+      "fastapi/typer",
+      "gin-gonic/gin",
+      "jd/tenacity",
+      "joblib/joblib",
+      "marshmallow-code/marshmallow",
+      "matplotlib/matplotlib",
+      "more-itertools/more-itertools",
+      "mwaskom/seaborn",
+      "networkx/networkx",
+      "numpy/numpy",
+      "pallets/click",
+      "pallets/flask",
+      "pallets/jinja",
+      "pallets/markupsafe",
+      "pallets/werkzeug",
+      "pandas-dev/pandas",
+      "psf/black",
+      "psf/requests",
+      "pyca/cryptography",
+      "pydantic/pydantic"
+    ],
+    "test_repos": [
+      "pydantic/pydantic-core",
+      "pypa/packaging",
+      "pypa/pip",
+      "pypa/setuptools",
+      "pypa/virtualenv",
+      "pypa/wheel",
+      "pytest-dev/pluggy",
+      "pytest-dev/pytest",
+      "pytest-dev/pytest-cov",
+      "python-attrs/attrs",
+      "python-jsonschema/jsonschema",
+      "python-pillow/Pillow",
+      "python-poetry/poetry",
+      "python-trio/trio",
+      "python/mypy",
+      "redis/redis-py",
+      "samuelcolvin/dirty-equals",
+      "scikit-learn/scikit-learn",
+      "scrapy/scrapy",
+      "sdispater/pendulum",
+      "serde-rs/serde",
+      "sindresorhus/got",
+      "spf13/cobra",
+      "sqlalchemy/sqlalchemy",
+      "sympy/sympy",
+      "theskumar/python-dotenv",
+      "tiangolo/sqlmodel",
+      "tornadoweb/tornado",
+      "tox-dev/tox",
+      "urllib3/urllib3",
+      "wimglenn/johnnydep",
+      "yaml/pyyaml"
+    ]
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "card_type": "experiment",
+  "id": "exp:gh-tier2-loranegs-repohard-v0",
+  "name": "Dense Tier-2 LoRA — same-repo HARD in-batch negatives (issue_to_fixing_pr)",
+  "created_at": "2026-06-23T00:00:00Z",
+  "hypothesis": "R16D showed the Tier-2 LoRA win is rank-saturated with harder/more in-batch negatives the only lever. Does making negatives HARDER (repo-homogeneous batches) beat making them MORE (bigger random pool) at matched pool size?",
+  "task": "issue_to_fixing_pr",
+  "dataset_version": "ds:gh-tier2-v0",
+  "code_version": "relsdlc-0.1.0",
+  "seed": 0,
+  "command": "PYTORCH_ENABLE_MPS_FALLBACK=1 python data/tier2/run_negatives_sweep.py && PYTHONPATH=src python data/tier2/run_negatives_bootstrap.py",
+  "system": "minilm-lora-tier2-repohard",
+  "runtime_class": "single-gpu",
+  "metrics": {
+    "recall_at_k": {"1": 0.6524, "5": 0.93, "10": 0.9889},
+    "mrr": 0.7751,
+    "hard_negative_accuracy": 0.6576,
+    "n_queries": 1171
+  },
+  "baseline_comparison": "exp:gh-tier2-lora-v0",
+  "error_slices": [],
+  "leakage_checks": [
+    "LoRA trains on train-repo fixes pairs only; eval on 32 held-out test repos; references scrubbed.",
+    "Bootstrap CI (query + repo-cluster) over the 1,171 held-out queries excludes zero: dR@1 +0.1375, CI [+0.112, +0.164]; 31/32 repos improve, 0 regress."
+  ],
+  "known_limitations": [
+    "Trained on Apple M5 GPU (MPS); MPS is NOT bit-deterministic (run-to-run ~+/-0.008 R@1; this cell read +0.146 on a first run, +0.1375 on the clean re-run the saved embeddings + CI use).",
+    "Single cross-repo split; single seed. The hardness gain over matched random (+0.017) is ~2x the MPS run-to-run noise, so multi-seed confirmation is the natural follow-up.",
+    "Larger random pools (b192/b384) OOM the M5 MPS allocator; practical in-batch pool ceiling ~b96. Exploratory."
+  ],
+  "exploratory": true
+}

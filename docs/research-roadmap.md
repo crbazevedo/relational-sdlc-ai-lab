@@ -97,6 +97,7 @@ torch (closing the snapshot-trust gap); R@5/R@10 are footnoted as near-ceiling a
 | **Graph-lift sweep (R16E)** | is the R11B graph lift a tuned knife-edge or robust; can multi-hop rescue diff→test? | **robust plateau + structure-bound** — issue→PR lift positive across α∈[0,0.75], hops=1≡hops=2 (R11B point sits on a plateau, 1 hop suffices); diff→test flat at every (α,hops) because 46.9% of gold tests are isolated after the leakage guard | issue→PR LoRA+graph 0.690 (h1, α0.25); diff→test reachable ceiling 59.8% | `gh-graphsweep-*` |
 | **LoRA-win CIs (R17a)** | does the headline LoRA delta survive a within-split CI, and where does it come from? | **yes — both query- and repo-cluster 95% CIs exclude zero; broad but not uniform** (5/8 repos improve, 2 regress slightly; net +11 rank-1 flips, sign-test p≈0.043) | ΔR@1 +0.063, CI [+0.006,+0.121] (repo-cluster [+0.007,+0.122]); ΔMRR +0.064, CI [+0.027,+0.102] | `bootstrap-ci-results.json` |
 | **diff→test density (R17b)** | is the 59.8% diff→test ceiling method-bound or an ingest-depth (density) artefact? | **density artefact, confirmed** — gold test files are heavily co-changed in real history (median 35 commits each); only 12/110 touched by ≤1 change | reachable ceiling 59.8% → **96.4%** (isolation 46.9% → 4.4%) under real co-change | `diff2test-density-results.json` |
+| **Negatives lever (R18)** | does pushing R16D's negative-pool lever (more vs harder) grow the Tier-2 LoRA win, now that the M5 GPU lifts the CPU memory cap? | **harder, not more** — random pool flat (b32/48/96 +0.12–0.13; b192/384 OOM the M5), but same-repo **hard** batching at matched pool is the new best; Tier-2 CI excludes zero decisively (31/32 repos up) | repo-hard ΔR@1 **+0.137** (vs matched random +0.120; R16D best +0.126), CI [+0.112,+0.164] (repo-cluster [+0.107,+0.173]) | `negatives-sweep-results.json` |
 
 **Synthesis (R3→R12, refined by R13/R14).** The relational win comes from the **base representation**:
 an embedding-tuned model as substrate, **LoRA reshaping it with the relation loss**
@@ -216,6 +217,16 @@ a trained relational SLM** — not naive "use the whole body."
   pool 32→48 gives the best recipe yet (r16-b48, ΔR@1 **+0.126**). Larger negative
   pools are capped by CPU memory, so the next gain is a GPU lever. **Open:** Tier-2
   full breadth (200–500 repos) is a GPU-scale follow-up.
+- **Negatives lever resolved (R18):** the first wave trained on the **Apple M5 GPU
+  (MPS)** ([ablation-negatives-sweep.md](ablation-negatives-sweep.md)) settled R16D's
+  "harder/more negatives" into **harder, not more**. More random negatives is flat
+  (b32/48/96 +0.12–0.13) and the largest pools (b192/384) **OOM the M5** (pool ceiling
+  ≈ b96) — so memory was never the limiter. But same-repo **hard** batching at matched
+  pool is the new best, ΔR@1 **+0.137** (R@1 0.515→0.652), with a tight Tier-2 CI
+  ([+0.112,+0.164]; repo-cluster [+0.107,+0.173]; 31/32 held-out repos up) that closes
+  R17a's open Tier-2-CI item. Open: multi-seed confirmation (MPS is not
+  bit-deterministic, ~±0.008 R@1) and harder-negative *mining* beyond same-repo
+  batching.
   And **Q6 follow-up:** a code-*embedding* base (not a code MLM — codebert
   collapsed; bge edged ahead). [ablation-code.md](ablation-code.md)
 

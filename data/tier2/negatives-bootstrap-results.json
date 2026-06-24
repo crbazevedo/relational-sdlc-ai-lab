@@ -1,0 +1,274 @@
+{
+  "task": "issue_to_fixing_pr",
+  "split": "dense Tier-2 cross-repo (32 held-out repos)",
+  "lora_cache": "minilm-lora-best.npz",
+  "n_queries": 1171,
+  "n_test_repos": 32,
+  "bootstrap": {
+    "B": 10000,
+    "seed": 0
+  },
+  "point": {
+    "frozen_r1": 0.5149444918872759,
+    "lora_r1": 0.6524338172502135,
+    "delta_r1": 0.13748932536293768,
+    "delta_mrr": 0.11982059358233577
+  },
+  "ci95": {
+    "query_bootstrap": {
+      "delta_r1": [
+        0.11187019641332197,
+        0.1639624252775405
+      ],
+      "delta_mrr": [
+        0.10275966419006555,
+        0.1375362792511596
+      ],
+      "p_one_sided_le0_r1": 0.0
+    },
+    "repo_cluster_bootstrap": {
+      "delta_r1": [
+        0.10691291262030811,
+        0.17269456558201943
+      ],
+      "delta_mrr": [
+        0.09688582981835034,
+        0.1463185079134612
+      ],
+      "frac_resamples_positive_r1": 1.0
+    }
+  },
+  "per_query_flips": {
+    "rank1_gains": 210,
+    "rank1_losses": 49,
+    "net": 161
+  },
+  "repos_improved": 31,
+  "repos_regressed": 0,
+  "per_repo": [
+    {
+      "repo": "pypa/wheel",
+      "n": 42,
+      "frozen_r1": 0.4048,
+      "lora_r1": 0.7381,
+      "delta_r1": 0.3333
+    },
+    {
+      "repo": "wimglenn/johnnydep",
+      "n": 3,
+      "frozen_r1": 0.0,
+      "lora_r1": 0.3333,
+      "delta_r1": 0.3333
+    },
+    {
+      "repo": "yaml/pyyaml",
+      "n": 18,
+      "frozen_r1": 0.2778,
+      "lora_r1": 0.6111,
+      "delta_r1": 0.3333
+    },
+    {
+      "repo": "theskumar/python-dotenv",
+      "n": 46,
+      "frozen_r1": 0.3913,
+      "lora_r1": 0.6957,
+      "delta_r1": 0.3043
+    },
+    {
+      "repo": "sdispater/pendulum",
+      "n": 40,
+      "frozen_r1": 0.275,
+      "lora_r1": 0.575,
+      "delta_r1": 0.3
+    },
+    {
+      "repo": "python-jsonschema/jsonschema",
+      "n": 4,
+      "frozen_r1": 0.5,
+      "lora_r1": 0.75,
+      "delta_r1": 0.25
+    },
+    {
+      "repo": "spf13/cobra",
+      "n": 35,
+      "frozen_r1": 0.4857,
+      "lora_r1": 0.7143,
+      "delta_r1": 0.2286
+    },
+    {
+      "repo": "serde-rs/serde",
+      "n": 26,
+      "frozen_r1": 0.3077,
+      "lora_r1": 0.5,
+      "delta_r1": 0.1923
+    },
+    {
+      "repo": "sqlalchemy/sqlalchemy",
+      "n": 42,
+      "frozen_r1": 0.6905,
+      "lora_r1": 0.881,
+      "delta_r1": 0.1905
+    },
+    {
+      "repo": "pytest-dev/pytest-cov",
+      "n": 27,
+      "frozen_r1": 0.2963,
+      "lora_r1": 0.4815,
+      "delta_r1": 0.1852
+    },
+    {
+      "repo": "python-poetry/poetry",
+      "n": 65,
+      "frozen_r1": 0.5077,
+      "lora_r1": 0.6769,
+      "delta_r1": 0.1692
+    },
+    {
+      "repo": "pytest-dev/pluggy",
+      "n": 32,
+      "frozen_r1": 0.5938,
+      "lora_r1": 0.75,
+      "delta_r1": 0.1562
+    },
+    {
+      "repo": "pytest-dev/pytest",
+      "n": 93,
+      "frozen_r1": 0.5054,
+      "lora_r1": 0.6559,
+      "delta_r1": 0.1505
+    },
+    {
+      "repo": "samuelcolvin/dirty-equals",
+      "n": 7,
+      "frozen_r1": 0.5714,
+      "lora_r1": 0.7143,
+      "delta_r1": 0.1429
+    },
+    {
+      "repo": "tox-dev/tox",
+      "n": 49,
+      "frozen_r1": 0.7143,
+      "lora_r1": 0.8571,
+      "delta_r1": 0.1429
+    },
+    {
+      "repo": "python-attrs/attrs",
+      "n": 39,
+      "frozen_r1": 0.6154,
+      "lora_r1": 0.7436,
+      "delta_r1": 0.1282
+    },
+    {
+      "repo": "sympy/sympy",
+      "n": 16,
+      "frozen_r1": 0.5625,
+      "lora_r1": 0.6875,
+      "delta_r1": 0.125
+    },
+    {
+      "repo": "tornadoweb/tornado",
+      "n": 32,
+      "frozen_r1": 0.5312,
+      "lora_r1": 0.6562,
+      "delta_r1": 0.125
+    },
+    {
+      "repo": "pypa/setuptools",
+      "n": 46,
+      "frozen_r1": 0.413,
+      "lora_r1": 0.5217,
+      "delta_r1": 0.1087
+    },
+    {
+      "repo": "sindresorhus/got",
+      "n": 28,
+      "frozen_r1": 0.5,
+      "lora_r1": 0.6071,
+      "delta_r1": 0.1071
+    },
+    {
+      "repo": "python/mypy",
+      "n": 71,
+      "frozen_r1": 0.3803,
+      "lora_r1": 0.4789,
+      "delta_r1": 0.0986
+    },
+    {
+      "repo": "python-trio/trio",
+      "n": 25,
+      "frozen_r1": 0.64,
+      "lora_r1": 0.72,
+      "delta_r1": 0.08
+    },
+    {
+      "repo": "urllib3/urllib3",
+      "n": 51,
+      "frozen_r1": 0.5686,
+      "lora_r1": 0.6471,
+      "delta_r1": 0.0784
+    },
+    {
+      "repo": "pydantic/pydantic-core",
+      "n": 13,
+      "frozen_r1": 0.7692,
+      "lora_r1": 0.8462,
+      "delta_r1": 0.0769
+    },
+    {
+      "repo": "pypa/packaging",
+      "n": 30,
+      "frozen_r1": 0.7,
+      "lora_r1": 0.7667,
+      "delta_r1": 0.0667
+    },
+    {
+      "repo": "pypa/pip",
+      "n": 45,
+      "frozen_r1": 0.6222,
+      "lora_r1": 0.6889,
+      "delta_r1": 0.0667
+    },
+    {
+      "repo": "pypa/virtualenv",
+      "n": 34,
+      "frozen_r1": 0.7059,
+      "lora_r1": 0.7647,
+      "delta_r1": 0.0588
+    },
+    {
+      "repo": "python-pillow/Pillow",
+      "n": 35,
+      "frozen_r1": 0.6571,
+      "lora_r1": 0.7143,
+      "delta_r1": 0.0571
+    },
+    {
+      "repo": "redis/redis-py",
+      "n": 22,
+      "frozen_r1": 0.7727,
+      "lora_r1": 0.8182,
+      "delta_r1": 0.0455
+    },
+    {
+      "repo": "scikit-learn/scikit-learn",
+      "n": 47,
+      "frozen_r1": 0.5957,
+      "lora_r1": 0.6383,
+      "delta_r1": 0.0426
+    },
+    {
+      "repo": "scrapy/scrapy",
+      "n": 101,
+      "frozen_r1": 0.3861,
+      "lora_r1": 0.4257,
+      "delta_r1": 0.0396
+    },
+    {
+      "repo": "tiangolo/sqlmodel",
+      "n": 7,
+      "frozen_r1": 0.7143,
+      "lora_r1": 0.7143,
+      "delta_r1": 0.0
+    }
+  ]
+}

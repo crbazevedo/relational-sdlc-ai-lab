@@ -98,6 +98,7 @@ torch (closing the snapshot-trust gap); R@5/R@10 are footnoted as near-ceiling a
 | **LoRA-win CIs (R17a)** | does the headline LoRA delta survive a within-split CI, and where does it come from? | **yes — both query- and repo-cluster 95% CIs exclude zero; broad but not uniform** (5/8 repos improve, 2 regress slightly; net +11 rank-1 flips, sign-test p≈0.043) | ΔR@1 +0.063, CI [+0.006,+0.121] (repo-cluster [+0.007,+0.122]); ΔMRR +0.064, CI [+0.027,+0.102] | `bootstrap-ci-results.json` |
 | **diff→test density (R17b)** | is the 59.8% diff→test ceiling method-bound or an ingest-depth (density) artefact? | **density artefact, confirmed** — gold test files are heavily co-changed in real history (median 35 commits each); only 12/110 touched by ≤1 change | reachable ceiling 59.8% → **96.4%** (isolation 46.9% → 4.4%) under real co-change | `diff2test-density-results.json` |
 | **Negatives lever (R18)** | does pushing R16D's negative-pool lever (more vs harder) grow the Tier-2 LoRA win, now that the M5 GPU lifts the CPU memory cap? | **harder, not more** — random pool flat (b32/48/96 +0.12–0.13; b192/384 OOM the M5), but same-repo **hard** batching at matched pool is the new best; Tier-2 CI excludes zero decisively (31/32 repos up) | repo-hard ΔR@1 **+0.137** (vs matched random +0.120; R16D best +0.126), CI [+0.112,+0.164] (repo-cluster [+0.107,+0.173]) | `negatives-sweep-results.json` |
+| **Hardness multi-seed (R19)** | is R18's hardness gain real across seeds or MPS noise? | **real** — repo-hard beats matched random on **both** seeds with a tight paired gap (mean +0.020, std ~0.001), above the ~±0.008 MPS noise; seed-0 reproduces R18's +0.1375 exactly (the +0.146 first-run was a memory-leak-state artefact) | random mean +0.122 vs **repo-hard mean +0.142** (paired gap +0.019/+0.021); mining (H2) deferred | `hardneg-confirm-results.json` |
 
 **Synthesis (R3→R12, refined by R13/R14).** The relational win comes from the **base representation**:
 an embedding-tuned model as substrate, **LoRA reshaping it with the relation loss**
@@ -224,9 +225,15 @@ a trained relational SLM** — not naive "use the whole body."
   ≈ b96) — so memory was never the limiter. But same-repo **hard** batching at matched
   pool is the new best, ΔR@1 **+0.137** (R@1 0.515→0.652), with a tight Tier-2 CI
   ([+0.112,+0.164]; repo-cluster [+0.107,+0.173]; 31/32 held-out repos up) that closes
-  R17a's open Tier-2-CI item. Open: multi-seed confirmation (MPS is not
-  bit-deterministic, ~±0.008 R@1) and harder-negative *mining* beyond same-repo
-  batching.
+  R17a's open Tier-2-CI item.
+- **Hardness confirmed multi-seed (R19):** the R18 gain is **not MPS noise**
+  ([ablation-hardneg-confirm.md](ablation-hardneg-confirm.md)) — over seeds {0,1} the
+  paired `repo-hard − random` ΔR@1 gap is +0.019 / +0.021 (mean **+0.020**, std ~0.001),
+  above the ~±0.008 run-to-run noise; `repo-hard` averages **+0.142** (peak +0.146).
+  Seed-0 reproduced R18's +0.1375 exactly, so the +0.146 first-run was a memory-leak
+  artefact, not seed variance. Open: harder-negative **mining** (H2, code ready but
+  deferred — its longer MPS cells exceeded the env's background-job limit), and a 3rd–5th
+  seed when compute is steadier.
   And **Q6 follow-up:** a code-*embedding* base (not a code MLM — codebert
   collapsed; bge edged ahead). [ablation-code.md](ablation-code.md)
 

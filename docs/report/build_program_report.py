@@ -169,14 +169,14 @@ def build():
     E.append(P("Program report — data, pipelines, methods, hypotheses, experiments, results, and next steps", SUBTITLE))
     E.append(Spacer(1, 8))
     E.append(HRFlowable(width="100%", thickness=1.4, color=NAVY, spaceAfter=6))
-    E.append(P("Relational SDLC AI Lab &nbsp;·&nbsp; public research repository &nbsp;·&nbsp; compiled 2026-06-23 &nbsp;·&nbsp; state through wave R17b", META))
+    E.append(P("Relational SDLC AI Lab &nbsp;·&nbsp; public research repository &nbsp;·&nbsp; compiled 2026-06-23 &nbsp;·&nbsp; state through wave R19", META))
     E.append(Spacer(1, 10))
 
     # ---- at-a-glance box
     glance = [
         [P("At a glance", TC_B), P("", TC)],
         ["Thesis", "Embeddings (and later SLMs) trained over <b>verifiable SDLC relations</b> generalize across repositories better than generic text similarity."],
-        ["Headline win", "Relation-loss <b>LoRA inside the representation</b> beats the frozen embedder cross-repo, and the gain <b>grows with data</b>: ΔR@1 +0.07 (pilot) → +0.080 (55 repos) → <b>+0.114</b> (78-repo dense Tier-2)."],
+        ["Headline win", "Relation-loss <b>LoRA inside the representation</b> beats the frozen embedder cross-repo, and the gain <b>grows with data</b>: ΔR@1 +0.07 (pilot) → +0.080 (55 repos) → +0.114 (78-repo dense Tier-2) → <b>+0.142</b> with same-repo <b>hard negatives</b> (R18/R19, first wave trained on the Apple M5 GPU)."],
         ["Robustness", "Positive on <b>all 5</b> held-out-repo splits (ΔR@1 +0.061±0.021); on the headline split both query- and repo-cluster <b>95% CIs exclude zero</b> (R17a). A thin parameter-free <b>graph lift</b> stacks on top (LoRA+graph R@1 0.690), robust across α and saturated at 1 hop."],
         ["Strongest negatives", "Learned heads on <i>frozen</i> vectors overfit at pilot scale; a code-MLM base collapses; <b>more text hurts</b> (de-truncation −0.09 to −0.15 R@1)."],
         ["Discipline", "CPU-first, one change vs. the embedder-cosine control, de-referenced cross-repo splits, every run emits an experiment card, honest negatives kept."],
@@ -524,6 +524,8 @@ def build():
         ["Graph-lift sweep (R16E, B)", "tuned knife-edge or robust; can hops rescue diff→test?", "<b>robust plateau + structure-bound</b>", "issue→PR 0.690 (h1); diff→test ceiling 59.8%"],
         ["LoRA-win CIs (R17a, A/D)", "does the headline delta survive a within-split CI?", "<b>yes</b> — both query- and repo-cluster 95% CIs exclude zero; broad but not uniform (5/8 repos)", "ΔR@1 +0.063, CI [+0.006,+0.121]; ΔMRR CI [+0.027,+0.102]"],
         ["diff→test density (R17b, B)", "is the 59.8% ceiling method-bound or an ingest-depth artefact?", "<b>density artefact</b> — gold tests heavily co-changed (median 35 commits)", "reachable ceiling 59.8% → 96.4% under real co-change"],
+        ["Negatives lever (R18, A/D)", "more vs harder in-batch negatives on the M5 GPU?", "<b>harder, not more</b> — random pool flat (b192/384 OOM the M5); same-repo hard batching is the new best", "repo-hard ΔR@1 +0.137, CI [+0.112,+0.164], 31/32 repos up"],
+        ["Hardness multi-seed (R19, A/D)", "is the hardness gain real across seeds or MPS noise?", "<b>real</b> — paired gap positive on both seeds, tight (mean +0.020, std ~0.001)", "random +0.122 vs repo-hard +0.142; mining (H2) deferred"],
     ]
     led_w = [3.0 * cm, W - 12.2 * cm, 4.7 * cm, 4.5 * cm]
     lt = table(led, led_w, font=7.4, lead=9.0)

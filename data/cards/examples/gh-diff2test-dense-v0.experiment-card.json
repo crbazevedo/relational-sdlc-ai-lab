@@ -1,0 +1,33 @@
+{
+  "card_type": "experiment",
+  "id": "exp:gh-diff2test-dense-v0",
+  "name": "diff->affected-test retrieval on a densified modifies graph (pilot cross-repo)",
+  "created_at": "2026-06-23T00:00:00Z",
+  "hypothesis": "R16E found diff->test structure-bound at R@1 0.009 (47% of gold tests isolated after the leakage guard); R17b showed that ceiling is an ingest-depth artefact (real co-change -> 96.4% reachable). Does densifying the modifies graph convert that structural unlock into an actual retrieval result?",
+  "task": "diff_to_affected_test",
+  "dataset_version": "ds:gh-pilot-v0",
+  "code_version": "relsdlc-0.1.0",
+  "seed": 0,
+  "command": "GITHUB_TOKEN=$GH_PAT python data/pilot/graph/densify_modifies.py && python data/pilot/graph/embed_dense_pr.py && PYTHONPATH=src python data/pilot/graph/run_diff2test_dense.py",
+  "system": "graph-aug-cosine (dense modifies, alpha=0.5, 1 hop)",
+  "runtime_class": "cpu",
+  "metrics": {
+    "recall_at_k": {"1": 0.3054, "5": 0.657, "10": 0.792},
+    "mrr": 0.508,
+    "hard_negative_accuracy": 0.3571,
+    "n_queries": 112
+  },
+  "baseline_comparison": "exp:gh-graphsweep-diff2test-lora-h2-v0",
+  "error_slices": [],
+  "leakage_checks": [
+    "Gold (query-PR, test) modifies edges excluded from aggregation (leakage guard); test features come ONLY from NON-gold modifying PRs.",
+    "Dense edges live-ingested from the 8 held-out test repos; references scrubbed from PR text before embedding.",
+    "Same R16E scorer + guard with original vs original+dense edges — the original-edges cell reproduces the R16E floor exactly (R@1 0.0089), so the gain is purely the densification."
+  ],
+  "known_limitations": [
+    "Pilot scale, single cross-repo split, one (alpha=0.5, hops=1) point. Test nodes carry no text embedding — the signal is purely structural (co-change geometry).",
+    "Reachability 89.3% (vs the 96.4% commit-level ceiling): PR-level densification (recent merged PRs touching test files) captures less than full commit history, so R@1 0.305 is a floor for this approach, not a ceiling. More PRs / commit-level edges would push it higher.",
+    "Dense graph is a one-time live snapshot (committed for offline replay). Exploratory."
+  ],
+  "exploratory": true
+}

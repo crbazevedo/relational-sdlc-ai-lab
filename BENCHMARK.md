@@ -82,6 +82,12 @@ PR's own embedding as the query (vs. an α-blend) is worth +0.195 R@1; enforcing
 temporal `as_of` cut costs +0.125 (future modifiers were leaking). The released number
 applies both — clean query, no future leakage.
 
+*Leakage audit (`diff2test-audit-results.json`):* the densification does not manufacture
+the signal. Candidate coverage is balanced (gold 85.7% vs negative 81.9%), and **ranking
+only among rankable candidates** (removing the covered-vs-uncovered cue) gives fair R@1
+**0.500 — 5.7× the random-among-covered baseline** — so the 0.429 end-to-end number is
+conservative, not inflated. Train/test repositories are disjoint (no forks/near-duplicates).
+
 ---
 
 ## Reproduce

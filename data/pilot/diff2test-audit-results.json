@@ -1,0 +1,41 @@
+{
+  "n_queries": 112,
+  "coverage": {
+    "gold_coverage_rate": 0.8571,
+    "negative_coverage_rate_mean": 0.8188,
+    "parity_note": "if gold >> negative coverage, R@1 risks being a 'gold has a feature' artefact"
+  },
+  "overall_R@1_uncovered_last": 0.4286,
+  "fair_R@1_among_covered": {
+    "value": 0.5,
+    "n_queries_gold_covered": 96,
+    "mean_fair_pool": 12.16,
+    "random_among_covered_baseline": 0.0881
+  },
+  "repo_disjointness": {
+    "train_repos": [
+      "Textualize/rich",
+      "astral-sh/ruff",
+      "encode/starlette",
+      "encode/uvicorn",
+      "fastapi/typer",
+      "pallets/click",
+      "pallets/flask",
+      "pallets/jinja",
+      "pallets/werkzeug",
+      "psf/black"
+    ],
+    "test_repos": [
+      "psf/requests",
+      "pydantic/pydantic",
+      "pytest-dev/pytest",
+      "python-attrs/attrs",
+      "python-pillow/Pillow",
+      "python-poetry/poetry",
+      "scrapy/scrapy",
+      "tox-dev/tox"
+    ],
+    "shared_base_names": [],
+    "forks_or_near_dupes": false
+  }
+}

@@ -73,6 +73,15 @@ method**.
   Clean decomposition: the pure-query rep is worth **+0.195** R@1 over the α-blend, while
   the strict `as_of` cut **costs 0.125** (future modifiers *were* leaking — flagging it
   was right). The released leaderboard number applies both.
+- **Leakage audit — passed (R23).** The densification could have inflated R@1 by giving
+  the gold test a feature while leaving negative candidates unrankable. The audit
+  ([run_diff2test_audit.py](../data/pilot/graph/run_diff2test_audit.py),
+  `diff2test-audit-results.json`) refutes that: candidate **coverage is balanced** (gold
+  85.7% vs negatives 81.9%); **fair R@1 — ranking only among *covered* candidates** (the
+  trivial covered-vs-uncovered cue removed) — is **0.500, 5.7× the random-among-covered
+  baseline** (0.088), and the end-to-end 0.429 is therefore slightly *conservative*, not
+  inflated; train/test repos are disjoint with no fork/near-duplicate base names. The
+  co-change signal is real discrimination, not a coverage artefact.
 - **Scope:** pilot scale, single cross-repo split, one (α, hops) point; the dense graph
   is a one-time live snapshot (committed for offline replay). Exploratory.
 

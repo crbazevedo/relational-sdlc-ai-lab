@@ -22,6 +22,8 @@ The public operating boundary is in [docs/operating-boundary.md](docs/operating-
 The research lifecycle is in [docs/research-lifecycle.md](docs/research-lifecycle.md).
 The experiment-driven research plan (hypotheses, results ledger, decision gates) is
 in [docs/research-roadmap.md](docs/research-roadmap.md).
+The **consolidated benchmark leaderboard** (both tasks, honest baselines, with the
+provenance card for every number) is in [BENCHMARK.md](BENCHMARK.md).
 
 This public repository is intentionally limited to research notes, source
 rules, dataset documentation, model designs, evaluation designs, and

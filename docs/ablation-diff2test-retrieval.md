@@ -65,12 +65,14 @@ method**.
   entirely from co-change geometry (a PR resembling the other PRs that touch a test).
   That is the relational thesis in its purest form on a task text-cosine *cannot* do
   (embedder-cosine = 0.009).
-- **Temporal caveat (a hardening item for R22).** The aggregation uses *all* non-gold
-  modifying PRs regardless of timestamp (matching R16E), so a test's feature can include
-  PRs created *after* the query PR. A strict `as_of` filter — only modifiers with
-  `valid_from ≤` the query PR's — is the honest benchmark variant and would tighten the
-  number; the dense graph's `temporal.inconsistent` validate warnings flag exactly these
-  older/newer edges. Deferred to the benchmark-hardening wave.
+- **Temporal caveat — resolved (R22).** R20/R21 used the R16E scorer (α-blends the
+  query PR with its files; aggregates non-gold modifiers regardless of time). The
+  **release-honest** variant — query = the PR's *own* embedding, test feature = mean of
+  non-gold modifiers with `valid_from ≤` the query PR's — gives **R@1 0.429, MRR 0.574**
+  (reachable 85.7%; `diff2test-strict-results.json`, see [BENCHMARK.md](../BENCHMARK.md)).
+  Clean decomposition: the pure-query rep is worth **+0.195** R@1 over the α-blend, while
+  the strict `as_of` cut **costs 0.125** (future modifiers *were* leaking — flagging it
+  was right). The released leaderboard number applies both.
 - **Scope:** pilot scale, single cross-repo split, one (α, hops) point; the dense graph
   is a one-time live snapshot (committed for offline replay). Exploratory.
 

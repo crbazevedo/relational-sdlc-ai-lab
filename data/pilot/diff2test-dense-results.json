@@ -1,0 +1,31 @@
+{
+  "task": "diff_to_affected_test",
+  "split": "pilot cross-repo (test split)",
+  "alpha": 0.5,
+  "hops": 1,
+  "n_dense_edges": 982,
+  "n_dense_pr_nodes": 510,
+  "reachable_orig": 0.5982,
+  "reachable_dense": 0.8929,
+  "embedder_cosine": {
+    "R@1": 0.0089,
+    "R@5": 0.1746,
+    "R@10": 0.7049,
+    "MRR": 0.1553,
+    "n_queries": 112
+  },
+  "graph_aug_orig_R16E": {
+    "R@1": 0.0089,
+    "R@5": 0.1746,
+    "R@10": 0.7049,
+    "MRR": 0.1553,
+    "n_queries": 112
+  },
+  "graph_aug_dense_R20": {
+    "R@1": 0.3054,
+    "R@5": 0.6575,
+    "R@10": 0.7919,
+    "MRR": 0.5078,
+    "n_queries": 112
+  }
+}

@@ -36,3 +36,6 @@ data/content/embeddings/
 # macOS junk
 .DS_Store
 **/.DS_Store
+
+# R20 live-densify resume checkpoint (transient)
+data/pilot/graph/densify-progress.json

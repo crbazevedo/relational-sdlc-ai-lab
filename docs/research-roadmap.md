@@ -99,6 +99,7 @@ torch (closing the snapshot-trust gap); R@5/R@10 are footnoted as near-ceiling a
 | **diff→test density (R17b)** | is the 59.8% diff→test ceiling method-bound or an ingest-depth (density) artefact? | **density artefact, confirmed** — gold test files are heavily co-changed in real history (median 35 commits each); only 12/110 touched by ≤1 change | reachable ceiling 59.8% → **96.4%** (isolation 46.9% → 4.4%) under real co-change | `diff2test-density-results.json` |
 | **Negatives lever (R18)** | does pushing R16D's negative-pool lever (more vs harder) grow the Tier-2 LoRA win, now that the M5 GPU lifts the CPU memory cap? | **harder, not more** — random pool flat (b32/48/96 +0.12–0.13; b192/384 OOM the M5), but same-repo **hard** batching at matched pool is the new best; Tier-2 CI excludes zero decisively (31/32 repos up) | repo-hard ΔR@1 **+0.137** (vs matched random +0.120; R16D best +0.126), CI [+0.112,+0.164] (repo-cluster [+0.107,+0.173]) | `negatives-sweep-results.json` |
 | **Hardness multi-seed (R19)** | is R18's hardness gain real across seeds or MPS noise? | **real** — repo-hard beats matched random on **both** seeds with a tight paired gap (mean +0.020, std ~0.001), above the ~±0.008 MPS noise; seed-0 reproduces R18's +0.1375 exactly (the +0.146 first-run was a memory-leak-state artefact) | random mean +0.122 vs **repo-hard mean +0.142** (paired gap +0.019/+0.021); mining (H2) deferred | `hardneg-confirm-results.json` |
+| **diff→test retrieval (R20)** | does R17b's structural unlock convert into an actual second-task retrieval result? | **yes — the second task works** — a denser `modifies` graph (live-ingested, +982 edges over 8 test repos) lifts diff→test off the floor; same R16E scorer+guard, only the graph density changes (R16E floor reproduces exactly) | R@1 **0.009 → 0.305** (≈34×), MRR 0.155 → 0.508; reachability 59.8% → 89.3% | `diff2test-dense-results.json` |
 
 **Synthesis (R3→R12, refined by R13/R14).** The relational win comes from the **base representation**:
 an embedding-tuned model as substrate, **LoRA reshaping it with the relation loss**
@@ -192,6 +193,14 @@ a trained relational SLM** — not naive "use the whole body."
   removable by denser ingest — the diff→test retrieval re-eval (which needs torch to
   embed the new PR nodes) is now a worthwhile **Track-D/GPU** follow-up, no longer
   capped below 60% by construction.
+- **Second task activated (R20):** done end-to-end on the M5
+  ([ablation-diff2test-retrieval.md](ablation-diff2test-retrieval.md)). A live-densified
+  `modifies` graph (+982 (PR,test) edges over the 8 test repos) + embedded PR nodes,
+  scored by the **same R16E aggregator + leakage guard**, lifts diff→test **R@1
+  0.009 → 0.305** (≈34×, MRR 0.155 → 0.508); reachability 59.8% → 89.3%. The R16E floor
+  reproduces exactly, so the gain is purely the density. The relational thesis now spans
+  **two tasks**, not one. Open: push density toward the 96.4% ceiling (more PRs /
+  commit-level edges); a learned link-predictor; the same on `log→file`.
 
 ### Track C — Tasks & labels
 - **C1 `diff→affected-test`, `log→file`** (needs Track B's file edges): test Q3.

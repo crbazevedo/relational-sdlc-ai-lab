@@ -3,15 +3,16 @@
   "split": "pilot cross-repo (test split)",
   "alpha": 0.5,
   "hops": 1,
-  "n_dense_edges": 982,
-  "n_dense_pr_nodes": 510,
+  "n_dense_edges": 3115,
+  "n_dense_pr_nodes": 920,
   "reachable_orig": 0.5982,
-  "reachable_dense": 0.8929,
+  "reachable_dense": 0.9375,
   "embedder_cosine": {
     "R@1": 0.0089,
     "R@5": 0.1746,
     "R@10": 0.7049,
     "MRR": 0.1553,
+    "HNA": 0.0893,
     "n_queries": 112
   },
   "graph_aug_orig_R16E": {
@@ -19,13 +20,15 @@
     "R@5": 0.1746,
     "R@10": 0.7049,
     "MRR": 0.1553,
+    "HNA": 0.0893,
     "n_queries": 112
   },
   "graph_aug_dense_R20": {
-    "R@1": 0.3054,
-    "R@5": 0.6575,
-    "R@10": 0.7919,
-    "MRR": 0.5078,
+    "R@1": 0.359,
+    "R@5": 0.6808,
+    "R@10": 0.8334,
+    "MRR": 0.5911,
+    "HNA": 0.4375,
     "n_queries": 112
   }
 }

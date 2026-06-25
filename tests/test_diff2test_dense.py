@@ -30,9 +30,10 @@ def test_original_edges_reproduce_the_r16e_floor():
 
 def test_dense_graph_lifts_retrieval_off_the_floor():
     # The whole point: dense edges move diff->test from chance to a real signal.
+    # R20 (~200 PRs/repo) hit 0.305; R21 (~500 PRs/repo) climbs to ~0.36.
     d = _d()
-    assert d["graph_aug_dense_R20"]["R@1"] > 0.25
-    assert d["graph_aug_dense_R20"]["MRR"] > 0.40
+    assert d["graph_aug_dense_R20"]["R@1"] > 0.30
+    assert d["graph_aug_dense_R20"]["MRR"] > 0.50
     # ...and the gain is purely the density (same scorer, same guard).
     assert d["graph_aug_dense_R20"]["R@1"] > 20 * d["graph_aug_orig_R16E"]["R@1"]
 
@@ -40,4 +41,4 @@ def test_dense_graph_lifts_retrieval_off_the_floor():
 def test_reachability_rose_with_density():
     d = _d()
     assert d["reachable_orig"] == pytest.approx(0.598, abs=1e-2)
-    assert d["reachable_dense"] > 0.85
+    assert d["reachable_dense"] > 0.90

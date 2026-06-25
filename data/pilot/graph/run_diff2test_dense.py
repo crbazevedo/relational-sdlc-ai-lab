@@ -71,7 +71,8 @@ def main():
     def cell(m):
         r = m["recall_at_k"]
         return {"R@1": round(r["1"], 4), "R@5": round(r["5"], 4), "R@10": round(r["10"], 4),
-                "MRR": round(m["mrr"], 4), "n_queries": m["n_queries"]}
+                "MRR": round(m["mrr"], 4), "HNA": round(m["hard_negative_accuracy"], 4),
+                "n_queries": m["n_queries"]}
 
     emb = cell(score_embedder_cosine(diff_ds, node_vecs, dim))
     aug_orig = cell(score_graph_aug(diff_ds, node_vecs, dim, fixes_edges, modifies_orig,

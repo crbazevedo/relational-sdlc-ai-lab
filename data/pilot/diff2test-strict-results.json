@@ -1,0 +1,27 @@
+{
+  "task": "diff_to_affected_test",
+  "split": "pilot cross-repo (test split)",
+  "query_repr": "pure PR embedding (no alpha-blend)",
+  "r21_alpha_blend_all_modifiers": {
+    "R@1": 0.359,
+    "MRR": 0.5911,
+    "reachable": 0.9375
+  },
+  "pure_query_all_modifiers": {
+    "R@1": 0.5536,
+    "R@5": 0.8393,
+    "R@10": 0.9196,
+    "MRR": 0.6789,
+    "reachable": 0.9375,
+    "n_queries": 112
+  },
+  "pure_query_as_of_RELEASE": {
+    "R@1": 0.4286,
+    "R@5": 0.7589,
+    "R@10": 0.8661,
+    "MRR": 0.5736,
+    "reachable": 0.8571,
+    "n_queries": 112
+  },
+  "reads": "query dilution (alpha-blend) cost ~0.195 R@1; temporal future-leakage inflated by ~0.125 R@1; release-honest = pure query + as_of."
+}

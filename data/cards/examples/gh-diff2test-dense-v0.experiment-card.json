@@ -12,9 +12,9 @@
   "system": "graph-aug-cosine (dense modifies, alpha=0.5, 1 hop)",
   "runtime_class": "cpu",
   "metrics": {
-    "recall_at_k": {"1": 0.3054, "5": 0.657, "10": 0.792},
-    "mrr": 0.508,
-    "hard_negative_accuracy": 0.3571,
+    "recall_at_k": {"1": 0.359, "5": 0.6808, "10": 0.8334},
+    "mrr": 0.5911,
+    "hard_negative_accuracy": 0.4375,
     "n_queries": 112
   },
   "baseline_comparison": "exp:gh-graphsweep-diff2test-lora-h2-v0",
@@ -26,7 +26,7 @@
   ],
   "known_limitations": [
     "Pilot scale, single cross-repo split, one (alpha=0.5, hops=1) point. Test nodes carry no text embedding — the signal is purely structural (co-change geometry).",
-    "Reachability 89.3% (vs the 96.4% commit-level ceiling): PR-level densification (recent merged PRs touching test files) captures less than full commit history, so R@1 0.305 is a floor for this approach, not a ceiling. More PRs / commit-level edges would push it higher.",
+    "Density progression: R20 (~200 PRs/repo, 982 edges) gave R@1 0.305 at 89.3% reachable; R21 (~500 PRs/repo, 3,115 edges) gives R@1 0.359 at 93.8% reachable — still below the 96.4% commit-level ceiling, so R@1 0.359 is a floor (more PRs / commit-level edges would push higher).",
     "Dense graph is a one-time live snapshot (committed for offline replay). Exploratory."
   ],
   "exploratory": true

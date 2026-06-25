@@ -38,6 +38,7 @@ from relsdlc.ingest import (  # noqa: E402
 from run_crossrepo_ablation import load_pilot_crossrepo  # noqa: E402
 
 PAGES = int(os.environ.get("RELSDLC_PAGES", "2"))    # merged PRs/repo ~ PAGES*100
+START_PAGE = int(os.environ.get("RELSDLC_START_PAGE", "1"))  # resume from a later page to ADD density
 PACE = 0.12
 EDGES_OUT = HERE / "modifies_edges_dense.jsonl"
 RECS_OUT = HERE / "records_dense.jsonl"              # new PR + test/file records
@@ -83,7 +84,7 @@ def main():
         lic = _repo_license(repo, token)
         ts = _now_iso()
         new_e = new_r = 0
-        for page in range(1, PAGES + 1):
+        for page in range(START_PAGE, PAGES + 1):
             try:
                 pulls, hdr = _request(
                     f"{GITHUB_API}/repos/{repo}/pulls?state=closed&per_page=100&page={page}", token)

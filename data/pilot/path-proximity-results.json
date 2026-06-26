@@ -1,0 +1,31 @@
+{
+  "harness": "pilot diff->affected-test, test split (same 112-query pool as the baselines)",
+  "n_queries": 112,
+  "source_coverage": 0.9107,
+  "path_proximity": {
+    "n": 112,
+    "R@1": 0.5804,
+    "R@5": 0.75,
+    "R@10": 0.9018,
+    "MRR": 0.6807
+  },
+  "bm25_over_paths_anchor": {
+    "n": 112,
+    "R@1": 0.5179,
+    "R@5": 0.7857,
+    "R@10": 0.9643,
+    "MRR": 0.6487
+  },
+  "best_static_proximity+bm25": {
+    "n": 112,
+    "R@1": 0.6786,
+    "R@5": 0.8929,
+    "R@10": 0.9821,
+    "MRR": 0.7871
+  },
+  "reference": {
+    "embedder_cosine_R@1": 0.009,
+    "co_change_structure_R@1_release": 0.429,
+    "co_change_structure_R@1_no_asof": 0.554
+  }
+}

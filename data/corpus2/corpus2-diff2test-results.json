@@ -1,0 +1,28 @@
+{
+  "corpus": "corpus2 (TS/JS, densified repos)",
+  "dense_repos": [
+    "expressjs/express",
+    "prettier/prettier",
+    "sveltejs/svelte",
+    "vitejs/vite",
+    "vuejs/core",
+    "withastro/astro"
+  ],
+  "n_queries": 905,
+  "mean_pool": 19.0,
+  "structure": {
+    "gold_reachable": 0.5414,
+    "negative_coverage": 0.5779
+  },
+  "embedder_cosine_R@1_textfree_baseline": 0.1337,
+  "graph_aug_asof_R@1": 0.3514,
+  "graph_aug_asof_MRR": 0.4553,
+  "fair_R@1_among_covered": 0.6408,
+  "random_among_covered": 0.1172,
+  "pilot_reference": {
+    "diff2test_R@1": 0.429,
+    "fair_R@1": 0.5,
+    "fair_x_random": 5.7,
+    "textfree_baseline": 0.009
+  }
+}

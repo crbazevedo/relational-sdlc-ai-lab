@@ -88,6 +88,15 @@ only among rankable candidates** (removing the covered-vs-uncovered cue) gives f
 **0.500 — 5.7× the random-among-covered baseline** — so the 0.429 end-to-end number is
 conservative, not inflated. Train/test repositories are disjoint (no forks/near-duplicates).
 
+*External-validity replication (`corpus2-diff2test-results.json`):* the result reproduces
+on an **independent 12-repo TypeScript/JavaScript corpus** (4,962 `modifies` edges,
+disjoint ecosystem from the Python pilot). Under the identical release-honest method,
+fair R@1 is **5.5× the random-among-covered baseline** — near-identical to the pilot's
+5.7×, and the cleanest cross-corpus comparison since it is invariant to pool size and
+reachability. Coverage is balanced (gold 54.1% vs negative 57.8%); end-to-end R@1 0.351
+(lower absolute number tracks the shallower densification — see
+[ablation-corpus2-replication.md](docs/ablation-corpus2-replication.md)).
+
 ---
 
 ## Reproduce

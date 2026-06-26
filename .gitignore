@@ -39,3 +39,10 @@ data/content/embeddings/
 
 # R20 live-densify resume checkpoint (transient)
 data/pilot/graph/densify-progress.json
+
+# R24 corpus2 transient checkpoint + logs
+data/corpus2/build-progress.json
+data/corpus2/*.log
+
+# Transient live-densify logs (R20/R21)
+data/pilot/graph/*.log

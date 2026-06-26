@@ -16,6 +16,11 @@ committed caches with **numpy only** (no GPU, no network).
 
 - **Links are labels, not features** — explicit references (`#N`, URLs, SHAs) are
   scrubbed from inputs; a relation a regex can recover is never a test.
+- **Labels are verifiable** — a construction audit (`label-audit-results.json`) puts
+  precision at **99.4%** for `fixes` (closing-keyword-verified) and **100%** for `modifies`
+  (git-history), with a manual sample confirming `fixes` is semantically correct even where
+  issue/PR titles share no tokens. See
+  [docs/ablation-label-precision.md](docs/ablation-label-precision.md).
 - **Cross-repo splits** — train repos are disjoint from test repos; a win must
   generalize to unseen repositories.
 - **The bar is a strong lexical baseline (BM25), not just `embedder-cosine`** — the

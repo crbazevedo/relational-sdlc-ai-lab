@@ -1,0 +1,137 @@
+{
+  "meta": {
+    "n_test_repos": 8,
+    "seed": 0,
+    "bootstrap": 10000
+  },
+  "task_A_issue2pr": {
+    "BM25": {
+      "n": 174,
+      "pool_mean": 13.0,
+      "R@1": 0.5,
+      "R@5": 0.8736,
+      "R@10": 0.9713,
+      "MRR": 0.658,
+      "nDCG@10": 0.7318,
+      "Hits@10": 0.9713,
+      "HardNegAcc": 0.5
+    },
+    "embedder-cosine (frozen)": {
+      "n": 174,
+      "pool_mean": 13.0,
+      "R@1": 0.592,
+      "R@5": 0.9195,
+      "R@10": 0.9885,
+      "MRR": 0.7278,
+      "nDCG@10": 0.7908,
+      "Hits@10": 0.9885,
+      "HardNegAcc": 0.592
+    },
+    "bi-encoder LoRA (Occam)": {
+      "n": 174,
+      "pool_mean": 13.0,
+      "R@1": 0.6552,
+      "R@5": 0.9943,
+      "R@10": 0.9943,
+      "MRR": 0.7914,
+      "nDCG@10": 0.8421,
+      "Hits@10": 0.9943,
+      "HardNegAcc": 0.6609
+    },
+    "+ graph-aug (LoRA)": {
+      "n": 174,
+      "pool_mean": 13.0,
+      "R@1": 0.6897,
+      "R@5": 0.9943,
+      "R@10": 0.9943,
+      "MRR": 0.8172,
+      "nDCG@10": 0.8617,
+      "Hits@10": 0.9943,
+      "HardNegAcc": 0.6897
+    }
+  },
+  "task_B_diff2test": {
+    "BM25 (paths)": {
+      "n": 112,
+      "pool_mean": 14.2,
+      "R@1": 0.5357,
+      "R@5": 0.7679,
+      "R@10": 0.9554,
+      "MRR": 0.6539,
+      "nDCG@10": 0.6968,
+      "Hits@10": 0.9554,
+      "HardNegAcc": 0.5625
+    },
+    "path-overlap": {
+      "n": 112,
+      "pool_mean": 14.2,
+      "R@1": 0.4643,
+      "R@5": 0.7679,
+      "R@10": 0.9554,
+      "MRR": 0.6103,
+      "nDCG@10": 0.6652,
+      "Hits@10": 0.9554,
+      "HardNegAcc": 0.4911
+    },
+    "embedder-cosine (frozen)": {
+      "n": 112,
+      "pool_mean": 14.2,
+      "R@1": 0.0089,
+      "R@5": 0.2321,
+      "R@10": 0.75,
+      "MRR": 0.1553,
+      "nDCG@10": 0.27,
+      "Hits@10": 0.75,
+      "HardNegAcc": 0.0893
+    },
+    "graph-aug (structure)": {
+      "n": 112,
+      "pool_mean": 14.2,
+      "R@1": 0.0089,
+      "R@5": 0.2321,
+      "R@10": 0.75,
+      "MRR": 0.1553,
+      "nDCG@10": 0.27,
+      "Hits@10": 0.75,
+      "HardNegAcc": 0.0893
+    }
+  },
+  "confidence_intervals_R@1": {
+    "A/bi-encoder LoRA/R@1/query": [
+      0.5805,
+      0.7241
+    ],
+    "A/bi-encoder LoRA/R@1/repo": [
+      0.5556,
+      0.7478
+    ],
+    "A/BM25/R@1/query": [
+      0.4253,
+      0.5747
+    ],
+    "B/graph-aug/R@1/query": [
+      0.0,
+      0.0268
+    ],
+    "B/graph-aug/R@1/repo": [
+      0.0,
+      0.0349
+    ],
+    "B/BM25/R@1/query": [
+      0.4464,
+      0.625
+    ]
+  },
+  "mde_power_lora_taskA": {
+    "n": 174,
+    "observed_delta_R@1": 0.0632,
+    "sd_paired": 0.3748,
+    "mde_R@1_at_80pct_power": 0.0796,
+    "achieved_power": 0.604,
+    "gains": 18,
+    "losses": 7,
+    "detectable": false
+  },
+  "construct_check_note": "Task B candidates are text-free test-file nodes (only a path). BM25 over path tokens and path-overlap both floor near chance; only co-change structure ranks.",
+  "released_dense_asof_note": "Task-B release-honest dense+as_of number is R@1 0.429 (BENCHMARK.md / diff2test-strict-results.json)."
+}

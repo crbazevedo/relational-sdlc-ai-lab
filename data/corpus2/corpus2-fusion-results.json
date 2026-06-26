@@ -1,0 +1,27 @@
+{
+  "corpus": "corpus2 (TS/JS), same-repo negs, leave-one-repo-out CV",
+  "n_queries": 905,
+  "R@1": {
+    "bm25": 0.6851,
+    "struct": 0.3481,
+    "LR_lexical": 0.7072,
+    "LR_lexical+struct": 0.6696
+  },
+  "structure_contribution": {
+    "delta_R@1_lexstruct_minus_lex": -0.0376,
+    "ci95": [
+      -0.0663,
+      -0.0088
+    ],
+    "delta_R@1_lexstruct_minus_bm25": -0.0155,
+    "ci95_vs_bm25": [
+      -0.0464,
+      0.0144
+    ]
+  },
+  "fallback_regime": {
+    "n_bm25_wrong": 285,
+    "recovery_LR_lexstruct": 0.3263,
+    "recovery_struct_alone": 0.3123
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "corpus": "corpus2 (TS/JS), same-repo negatives",
+  "n_queries": 905,
+  "R@1": {
+    "bm25": 0.6088,
+    "struct": 0.3481,
+    "fusion": 0.4972
+  },
+  "complementarity": {
+    "struct_only": 109,
+    "bm25_only": 345,
+    "both": 206,
+    "neither": 245
+  },
+  "pilot_note": "pilot Task B: BM25(paths) R@1 0.536 vs embedder-cosine 0.009"
+}

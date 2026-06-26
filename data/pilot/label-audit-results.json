@@ -1,0 +1,186 @@
+{
+  "fixes": {
+    "n_edges": 356,
+    "n_checkable": 356,
+    "construction_precision": 0.9944,
+    "definition": "source PR text contains a closing keyword referencing the target issue number",
+    "method_distribution": {
+      "human_label": 356
+    },
+    "semantic_proxy_title_jaccard": {
+      "median": 0.1875,
+      "frac_overlap_gt_0": 0.8848,
+      "note": "weak proxy, NOT ground truth; manual rating needed for true semantic precision"
+    }
+  },
+  "modifies": {
+    "n_edges": 1356,
+    "construction_precision": 1.0,
+    "definition": "edge correctly asserts 'PR changed this file' (source is a PR, target a file/test node); ~1.0 by git-history construction",
+    "test_file_fraction": 0.2898,
+    "test_file_fraction_note": "share of modify-edges whose target is a TEST path \u2014 a graph-composition statistic, NOT a precision number"
+  },
+  "sample_for_manual_rating": [
+    {
+      "pr": "gh:Textualize/rich:pr:3952",
+      "issue": "gh:Textualize/rich:issue:3947",
+      "closing_keyword_found": true,
+      "issue_title": "[BUG] If the text contains '\\u200d', console.print may throw a RuntimeError",
+      "pr_title": "Fix cell_len crash when string ends with ZWJ",
+      "title_jaccard": 0.0
+    },
+    {
+      "pr": "gh:Textualize/rich:pr:3963",
+      "issue": "gh:Textualize/rich:issue:3958",
+      "closing_keyword_found": true,
+      "issue_title": "[BUG] Strings with ANSI escape sequences can cause `Console.print()` to hang",
+      "pr_title": "Fix infinite loop when ANSI escape sequences appear at string start",
+      "title_jaccard": 0.15
+    },
+    {
+      "pr": "gh:Textualize/rich:pr:3979",
+      "issue": "gh:Textualize/rich:issue:3958",
+      "closing_keyword_found": true,
+      "issue_title": "[BUG] Strings with ANSI escape sequences can cause `Console.print()` to hang",
+      "pr_title": "Fix infinite loop in split_graphemes with zero-width leading characters",
+      "title_jaccard": 0.045
+    },
+    {
+      "pr": "gh:Textualize/rich:pr:3988",
+      "issue": "gh:Textualize/rich:issue:3577",
+      "closing_keyword_found": true,
+      "issue_title": "[BUG] Trailing line break removed by Text.from_ansi().",
+      "pr_title": "Fix Text.from_ansi() stripping trailing newlines",
+      "title_jaccard": 0.333
+    },
+    {
+      "pr": "gh:Textualize/rich:pr:4054",
+      "issue": "gh:Textualize/rich:issue:4041",
+      "closing_keyword_found": true,
+      "issue_title": "`FileProxy.isatty()` always returns `False` instead of delegating to the proxied file",
+      "pr_title": "Fix FileProxy.isatty() always returning False instead of delegating to proxied file",
+      "title_jaccard": 0.714
+    },
+    {
+      "pr": "gh:Textualize/rich:pr:4063",
+      "issue": "gh:Textualize/rich:issue:4038",
+      "closing_keyword_found": true,
+      "issue_title": "[BUG] `TableDataElement.on_text` clobbers syntax-highlight spans for inline code",
+      "pr_title": "Preserve inline code spans in markdown tables",
+      "title_jaccard": 0.2
+    },
+    {
+      "pr": "gh:astral-sh/ruff:pr:25791",
+      "issue": "gh:astral-sh/ruff:issue:25547",
+      "closing_keyword_found": true,
+      "issue_title": "`ruff:ignore` doesn't work in nested comments",
+      "pr_title": "Handle nested `ruff:ignore` comments",
+      "title_jaccard": 0.444
+    },
+    {
+      "pr": "gh:encode/starlette:pr:3085",
+      "issue": "gh:encode/starlette:issue:3048",
+      "closing_keyword_found": true,
+      "issue_title": "Can not use `send_denial_response` with `StreamingResponse`",
+      "pr_title": "fix: websocket prefix for StreamingResponse and FileResponse denial (\u2026",
+      "title_jaccard": 0.143
+    },
+    {
+      "pr": "gh:encode/starlette:pr:3094",
+      "issue": "gh:encode/starlette:issue:1832",
+      "closing_keyword_found": true,
+      "issue_title": "CORSMiddleware does not provide explicit origin although Authorization header is present",
+      "pr_title": "Fix CORSMiddleware to return explicit origin with Authorization header",
+      "title_jaccard": 0.333
+    },
+    {
+      "pr": "gh:encode/starlette:pr:3111",
+      "issue": "gh:encode/starlette:issue:1921",
+      "closing_keyword_found": true,
+      "issue_title": "Rewrite databases page",
+      "pr_title": "docs: drop notes about `databases` package",
+      "title_jaccard": 0.125
+    },
+    {
+      "pr": "gh:encode/starlette:pr:3126",
+      "issue": "gh:encode/starlette:issue:1832",
+      "closing_keyword_found": true,
+      "issue_title": "CORSMiddleware does not provide explicit origin although Authorization header is present",
+      "pr_title": "Fix CORSMiddleware to return explicit origin for Authorization header",
+      "title_jaccard": 0.333
+    },
+    {
+      "pr": "gh:encode/starlette:pr:3127",
+      "issue": "gh:encode/starlette:issue:1832",
+      "closing_keyword_found": true,
+      "issue_title": "CORSMiddleware does not provide explicit origin although Authorization header is present",
+      "pr_title": "Fix CORSMiddleware to return explicit origin for Authorization header",
+      "title_jaccard": 0.333
+    },
+    {
+      "pr": "gh:encode/starlette:pr:3134",
+      "issue": "gh:encode/starlette:issue:1832",
+      "closing_keyword_found": true,
+      "issue_title": "CORSMiddleware does not provide explicit origin although Authorization header is present",
+      "pr_title": "Return explicit origin for CORS requests with Authorization header",
+      "title_jaccard": 0.25
+    },
+    {
+      "pr": "gh:encode/starlette:pr:3137",
+      "issue": "gh:encode/starlette:issue:1832",
+      "closing_keyword_found": true,
+      "issue_title": "CORSMiddleware does not provide explicit origin although Authorization header is present",
+      "pr_title": "Return explicit origin in CORS response when credentials are allowed",
+      "title_jaccard": 0.105
+    },
+    {
+      "pr": "gh:encode/starlette:pr:3187",
+      "issue": "gh:encode/starlette:issue:3048",
+      "closing_keyword_found": true,
+      "issue_title": "Can not use `send_denial_response` with `StreamingResponse`",
+      "pr_title": "Fix StreamingResponse and FileResponse with websocket denial responses",
+      "title_jaccard": 0.231
+    },
+    {
+      "pr": "gh:encode/starlette:pr:3188",
+      "issue": "gh:encode/starlette:issue:3048",
+      "closing_keyword_found": true,
+      "issue_title": "Can not use `send_denial_response` with `StreamingResponse`",
+      "pr_title": "Fix StreamingResponse and FileResponse with websocket denial responses",
+      "title_jaccard": 0.231
+    },
+    {
+      "pr": "gh:encode/starlette:pr:3189",
+      "issue": "gh:encode/starlette:issue:3048",
+      "closing_keyword_found": true,
+      "issue_title": "Can not use `send_denial_response` with `StreamingResponse`",
+      "pr_title": "Handle websocket denial responses in streaming and file responses",
+      "title_jaccard": 0.067
+    },
+    {
+      "pr": "gh:encode/starlette:pr:3198",
+      "issue": "gh:encode/starlette:issue:3192",
+      "closing_keyword_found": true,
+      "issue_title": "Remove or deprecate HTTP_306_RESERVED \u2014 status code 306 is (Unused) per IANA and RFC 9110",
+      "pr_title": "Deprecate HTTP_306_RESERVED status code",
+      "title_jaccard": 0.4
+    },
+    {
+      "pr": "gh:encode/starlette:pr:3250",
+      "issue": "gh:encode/starlette:issue:3203",
+      "closing_keyword_found": true,
+      "issue_title": "Replace inline server list with link to ASGI implementations page",
+      "pr_title": "docs: link to ASGI server implementations list",
+      "title_jaccard": 0.545
+    },
+    {
+      "pr": "gh:encode/uvicorn:pr:2809",
+      "issue": "gh:encode/uvicorn:issue:2789",
+      "closing_keyword_found": true,
+      "issue_title": "X-Forwarded-For doesn't properly handle ports",
+      "pr_title": "Fix X-Forwarded-For not properly handling ports",
+      "title_jaccard": 0.455
+    }
+  ],
+  "honest_note": "Construction precision is an UPPER BOUND on semantic precision. `fixes` semantic precision (did the PR actually fix the issue) and `modifies` semantic precision (is the test actually exercised by the diff) require human raters; the sample above is provided for that."
+}

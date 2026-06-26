@@ -87,15 +87,42 @@ already gets right.
 (R@1 0.707). Co-change structure is neither superior to, nor complementary with, lexical
 retrieval here. The "co-change geometry beats text" thesis does not hold for this task.
 
-## 4. What this means
+## 4. A static path-proximity heuristic also beats structure (R27)
+
+The sharpest SE-reviewer objection is that BM25-over-prose is not the field's baseline for
+test selection. The field's baseline is *static change-based selection* — pick the tests
+nearest the changed files. Ekstazi/STARTS are JVM dynamic RTS and do not run on our
+Python/TS corpora, so the language-agnostic, deployable analogue is **changed-source-path →
+test-path proximity**: for each query PR, take the non-test files it modified (the diff,
+available at query time, no history) and rank candidate tests by core-token overlap with
+those source paths (e.g. `pydantic/_internal/_generics.py` → `tests/test_generics.py`).
+Scored on the same 112-query pilot harness ([run_path_proximity.py](../data/pilot/run_path_proximity.py)):
+
+| System | R@1 | R@5 | MRR |
+|---|---|---|---|
+| sentence embedder-cosine | 0.009 | — | — |
+| co-change structure (graph-agg + `as_of`) | 0.429 | 0.759 | 0.574 |
+| BM25 over paths | ~0.52–0.54 | 0.79 | 0.65 |
+| **path-proximity (static, no history)** | **0.580** | 0.750 | 0.681 |
+| **best static (path-proximity + BM25)** | **0.679** | 0.893 | 0.787 |
+
+A history-free static heuristic (0.580) beats co-change structure (0.429), and the best
+deployable static system — path-proximity combined with PR-prose BM25 — reaches 0.679. The
+heuristic is honest, not circular: it uses only the diff a selector has at query time, and it
+genuinely fails when the affected test is not named after the changed file (e.g. a change to
+`json_schema.py` whose gold test is `test_root_model.py`). So the negative result holds
+against the field's own baseline class, not only against text similarity.
+
+## 5. What this means
 
 - **Task A is the positive result** (relational LoRA + aggregation beat BM25 and the frozen
   embedder), tempered by an honest power caveat.
-- **Task B is a negative result / cautionary tale**: "text-free" intuitions are dangerous —
-  paths are text, and a path-lexical baseline beats graph structure on SE test retrieval.
-- The program's durable contribution is the **benchmark and protocol** — de-referencing,
-  cross-repo splits, leakage + coverage audits, cross-corpus replication, *and the baseline
-  rigor that exposed its own headline*.
+- **Task B is a negative result / cautionary tale**: paths are text, and both a path-lexical
+  ranker and a static change-proximity heuristic beat co-change structure on SE test retrieval.
+- The program's durable contribution is the benchmark and protocol — de-referencing,
+  cross-repo splits, leakage + coverage audits, cross-corpus replication, and the baseline
+  rigor that exposed its own headline.
 
-The paper is being re-spined accordingly (Task A + methodology forward; Task B as the
-honest negative). Source of truth: the three results JSONs committed alongside these scripts.
+The actionable takeaway for practitioners: on diff→test, try static path-proximity to the
+changed files (and PR-prose BM25) before reaching for graph or embedding methods. Source of
+truth: the result JSONs committed alongside these scripts.

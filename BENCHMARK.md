@@ -91,13 +91,18 @@ test it touches.
 | sentence embedder-cosine | 0.009 | 0.134 | `baselines-metrics-results.json` |
 | co-change structure (graph-agg + `as_of`) | 0.429 (dense) / 0.009 (sparse) | 0.348 | `diff2test-strict-results.json` |
 | **BM25 over test paths** | **0.536** | **0.609** | `corpus2-baselines-results.json` |
+| **path-proximity** (static, changed-source→test path) | **0.580** | — | `path-proximity-results.json` |
+| **best static** (path-proximity + BM25) | **0.679** | — | `path-proximity-results.json` |
 | **learned lexical reranker** (BM25 + path-overlap, LORO CV) | — | **0.707** | `corpus2-fusion-results.json` |
 
-**BM25-over-paths beats co-change structure on both corpora**, including against corpus2's
-harder same-repo negatives. A *learned* reranker over lexical features is the best system
-(R@1 0.707); adding structure features to it **significantly hurts** (ΔR@1 −0.038, 95% CI
-[−0.066, −0.009]), and naive fusion also hurts. So co-change structure is **neither
-superior to nor complementary with** lexical retrieval on this task.
+**Both a path-lexical ranker and a static change-proximity heuristic beat co-change
+structure.** BM25-over-paths wins on both corpora; a classic static test-selection heuristic
+(rank tests by path proximity to the changed source files — the language-agnostic analogue of
+Ekstazi/STARTS-style RTS, history-free) reaches R@1 0.580, and combined with BM25 reaches
+0.679 — both above co-change structure's 0.429. A *learned* reranker over lexical features is
+the best corpus2 system (R@1 0.707); adding structure features to it **significantly hurts**
+(ΔR@1 −0.038, 95% CI [−0.066, −0.009]). So co-change structure is **neither superior to nor
+complementary with** lexical and static-analysis retrieval on this task.
 
 *What the structure work did establish (still true, just not the headline):* the co-change
 graph reaches R@1 0.429 dense+`as_of` (`diff2test-strict-results.json`); that number is not

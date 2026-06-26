@@ -18,8 +18,11 @@ committed caches with **numpy only** (no GPU, no network).
   scrubbed from inputs; a relation a regex can recover is never a test.
 - **Cross-repo splits** — train repos are disjoint from test repos; a win must
   generalize to unseen repositories.
-- **The bar is `embedder-cosine`** — the relational contribution is the *delta* over a
-  frozen pretrained embedder on the same split.
+- **The bar is a strong lexical baseline (BM25), not just `embedder-cosine`** — the
+  relational contribution is the *delta* over BM25 **and** a frozen pretrained embedder
+  on the same split. (R25 lesson: for the text-free diff→test task, `embedder-cosine` is
+  *not* a sufficient bar — a BM25 over the candidate **paths** beats co-change structure;
+  see Task 2.)
 - **Leakage guards** — the gold edge is removed before any graph aggregation; for
   diff→test the released number additionally enforces a temporal `as_of` cut (a test's
   evidence may only come from changes *before* the query).
@@ -38,12 +41,17 @@ Given an issue, retrieve the PR(s) that fixed it.
 |---|---|---|---|---|
 | vanilla token cosine | 0.391 | 0.724 | 0.544 | `gh-xrepo-vanilla-v0` |
 | unsupervised IDF cosine | 0.460 | 0.828 | 0.624 | `gh-xrepo-idf-v0` |
+| **BM25** (lexical baseline) | **0.500** | 0.874 | 0.658 | `baselines-metrics-results.json` |
 | **embedder-cosine** (frozen MiniLM-L6) | **0.592** | 0.920 | 0.728 | `gh-embed-cosine` |
 | **+ relational LoRA** (relation InfoNCE) | **0.655** | 0.994 | 0.791 | `gh-finetune-cosine` |
 | + LoRA + parameter-free graph lift | **0.690** | — | 0.820 | `gh-graphsweep-issue2pr-lora-h1-best` |
 
 *Robustness:* the LoRA win is positive on all 5 held-out-repo splits (ΔR@1 +0.061±0.021),
-with within-split 95% CIs that exclude zero (`bootstrap-ci-results.json`).
+with within-split 95% CIs that exclude zero (`bootstrap-ci-results.json`). *Power (R25):*
+the headline-split LoRA delta (+0.063) is honest but **underpowered** — it sits below the
+80%-power minimum detectable effect (0.080), achieved power ≈0.60 (`baselines-metrics-results.json`).
+The full metric suite (R@1/5/10, MRR, nDCG, Hits) with query- and repo-cluster CIs is in
+the same file.
 
 ### Dense Tier-2 (78 repos, ~35 queries/repo, 1,171 held-out queries)
 
@@ -62,40 +70,41 @@ hardness, not quantity, is the lever** — confirmed multi-seed (paired gap +0.0
 ## Task 2 — `diff_to_affected_test`
 
 Given a PR/diff, retrieve the test file(s) it affects. Candidates are test-file nodes
-with **no text embedding** — a test's score comes purely from *co-change structure*
-(the PR's similarity to the other PRs that historically modified that test), with the
-gold edge removed and a temporal `as_of` cut applied.
+with **no text *embedding*** — but they are **not text-free**: each carries a **path**
+(`tests/test_root_model.py`), and a PR's prose shares vocabulary with the path of the
+test it touches.
 
-| System | R@1 | R@5 | MRR | Card |
-|---|---|---|---|---|
-| embedder-cosine (no graph) | 0.009 | 0.175 | 0.155 | — |
-| graph-aggregation, sparse pilot graph | 0.009 | 0.175 | 0.155 | `gh-graphsweep-diff2test-lora-h2` |
-| **graph-aggregation, densified graph + `as_of`** | **0.429** | 0.759 | 0.574 | `gh-diff2test-dense-v0` |
+> **⚠️ R25 correction — a path-lexical baseline beats co-change structure here; the
+> "text-free, only structure works" framing is refuted.** We previously reported
+> `embedder-cosine 0.009` as the baseline, but that is near-zero only because a *sentence
+> embedder* discards path tokens. The honest baseline is a **BM25 over the candidate
+> paths**, and it wins on both corpora. Full analysis:
+> [ablation-baselines-and-refutation.md](docs/ablation-baselines-and-refutation.md).
 
-A task text-cosine *cannot* do (0.009) reaches **R@1 0.429** once the `modifies` graph
-is dense enough — the relational thesis in its purest form. The blocker was always
-co-change **density**, not the method: pilot sparsity isolated 47% of gold tests; a
-denser graph (live-ingested) raises reachability to ~86% under the honest `as_of` cut.
+| System | Pilot R@1 (112 q) | corpus2 R@1 (905 q, same-repo negs) | Source |
+|---|---|---|---|
+| sentence embedder-cosine | 0.009 | 0.134 | `baselines-metrics-results.json` |
+| co-change structure (graph-agg + `as_of`) | 0.429 (dense) / 0.009 (sparse) | 0.348 | `diff2test-strict-results.json` |
+| **BM25 over test paths** | **0.536** | **0.609** | `corpus2-baselines-results.json` |
+| **learned lexical reranker** (BM25 + path-overlap, LORO CV) | — | **0.707** | `corpus2-fusion-results.json` |
 
-*Honest decomposition (`diff2test-strict-results.json`):* on the dense graph, using the
-PR's own embedding as the query (vs. an α-blend) is worth +0.195 R@1; enforcing the
-temporal `as_of` cut costs +0.125 (future modifiers were leaking). The released number
-applies both — clean query, no future leakage.
+**BM25-over-paths beats co-change structure on both corpora**, including against corpus2's
+harder same-repo negatives. A *learned* reranker over lexical features is the best system
+(R@1 0.707); adding structure features to it **significantly hurts** (ΔR@1 −0.038, 95% CI
+[−0.066, −0.009]), and naive fusion also hurts. So co-change structure is **neither
+superior to nor complementary with** lexical retrieval on this task.
 
-*Leakage audit (`diff2test-audit-results.json`):* the densification does not manufacture
-the signal. Candidate coverage is balanced (gold 85.7% vs negative 81.9%), and **ranking
-only among rankable candidates** (removing the covered-vs-uncovered cue) gives fair R@1
-**0.500 — 5.7× the random-among-covered baseline** — so the 0.429 end-to-end number is
-conservative, not inflated. Train/test repositories are disjoint (no forks/near-duplicates).
+*What the structure work did establish (still true, just not the headline):* the co-change
+graph reaches R@1 0.429 dense+`as_of` (`diff2test-strict-results.json`); that number is not
+a coverage artefact (fair R@1 0.500 = 5.7× random, balanced gold/negative coverage,
+disjoint train/test repos — `diff2test-audit-results.json`); and the structure signal
+replicates on the independent TS/JS corpus (0.348, fair 5.5× random —
+`corpus2-diff2test-results.json`). These are real properties of co-change geometry — a
+simpler lexical baseline just solves the task better, so the structure is not *needed*.
 
-*External-validity replication (`corpus2-diff2test-results.json`):* the result reproduces
-on an **independent 12-repo TypeScript/JavaScript corpus** (4,962 `modifies` edges,
-disjoint ecosystem from the Python pilot). Under the identical release-honest method,
-fair R@1 is **5.5× the random-among-covered baseline** — near-identical to the pilot's
-5.7×, and the cleanest cross-corpus comparison since it is invariant to pool size and
-reachability. Coverage is balanced (gold 54.1% vs negative 57.8%); end-to-end R@1 0.351
-(lower absolute number tracks the shallower densification — see
-[ablation-corpus2-replication.md](docs/ablation-corpus2-replication.md)).
+*Honest residual:* on the ~⅓ of changes where BM25's top-1 is wrong, co-change structure
+independently recovers ~31% of the affected tests — a fallback signal, not a system that
+beats lexical (gating on it lowers overall R@1).
 
 ---
 
